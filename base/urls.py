@@ -8,10 +8,6 @@ urlpatterns = [
     path("accounts/", include("accounts.urls")),
     path("accounts/", include("dj_rest_auth.urls")),
     path("", include("main.urls")),
-    path('n/',include('notifications.urls')),
-    path('posts/',include('posts.urls')),
-    path('plus/',include('plus.urls')),
-    path('savelog/',include('savelog.urls'))
 ]
 if settings.DEBUG:
     urlpatterns+=path("__debug__/", include("debug_toolbar.urls")),

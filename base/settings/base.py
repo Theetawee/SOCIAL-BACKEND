@@ -32,12 +32,8 @@ INSTALLED_APPS = [
     "main",
     "cloudinary_storage",
     "cloudinary",
-    "notifications",
     "debug_toolbar",
     "sockets",
-    "posts",
-    "plus",
-    "savelog",
 ]
 
 SITE_ID = 1
