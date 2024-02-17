@@ -1,0 +1,22 @@
+{% extends "account/email/base_message.txt" %}
+{% load account %}
+{% load i18n %}
+
+{% block content %}
+    {% autoescape off %}
+        {% user_display user as user_display %}
+        {% blocktrans with site_name=current_site.name site_domain=current_site.domain user_display=user_display %}
+            Dear {{ user_display }},
+
+            Thank you for choosing Waanverse, your social platform of choice. We've received a request to verify your account.
+
+            To confirm this action, please click the following link:
+            {{ activate_url }}
+
+            If you did not make this request, please disregard this email.
+
+            Best regards,
+            The Waanverse Team
+        {% endblocktrans %}
+    {% endautoescape %}
+{% endblock content %}

@@ -1,0 +1,8 @@
+{% load i18n %}{% autoescape off %}
+Hello from Waanverse!
+
+{% block content %}{% endblock content %}
+
+Thank you for using Waanverse.!
+Waanverse Support Team.
+{% endautoescape %}

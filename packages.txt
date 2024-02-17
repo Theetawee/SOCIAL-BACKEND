@@ -1,0 +1,17 @@
+django
+django-cors-headers
+django-dotenv
+djangorestframework
+dj-rest-auth
+django-allauth
+django-cloudinary-storage
+django-debug-toolbar
+django-phonenumber-field
+phonenumberslite
+blurhash-python
+pywebpush
+djangorestframework-simplejwt
+gunicorn
+psycopg
+psycopg-binary
+psycopg-pool
