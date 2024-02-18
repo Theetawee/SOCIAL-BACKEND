@@ -42,6 +42,30 @@ class AccountManager(BaseUserManager):
         return self.create_user(email, username, name, password, **extra_fields)
 
 
+class Friendship(models.Model):
+    account1 = models.ForeignKey(
+        "Account", on_delete=models.CASCADE, related_name="friendships_as_account1"
+    )
+    account2 = models.ForeignKey(
+        "Account", on_delete=models.CASCADE, related_name="friendships_as_account2"
+    )
+    date_started = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ("acquaintance", "Acquaintance"),
+            ("close_friend", "Close Friend"),
+            ("best_friend", "Best Friend"),
+        ],
+        default="acquaintance",
+    )
+    is_one_sided = models.BooleanField(default=False)
+    notes = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"{self.account1.username} - {self.account2.username}"
+
+
 class Badge(models.Model):
     name = models.CharField(max_length=255)
     badge_image = models.ImageField(upload_to="badges/")
@@ -96,13 +120,10 @@ class Account(AbstractBaseUser, PermissionsMixin):
     verified = models.BooleanField(default=False)
     location = models.CharField(max_length=20, blank=True,null=True)
     badges=models.ManyToManyField(Badge,blank=True)
-    follows = models.ManyToManyField(
-        "self", related_name="followed_by", blank=True, symmetrical=False
-    )
     profile_image_hash = models.CharField(
         max_length=255, default="LTL55tj[~qof?bfQIUj[j[fQM{ay"
     )
-
+    friends=models.ManyToManyField('self',through=Friendship,symmetrical=False,blank=True)
     username_last_update = models.DateTimeField(blank=True, null=True)
 
     USERNAME_FIELD = "username"
@@ -140,13 +161,25 @@ class Account(AbstractBaseUser, PermissionsMixin):
     def has_module_perms(self, app_label):
         return True
 
-    @property
-    def is_following(self):
-        return self.follows.all().count()
 
-    @property
-    def is_followed_by(self):
-        return self.followed_by.all().count()
+class FriendRequest(models.Model):
+    STATUS=(
+        ("pending","pending"),
+        ("accepted","accepted"),
+        ('declined','declined')
+    )
+    sender = models.ForeignKey(
+        Account, on_delete=models.CASCADE, related_name="sender"
+    )
+    recipient = models.ForeignKey(
+        Account, on_delete=models.CASCADE, related_name="recipient"
+    )
+
+    date_sent=models.DateTimeField(auto_now_add=True)
+    status=models.CharField(max_length=20,choices=STATUS,default="pending")
+
+    def __str__(self):
+        return f"{self.sender} sent request to {self.recipient}"
 
 
 @receiver(user_signed_up)

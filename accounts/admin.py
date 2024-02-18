@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Account,Badge
+from .models import Account,Badge,FriendRequest,Friendship
 from django.contrib.auth.admin import UserAdmin
 
 # Register your models here.
@@ -24,6 +24,7 @@ class AccountAdmin(UserAdmin):
 
 admin.site.register(Account, AccountAdmin)
 
-
+admin.site.register(Friendship)
+admin.site.register(FriendRequest)
 
 admin.site.register(Badge)

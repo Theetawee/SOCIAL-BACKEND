@@ -1,4 +1,4 @@
-from .models import Account
+from .models import Account,FriendRequest
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.generics import ListAPIView,RetrieveAPIView
@@ -110,15 +110,58 @@ def update_profile_info(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class GetUserInfo(RetrieveAPIView):
-    serializer_class = AccountSerializer
-    queryset = (
-        Account.objects.all()
-    )  # Assuming you want to retrieve all accounts initially
+@api_view(["GET"])
+def user_details(request, username):
+    try:
+        # Check if the requested username is the same as the authenticated user
+        is_self = request.user.username == username
 
-    def get_object(self):
-        username = self.kwargs.get("username")
-        return self.queryset.get(username=username)
+        # Get the account associated with the username
+        account = Account.objects.get(username=username)
+
+        # Check if the authenticated user is friends with the requested account
+        account_is_friend = account in request.user.friends.all()
+
+        # Check if the requested account is friends with the authenticated user
+        user_is_friend = request.user in account.friends.all()
+
+        # Check if the authenticated user has sent a friend request to the requested account
+        user_sent_friend_request = FriendRequest.objects.filter(sender=request.user, recipient=account, status='pending').exists()
+
+        # Check if the requested account has sent a friend request to the authenticated user
+        account_sent_friend_request = FriendRequest.objects.filter(sender=account, recipient=request.user, status='pending').exists()
+
+        # Serialize the account data
+        serializer = AccountSerializer(account)
+        data=serializer.data
+        # Add additional data to the serialized account
+        data['is_self'] = is_self
+        data['account_is_friend'] = account_is_friend
+        data['user_is_friend'] = user_is_friend
+        data['user_sent_friend_request'] = user_sent_friend_request
+        data['account_sent_friend_request'] = account_sent_friend_request
+        # Return the serialized data as a response
+        return Response(data, status=status.HTTP_200_OK)
+
+    except Account.DoesNotExist:
+        # Return a 404 response if the account does not exist
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-user_details = GetUserInfo.as_view()
+@api_view(["POST"])
+def send_friend_request(request,username):
+    user = request.user
+    try:
+        account=Account.objects.get(username=username)
+    except Account.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if(account == user):
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    if(FriendRequest.objects.filter(sender=user,recipient=account).exists()):
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    friend_request = FriendRequest.objects.create(sender=user,recipient=account)
+    friend_request.save()
+    return Response(status=status.HTTP_200_OK)

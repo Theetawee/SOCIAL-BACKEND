@@ -102,10 +102,7 @@ class AccountSerializer(serializers.ModelSerializer):
             "name",
             "profile_image_hash",
             "location",
-            "is_following",
-            "is_followed_by",
             "badges",
-            "follows",
             "joined",
         ]
 
