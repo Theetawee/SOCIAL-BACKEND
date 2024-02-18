@@ -10,7 +10,6 @@ from dj_rest_auth.registration.serializers import RegisterSerializer as Cast
 from allauth.socialaccount.models import EmailAddress
 from allauth.account.utils import setup_user_email
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -49,6 +48,7 @@ class RegisterSerializer(Cast):
             "password1": self.validated_data.get("password1", ""),
             "email": self.validated_data.get("email", ""),
             "name": self.validated_data.get("name", ""),
+            "username": self.validated_data.get("username", ""),
         }
 
     def save(self, request):
