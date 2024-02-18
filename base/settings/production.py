@@ -46,7 +46,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = ["https://www.waanverse.com", "https://api.waanverse.com"]
 
 
-GOOGLE_REDIRECT_URI = "https://accounts.waanverse.com/oauth2/google/"
+GOOGLE_REDIRECT_URI = "https://www.waanverse.com/accounts/oauth2/google/"
 
 
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
@@ -132,7 +132,7 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-EMAIL_VERIFICATION_URL = "https://accounts.waanverse.com/accounts/"
+EMAIL_VERIFICATION_URL = "https://www.waanverse.com/accounts/"
 
 
 REST_AUTH["JWT_AUTH_SECURE"] = True
