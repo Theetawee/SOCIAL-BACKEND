@@ -1,6 +1,6 @@
 from django.urls import path, include
 from .views import (
-    loggedInUser,resend_email,update_profile_image,update_profile_info
+    loggedInUser,resend_email,update_profile_image,update_profile_info,user_details
 )
 from dj_rest_auth.registration.views import VerifyEmailView
 from accounts.authentication import GoogleLogin
@@ -34,6 +34,7 @@ urlpatterns = [
     path("resend_email/", resend_email),
     path('update/image/',update_profile_image),
     path('update/info/',update_profile_info),
+    path('user/<str:username>/',user_details),
     # path('login/',CustomLoginView.as_view())
 ]
 

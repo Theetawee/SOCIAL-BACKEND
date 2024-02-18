@@ -1,6 +1,7 @@
 from .models import Account
 from rest_framework.decorators import api_view
 from rest_framework import status
+from rest_framework.generics import ListAPIView,RetrieveAPIView
 from rest_framework.response import Response
 from .serializers import (
     AccountSerializer,
@@ -8,10 +9,6 @@ from .serializers import (
     UpdateProfileImageSerializer,
     AccountUpdateSerializer
 )
-from dj_rest_auth.jwt_auth import set_jwt_cookies
-from django.utils import timezone
-from dj_rest_auth.app_settings import api_settings
-from dj_rest_auth.views import LoginView
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.generics import get_object_or_404
@@ -23,14 +20,6 @@ from rest_framework.exceptions import APIException
 import blurhash
 from PIL import Image
 from allauth.account.models import EmailAddress
-from rest_framework_simplejwt.settings import (
-    api_settings as jwt_settings,
-)
-from .utils import generate_secure_key
-from rest_framework_simplejwt.views import TokenObtainPairView
-
-
-
 
 
 # Create your views here.
@@ -76,17 +65,6 @@ class NewEmailConfirmation(APIView):
 resend_email = NewEmailConfirmation.as_view()
 
 
-
-
-
-
-
-
-
-
-
-
-
 @api_view(["GET"])
 def loggedInUser(request):
     user = request.user
@@ -130,3 +108,17 @@ def update_profile_info(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetUserInfo(RetrieveAPIView):
+    serializer_class = AccountSerializer
+    queryset = (
+        Account.objects.all()
+    )  # Assuming you want to retrieve all accounts initially
+
+    def get_object(self):
+        username = self.kwargs.get("username")
+        return self.queryset.get(username=username)
+
+
+user_details = GetUserInfo.as_view()

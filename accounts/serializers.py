@@ -22,6 +22,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token["email"]=user.email
         token["image_hash"]=user.profile_image_hash
         token["username"]=user.username
+        token["verified"]=user.verified
 
 
         return token

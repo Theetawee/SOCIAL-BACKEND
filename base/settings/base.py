@@ -157,7 +157,7 @@ REST_AUTH = {
     "JWT_AUTH_REFRESH_COOKIE": "_Secure-RT",
     "JWT_AUTH_RETURN_EXPIRATION": False,
     "REGISTER_SERIALIZER": "accounts.serializers.RegisterSerializer",
-    "USER_DETAILS_SERIALIZER": "accounts.serializers.AccountSerializer",
+    # "USER_DETAILS_SERIALIZER": "accounts.serializers.AccountSerializer",
     "PASSWORD_RESET_USE_SITES_DOMAIN": True,
     "OLD_PASSWORD_FIELD_ENABLED": True,
     "JWT_TOKEN_CLAIMS_SERIALIZER": "accounts.serializers.MyTokenObtainPairSerializer",
