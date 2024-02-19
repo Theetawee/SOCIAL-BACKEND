@@ -1,4 +1,4 @@
-from .models import Account,FriendRequest,Friendship
+from .models import Account,FriendRequest,Hobby
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.generics import ListAPIView,RetrieveAPIView
@@ -6,8 +6,9 @@ from rest_framework.response import Response
 from .serializers import (
     AccountSerializer,
     AccountSerializer,
+    HobbySerializer,
     UpdateProfileImageSerializer,
-    AccountUpdateSerializer,FriendRequestSerializer
+    AccountUpdateSerializer,FriendRequestSerializer,UpdateHobbySerializer
 )
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
@@ -211,3 +212,24 @@ def decline_friend_request(request,requestId):
 
 
 
+class GetHobbies(ListAPIView):
+    serializer_class = HobbySerializer
+    queryset = Hobby.objects.all()
+    pagination_class = None
+
+get_hobbies=GetHobbies.as_view()
+
+
+@api_view(["POST"])
+def update_hobbies(request):
+    hobbies=request.data.get('hobbies')
+    if hobbies:
+        try:
+            request.user.hobbies.set(hobbies)
+            request.user.save()
+            return Response(status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+    else:
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)

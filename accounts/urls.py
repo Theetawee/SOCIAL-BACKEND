@@ -1,6 +1,6 @@
 from django.urls import path, include
 from .views import (
-    loggedInUser,resend_email,update_profile_image,update_profile_info,user_details,send_friend_request,get_user_friend_requests,accept_friend_request,decline_friend_request
+    loggedInUser,resend_email,update_profile_image,update_profile_info,user_details,send_friend_request,get_user_friend_requests,accept_friend_request,update_hobbies,decline_friend_request,get_hobbies
 )
 from dj_rest_auth.registration.views import VerifyEmailView
 from accounts.authentication import GoogleLogin
@@ -39,6 +39,8 @@ urlpatterns = [
     path('friend-requests/',get_user_friend_requests),
     path('accept-friend-request/<int:requestId>/',accept_friend_request),
     path('decline-friend-request/<int:requestId>/',decline_friend_request),
+    path('hobbies/',get_hobbies),
+    path('hobbies/update/',update_hobbies),
 ]
 
 

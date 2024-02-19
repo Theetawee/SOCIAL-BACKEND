@@ -1,4 +1,4 @@
-from accounts.models import Account,Badge,FriendRequest,Hobby
+from accounts.models import Account, Badge, FriendRequest, Hobby
 from rest_framework import serializers
 from allauth.account import app_settings as allauth_account_settings
 from allauth.account.adapter import get_adapter
@@ -18,19 +18,20 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         # Add custom claims
         token["name"] = user.name
-        token["image"]=user.image
-        token["email"]=user.email
-        token["image_hash"]=user.profile_image_hash
-        token["username"]=user.username
-        token["verified"]=user.verified
-
+        token["image"] = user.image
+        token["email"] = user.email
+        token["image_hash"] = user.profile_image_hash
+        token["username"] = user.username
+        token["verified"] = user.verified
 
         return token
+
 
 class HobbySerializer(serializers.ModelSerializer):
     class Meta:
         model = Hobby
         fields = "__all__"
+
 
 class RegisterSerializer(Cast):
     name = serializers.CharField(required=True, max_length=255)
@@ -76,7 +77,7 @@ class RegisterSerializer(Cast):
 
 class BadgeSerializer(serializers.ModelSerializer):
     class Meta:
-        model =Badge
+        model = Badge
         fields = [
             "id",
             "name",
@@ -86,12 +87,13 @@ class BadgeSerializer(serializers.ModelSerializer):
             "image_hash",
             "added_on",
             "updated_on",
-]
+        ]
 
 
 class AccountSerializer(serializers.ModelSerializer):
-    badges=BadgeSerializer(many=True)
-    hobbies=HobbySerializer(many=True)
+    badges = BadgeSerializer(many=True)
+    hobbies = HobbySerializer(many=True)
+
     class Meta:
         model = Account
         fields = [
@@ -109,7 +111,7 @@ class AccountSerializer(serializers.ModelSerializer):
             "location",
             "badges",
             "joined",
-            "hobbies"
+            "hobbies",
         ]
 
 
@@ -129,6 +131,7 @@ class AccountUpdateSerializer(serializers.ModelSerializer):
             "bio",
             "name",
             "location",
+            "hobbies",
         ]
 
 
@@ -142,9 +145,8 @@ class EmailSerializer(serializers.ModelSerializer):
             UniqueValidator(
                 queryset=Account.objects.all(),
                 message="Email already exists.",
-
             )
-        ]
+        ],
     )
 
     class Meta:
@@ -152,10 +154,22 @@ class EmailSerializer(serializers.ModelSerializer):
         fields = ["email"]
 
 
-
 class FriendRequestSerializer(serializers.ModelSerializer):
-    sender=AccountSerializer()
-    recipient=AccountSerializer()
+    sender = AccountSerializer()
+    recipient = AccountSerializer()
+
     class Meta:
-        model=FriendRequest
-        fields="__all__"
+        model = FriendRequest
+        fields = "__all__"
+
+
+class UpdateHobbySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = ["hobbies"]
+
+    def update(self, instance, validated_data):
+        print('here')
+        instance.hobbies.set(validated_data.get("hobbies", instance.hobbies))
+        instance.save()
+        return instance
