@@ -1,4 +1,4 @@
-from accounts.models import Account,Badge,FriendRequest
+from accounts.models import Account,Badge,FriendRequest,Hobby
 from rest_framework import serializers
 from allauth.account import app_settings as allauth_account_settings
 from allauth.account.adapter import get_adapter
@@ -27,6 +27,10 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         return token
 
+class HobbySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Hobby
+        fields = "__all__"
 
 class RegisterSerializer(Cast):
     name = serializers.CharField(required=True, max_length=255)
@@ -87,6 +91,7 @@ class BadgeSerializer(serializers.ModelSerializer):
 
 class AccountSerializer(serializers.ModelSerializer):
     badges=BadgeSerializer(many=True)
+    hobbies=HobbySerializer(many=True)
     class Meta:
         model = Account
         fields = [
@@ -104,6 +109,7 @@ class AccountSerializer(serializers.ModelSerializer):
             "location",
             "badges",
             "joined",
+            "hobbies"
         ]
 
 

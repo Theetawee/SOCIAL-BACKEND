@@ -170,7 +170,12 @@ def send_friend_request(request,username):
 
 @api_view(['GET'])
 def get_user_friend_requests(request):
-    friend_requests=FriendRequest.objects.filter(recipient=request.user,status='pending')
+    value=request.GET.get('value')
+    if value:
+        value=int(value)
+        friend_requests=FriendRequest.objects.filter(recipient=request.user,status='pending')[:value]
+    else:
+        friend_requests=FriendRequest.objects.filter(recipient=request.user,status='pending')
     serializer=FriendRequestSerializer(friend_requests,many=True)
     return Response(serializer.data,status=status.HTTP_200_OK)
 
@@ -189,3 +194,20 @@ def accept_friend_request(request,requestId):
     user.friends.add(account)
     user.save()
     return Response(status=status.HTTP_200_OK)
+
+
+# Decline a friend request
+
+@api_view(['POST'])
+def decline_friend_request(request,requestId):
+    user = request.user
+    try:
+        friend_request=FriendRequest.objects.get(id=requestId)
+    except Account.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    friend_request.status='declined'
+    friend_request.save()
+    return Response(status=status.HTTP_200_OK)
+
+
+

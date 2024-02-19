@@ -124,6 +124,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
     profile_image_hash = models.CharField(
         max_length=255, default="LTL55tj[~qof?bfQIUj[j[fQM{ay"
     )
+    hobbies=models.ManyToManyField("Hobby", blank=True)
     friends = models.ManyToManyField(
         "self", through=Friendship, symmetrical=False, blank=True
     )
@@ -180,6 +181,26 @@ class FriendRequest(models.Model):
 
     def __str__(self):
         return f"{self.sender} sent request to {self.recipient}"
+
+    class Meta:
+        unique_together = ("sender", "recipient")
+        ordering = ["-date_sent"]
+
+# model for hobbies
+class Hobby(models.Model):
+    name = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+
+
+
+
+
+
 
 
 @receiver(user_signed_up)
