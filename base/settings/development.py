@@ -49,7 +49,7 @@ GOOGLE_REDIRECT_URI = "http://localhost:5173/accounts/oauth2/google/"
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"
 
 
-BACKUP_DIRECTORY = os.path.join(BASE_DIR, "backups/dev")
+BACKUP_DIRECTORY = os.path.join(BASE_DIR, "backups/development")
 
 
 SOCIALACCOUNT_PROVIDERS = {

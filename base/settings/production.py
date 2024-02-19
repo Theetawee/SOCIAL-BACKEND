@@ -52,7 +52,7 @@ GOOGLE_REDIRECT_URI = "https://www.waanverse.com/accounts/oauth2/google/"
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
 
 
-BACKUP_DIRECTORY = os.path.join(BASE_DIR, "backups/prod")
+BACKUP_DIRECTORY = os.path.join(BASE_DIR, "backups/production")
 
 
 CSRF_TRUSTED_ORIGINS = [
