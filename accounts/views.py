@@ -7,7 +7,7 @@ from .serializers import (
     AccountSerializer,
     AccountSerializer,
     UpdateProfileImageSerializer,
-    AccountUpdateSerializer
+    AccountUpdateSerializer,FriendRequestSerializer
 )
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
@@ -165,3 +165,11 @@ def send_friend_request(request,username):
     friend_request = FriendRequest.objects.create(sender=user,recipient=account)
     friend_request.save()
     return Response(status=status.HTTP_200_OK)
+
+
+
+@api_view(['GET'])
+def get_user_friend_requests(request):
+    friend_requests=FriendRequest.objects.filter(recipient=request.user,status='pending')
+    serializer=FriendRequestSerializer(friend_requests,many=True)
+    return Response(serializer.data,status=status.HTTP_200_OK)

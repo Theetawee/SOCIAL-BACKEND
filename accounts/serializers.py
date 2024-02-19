@@ -1,4 +1,4 @@
-from accounts.models import Account,Badge
+from accounts.models import Account,Badge,FriendRequest
 from rest_framework import serializers
 from allauth.account import app_settings as allauth_account_settings
 from allauth.account.adapter import get_adapter
@@ -144,3 +144,12 @@ class EmailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         fields = ["email"]
+
+
+
+class FriendRequestSerializer(serializers.ModelSerializer):
+    sender=AccountSerializer()
+    recipient=AccountSerializer()
+    class Meta:
+        model=FriendRequest
+        fields="__all__"
