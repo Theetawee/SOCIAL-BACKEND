@@ -1,4 +1,4 @@
-from .models import Account,FriendRequest
+from .models import Account,FriendRequest,Friendship
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.generics import ListAPIView,RetrieveAPIView
@@ -173,3 +173,19 @@ def get_user_friend_requests(request):
     friend_requests=FriendRequest.objects.filter(recipient=request.user,status='pending')
     serializer=FriendRequestSerializer(friend_requests,many=True)
     return Response(serializer.data,status=status.HTTP_200_OK)
+
+
+# Accept a friend request
+@api_view(['POST'])
+def accept_friend_request(request,requestId):
+    user = request.user
+    try:
+        friend_request=FriendRequest.objects.get(id=requestId)
+    except Account.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    account=friend_request.sender
+    friend_request.status='accepted'
+    friend_request.save()
+    user.friends.add(account)
+    user.save()
+    return Response(status=status.HTTP_200_OK)

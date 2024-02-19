@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser,
-    PermissionsMixin,BaseUserManager
+    PermissionsMixin,
+    BaseUserManager,
 )
 from phonenumber_field.modelfields import PhoneNumberField
 from allauth.account.signals import user_signed_up
@@ -70,8 +71,10 @@ class Badge(models.Model):
     name = models.CharField(max_length=255)
     badge_image = models.ImageField(upload_to="badges/")
     description = models.TextField()
-    value=models.DecimalField(max_digits=10,decimal_places=1)
-    image_hash=models.CharField(max_length=255,default="L02v:alCD4fRlCk[Z2Z28wf5HXaI")
+    value = models.DecimalField(max_digits=10, decimal_places=1)
+    image_hash = models.CharField(
+        max_length=255, default="L02v:alCD4fRlCk[Z2Z28wf5HXaI"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -102,9 +105,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
     )
     name = models.CharField(max_length=255)
     username = models.CharField(max_length=150, unique=True)
-    email = models.EmailField(
-        max_length=255, unique=True, verbose_name="Email"
-    )
+    email = models.EmailField(max_length=255, unique=True, verbose_name="Email")
     phone = PhoneNumberField(null=True, blank=True, unique=True)
     gender = models.CharField(
         max_length=10, blank=True, null=True, choices=GENDER_OPTIONS
@@ -118,16 +119,18 @@ class Account(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     bio = models.TextField(blank=True, null=True)
     verified = models.BooleanField(default=False)
-    location = models.CharField(max_length=20, blank=True,null=True)
-    badges=models.ManyToManyField(Badge,blank=True)
+    location = models.CharField(max_length=20, blank=True, null=True)
+    badges = models.ManyToManyField(Badge, blank=True)
     profile_image_hash = models.CharField(
         max_length=255, default="LTL55tj[~qof?bfQIUj[j[fQM{ay"
     )
-    friends=models.ManyToManyField('self',through=Friendship,symmetrical=False,blank=True)
+    friends = models.ManyToManyField(
+        "self", through=Friendship, symmetrical=False, blank=True
+    )
     username_last_update = models.DateTimeField(blank=True, null=True)
 
     USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = ["name","email"]
+    REQUIRED_FIELDS = ["name", "email"]
 
     objects = AccountManager()
 
@@ -139,7 +142,6 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
     def get_short_name(self):
         return self.username
-
 
     @property
     def joined(self):
@@ -163,20 +165,18 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
 
 class FriendRequest(models.Model):
-    STATUS=(
-        ("pending","pending"),
-        ("accepted","accepted"),
-        ('declined','declined')
+    STATUS = (
+        ("pending", "pending"),
+        ("accepted", "accepted"),
+        ("declined", "declined"),
     )
-    sender = models.ForeignKey(
-        Account, on_delete=models.CASCADE, related_name="sender"
-    )
+    sender = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="sender")
     recipient = models.ForeignKey(
         Account, on_delete=models.CASCADE, related_name="recipient"
     )
 
-    date_sent=models.DateTimeField(auto_now_add=True)
-    status=models.CharField(max_length=20,choices=STATUS,default="pending")
+    date_sent = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=STATUS, default="pending")
 
     def __str__(self):
         return f"{self.sender} sent request to {self.recipient}"
