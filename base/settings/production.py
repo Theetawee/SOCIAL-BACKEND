@@ -24,12 +24,11 @@ DATABASES = {
         "NAME": "waanverse",
         "USER": "waanversecorp",
         "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": "ep-quiet-mouse-a229y219.eu-central-1.aws.neon.tech",
+        "HOST": "ep-small-violet-a295dtp0.eu-central-1.aws.neon.tech",
         "PORT": "5432",
         "OPTIONS": {"sslmode": "require"},
     }
 }
-
 CLOUDINARY_STORAGE = {
     "CLOUD_NAME": "dodcxvbqu",
     "API_KEY": "926972112538678",
