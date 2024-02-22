@@ -45,16 +45,8 @@ class Posts(generics.ListAPIView):
                         Post.objects.select_related("account")
                         .prefetch_related("likes")
                         .filter(account=account)
-                        .filter(
-                            Q(open_to="E")
-                            | (
-                                Q(open_to="F") & Q(account__followed_by=user)
-                                | Q(account=user)
-                            )
-                            | (Q(open_to="O") & Q(account=user))
-                        )
-                        .distinct()
-                    )
+
+                    .all())
 
                 return queryset
             except Account.DoesNotExist:
@@ -68,16 +60,7 @@ class Posts(generics.ListAPIView):
             else:
                 queryset = (
                     Post.objects.select_related("account")
-                    .prefetch_related("likes")
-                    .filter(
-                        Q(open_to="E")
-                        | (
-                            Q(open_to="F") & Q(account__followed_by=user)
-                            | Q(account=user)
-                        )
-                        | (Q(open_to="O") & Q(account=user))
-                    )
-                    .distinct()
+                    .prefetch_related("likes").all()
                 )
 
                 return queryset

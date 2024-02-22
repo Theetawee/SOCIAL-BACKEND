@@ -68,8 +68,9 @@ resend_email = NewEmailConfirmation.as_view()
 
 
 class CustomLoginView(LoginView):
-    
+
     def get_response(self):
+        print('called')
         set_device(self.user,self.request)
         return super().get_response()
 
