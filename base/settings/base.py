@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "cloudinary",
     "debug_toolbar",
     "sockets",
+    "django_user_agents",
 ]
 
 SITE_ID = 1
@@ -49,6 +50,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "django_user_agents.middleware.UserAgentMiddleware",
 ]
 
 ROOT_URLCONF = "base.urls"

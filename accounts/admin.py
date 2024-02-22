@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Account,Badge,FriendRequest,Friendship,Hobby
+from .models import Account,Badge,FriendRequest,Friendship,Hobby,UserDevice
 from django.contrib.auth.admin import UserAdmin
 
 # Register your models here.
@@ -28,3 +28,4 @@ admin.site.register(Friendship)
 admin.site.register(FriendRequest)
 
 admin.site.register(Badge)
+admin.site.register(UserDevice)

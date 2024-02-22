@@ -1,6 +1,6 @@
 from django.urls import path, include
 from .views import (
-    loggedInUser,resend_email,update_profile_image,update_profile_info,user_details,send_friend_request,get_user_friend_requests,accept_friend_request,update_hobbies,decline_friend_request,get_hobbies
+    loggedInUser,resend_email,update_profile_image,update_profile_info,user_details,send_friend_request,get_user_friend_requests,accept_friend_request,update_hobbies,decline_friend_request,get_hobbies,CustomLoginView
 )
 from dj_rest_auth.registration.views import VerifyEmailView
 from accounts.authentication import GoogleLogin
@@ -19,6 +19,7 @@ Accounts Endpoints
 
 urlpatterns = [
     path("me/", loggedInUser),
+    path('login/',CustomLoginView.as_view()),
     path(
         "activate/",
         VerifyEmailView.as_view(),

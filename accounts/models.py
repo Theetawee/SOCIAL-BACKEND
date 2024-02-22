@@ -197,10 +197,22 @@ class Hobby(models.Model):
 
 
 
+class UserDevice(models.Model):
+    user = models.ForeignKey(Account, on_delete=models.CASCADE)
+    is_mobile = models.BooleanField(default=False)
+    is_tablet = models.BooleanField(default=False)
+    is_touch_capable = models.BooleanField(default=False)
+    is_pc=models.BooleanField(default=False)
+    browser_family = models.CharField(max_length=100, blank=True)
+    browser_version = models.CharField(max_length=20, blank=True)
+    os_family = models.CharField(max_length=100, blank=True)
+    os_version = models.CharField(max_length=20, blank=True)
+    device_family = models.CharField(max_length=100, blank=True)
+    last_used=models.DateTimeField(auto_now=True)
+    date_added=models.DateTimeField(auto_now_add=True)
 
-
-
-
+    def __str__(self):
+        return f"User: {self.user}, Mobile: {self.is_mobile}, Tablet: {self.is_tablet}, Touch Capable: {self.is_touch_capable}"
 
 
 @receiver(user_signed_up)

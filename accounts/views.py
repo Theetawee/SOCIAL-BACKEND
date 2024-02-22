@@ -21,8 +21,8 @@ from rest_framework.exceptions import APIException
 import blurhash
 from PIL import Image
 from allauth.account.models import EmailAddress
-
-
+from dj_rest_auth.views import LoginView
+from .utils import set_device
 # Create your views here.
 
 
@@ -64,6 +64,14 @@ class NewEmailConfirmation(APIView):
 
 
 resend_email = NewEmailConfirmation.as_view()
+
+
+
+class CustomLoginView(LoginView):
+    
+    def get_response(self):
+        set_device(self.user,self.request)
+        return super().get_response()
 
 
 @api_view(["GET"])
