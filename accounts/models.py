@@ -196,23 +196,25 @@ class Hobby(models.Model):
         return self.name
 
 
-
 class UserDevice(models.Model):
-    user = models.ForeignKey(Account, on_delete=models.CASCADE)
-    is_mobile = models.BooleanField(default=False)
-    is_tablet = models.BooleanField(default=False)
-    is_touch_capable = models.BooleanField(default=False)
-    is_pc=models.BooleanField(default=False)
-    browser_family = models.CharField(max_length=100, blank=True)
-    browser_version = models.CharField(max_length=20, blank=True)
-    os_family = models.CharField(max_length=100, blank=True)
-    os_version = models.CharField(max_length=20, blank=True)
-    device_family = models.CharField(max_length=100, blank=True)
-    last_used=models.DateTimeField(auto_now=True)
-    date_added=models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(
+        Account, on_delete=models.CASCADE
+    )
+    os_name = models.CharField(max_length=255, null=True, blank=True)
+    os_version = models.CharField(max_length=255, null=True, blank=True)
+    engine = models.CharField(max_length=255, null=True, blank=True)
+    device_name = models.CharField(max_length=255, null=True, blank=True)
+    device_brand = models.CharField(max_length=255, null=True, blank=True)
+    device_model = models.CharField(max_length=255, null=True, blank=True)
+    device_type = models.CharField(max_length=255, null=True, blank=True)
+    client_name = models.CharField(max_length=255, null=True, blank=True)
+    client_type = models.CharField(max_length=255, null=True, blank=True)
+    client_version = models.CharField(max_length=255, null=True, blank=True)
+    last_used = models.DateTimeField(auto_now=True)
+    date_added= models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"User: {self.user}, Mobile: {self.is_mobile}, Tablet: {self.is_tablet}, Touch Capable: {self.is_touch_capable}"
+        return f"{self.user.username}'s Device"
 
 
 @receiver(user_signed_up)

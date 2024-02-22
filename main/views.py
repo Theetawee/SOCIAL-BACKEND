@@ -33,7 +33,8 @@ class Posts(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         is_admin = user.is_staff
-
+        user_agent = self.request.headers.get('User-Agent')
+        print(user_agent)
         account_param = self.request.query_params.get("account", None)
         if account_param:
             try:
