@@ -7,8 +7,8 @@ from django.db.models import Q
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from .serializers import CreatePostSerializer, PostSerializer
-from .models import Post
+from .serializers import CreatePostSerializer, PostSerializer,ContentImageSerializer
+from .models import Post,ContentImage
 
 
 @api_view(["POST"])
@@ -149,3 +149,14 @@ class PostDetail(generics.RetrieveAPIView):
 
 
 post_detail = PostDetail.as_view()
+
+
+@api_view(["GET"])
+def get_post_image(request, pk):
+    try:
+        post = get_object_or_404(Post, id=pk)
+        images = ContentImage.objects.filter(post=post)
+        serializer = ContentImageSerializer(images, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Post.DoesNotExist:
+        return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
