@@ -10,6 +10,8 @@ from .serializers import (
     UpdateProfileImageSerializer,
     AccountUpdateSerializer,FriendRequestSerializer,UpdateHobbySerializer
 )
+from dj_rest_auth.app_settings import api_settings
+
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.generics import get_object_or_404
@@ -23,6 +25,12 @@ from PIL import Image
 from allauth.account.models import EmailAddress
 from dj_rest_auth.views import LoginView
 from .utils import set_device
+from dj_rest_auth.jwt_auth import set_jwt_cookies
+from django.utils import timezone
+from rest_framework_simplejwt.settings import (
+    api_settings as jwt_settings,
+)
+
 # Create your views here.
 
 
@@ -66,14 +74,42 @@ class NewEmailConfirmation(APIView):
 resend_email = NewEmailConfirmation.as_view()
 
 
-
 class CustomLoginView(LoginView):
 
     def get_response(self):
-        print('called')
-        set_device(self.user,self.request)
-        return super().get_response()
+        serializer_class = self.get_response_serializer()
 
+        set_device(self.user,self.request)
+
+        access_token_expiration = (
+            timezone.now() + jwt_settings.ACCESS_TOKEN_LIFETIME
+        )
+        refresh_token_expiration = (
+            timezone.now() + jwt_settings.REFRESH_TOKEN_LIFETIME
+        )
+        return_expiration_times = api_settings.JWT_AUTH_RETURN_EXPIRATION
+
+        data = {
+            "user": self.user,
+            "access": self.access_token,
+        }
+        data["refresh"] = self.refresh_token
+
+        if return_expiration_times:
+            data["access_expiration"] = access_token_expiration
+            data["refresh_expiration"] = refresh_token_expiration
+
+        serializer = serializer_class(
+            instance=data,
+            context=self.get_serializer_context(),
+        )
+
+        response = Response(serializer.data, status=status.HTTP_200_OK)
+
+        set_jwt_cookies(response, self.access_token, self.refresh_token)
+        return response
+
+    
 
 @api_view(["GET"])
 def loggedInUser(request):
@@ -177,7 +213,6 @@ def send_friend_request(request,username):
     return Response(status=status.HTTP_200_OK)
 
 
-
 @api_view(['GET'])
 def get_user_friend_requests(request):
     value=request.GET.get('value')
@@ -218,7 +253,6 @@ def decline_friend_request(request,requestId):
     friend_request.status='declined'
     friend_request.save()
     return Response(status=status.HTTP_200_OK)
-
 
 
 class GetHobbies(ListAPIView):
