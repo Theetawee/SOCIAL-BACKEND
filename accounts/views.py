@@ -109,7 +109,7 @@ class CustomLoginView(LoginView):
         set_jwt_cookies(response, self.access_token, self.refresh_token)
         return response
 
-    
+
 
 @api_view(["GET"])
 def loggedInUser(request):
@@ -135,9 +135,7 @@ def update_profile_image(request):
                 hash_value = blurhash.encode(image, x_components=4, y_components=3)
                 updated_user.profile_image_hash = hash_value
                 updated_user.save()
-                print(hash_value)
                 serializer.data["profile_image_hash"] = hash_value
-                print("yea")
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

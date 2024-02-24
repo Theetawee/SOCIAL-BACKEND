@@ -169,7 +169,6 @@ class UpdateHobbySerializer(serializers.ModelSerializer):
         fields = ["hobbies"]
 
     def update(self, instance, validated_data):
-        print('here')
         instance.hobbies.set(validated_data.get("hobbies", instance.hobbies))
         instance.save()
         return instance
