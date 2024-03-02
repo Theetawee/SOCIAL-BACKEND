@@ -7,8 +7,8 @@ from django.db.models import Q
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from .serializers import CreatePostSerializer, PostSerializer,ContentImageSerializer
 from .models import Post,ContentImage
+from .serializers import CreatePostSerializer,PostSerializer,ContentImageSerializer,SuggestedAccountsSerializer
 
 
 @api_view(["POST"])
@@ -159,3 +159,16 @@ def get_post_image(request, pk):
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Post.DoesNotExist:
         return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+
+@api_view(["GET"])
+def get_accounts_to_tag(request):
+    account=request.GET.get('account',None)
+    if(account):
+        accounts=Account.objects.filter(username__icontains=account).exclude(id=request.user.id)
+        serializer=SuggestedAccountsSerializer(accounts,many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)

@@ -18,17 +18,22 @@ except:
     PRIVATE_KEY=""
     PUBLIC_KEY=""
 
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "waanverse",
-        "USER": "waanversecorp",
-        "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": "ep-small-violet-a295dtp0.eu-central-1.aws.neon.tech",
-        "PORT": "5432",
-        "OPTIONS": {"sslmode": "require"},
+        "NAME": os.environ.get("PGDATABASE"),
+        "USER": os.environ.get("PGUSER"),
+        "PASSWORD": os.environ.get("PGPASSWORD"),
+        "HOST": os.environ.get("PGHOST"),
+        "PORT": os.environ.get("PGPORT", 5432),
+        "OPTIONS": {
+            "sslmode": "require",
+        },
     }
 }
+
+
 CLOUDINARY_STORAGE = {
     "CLOUD_NAME": "dodcxvbqu",
     "API_KEY": "926972112538678",

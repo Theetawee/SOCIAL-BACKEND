@@ -224,7 +224,7 @@ def social_account_signed_up(request, user, **kwargs):
         extra_data = social_account.extra_data.get("picture")
         names = social_account.extra_data.get("name")
         username = social_account.extra_data.get("given_name")
-        user.username = username.lower()
+        user.username = username.lower().replace(" ", "_")
         user.name = names
         user.profile_url = extra_data
         user.save()

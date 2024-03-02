@@ -15,7 +15,7 @@ class CreatePostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ["content", "account", "open_to", "taged_accounts"]
+        fields = ["content", "account", "taged_accounts"]
 
     def create(self, validated_data):
         taged_accounts_data = validated_data.pop("taged_accounts", [])
@@ -32,10 +32,11 @@ class CreatePostSerializer(serializers.ModelSerializer):
         if taged_accounts_data:
             taged_accounts_data = taged_accounts_data[0]
             taged_accounts_data = json.loads(taged_accounts_data)
-            account_id = taged_accounts_data.get("id")
-            if account_id:
-                tagged_account = Account.objects.get(id=account_id)
-                post.taged_accounts.add(tagged_account)
+            for account in taged_accounts_data:
+                account_id = account["id"]
+                if account_id:
+                    tagged_account = Account.objects.get(id=account_id)
+                    post.taged_accounts.add(tagged_account)
 
         return post
 
@@ -58,6 +59,7 @@ class PostSerializer(serializers.ModelSerializer):
     account = PostAccountSerializer()
     is_liked = serializers.SerializerMethodField()
     is_disliked = serializers.SerializerMethodField()
+    taged_accounts=PostAccountSerializer(many=True)
     post_images = ContentImageSerializer(
         many=True, read_only=True, source="content_images"
     )
@@ -73,7 +75,7 @@ class PostSerializer(serializers.ModelSerializer):
             "id",
             "is_liked",
             "is_disliked",
-            "open_to",
+            "taged_accounts",
             "total_comments",
             "post_images",
         ]
@@ -85,3 +87,9 @@ class PostSerializer(serializers.ModelSerializer):
     def get_is_disliked(self, obj):
         user = self.context.get("request").user
         return obj.is_disliked(user)
+
+
+class SuggestedAccountsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = ["username","id","profile_image_hash", "verified","image","name"]

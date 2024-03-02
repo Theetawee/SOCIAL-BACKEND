@@ -9,14 +9,14 @@ from PIL import Image
 # Create your models here.
 
 
-class BaseStructure(models.Model):
+class Post(models.Model):
     content = models.TextField()
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     last_edited = models.DateTimeField(auto_now=True)
-    likes = models.ManyToManyField(Account, related_name="content_likes", blank=True)
+    likes = models.ManyToManyField(Account, related_name="post_likes", blank=True)
     dislikes = models.ManyToManyField(
-        Account, related_name="content_dislikes", blank=True
+        Account, related_name="post_dislikes", blank=True
     )
     views = models.PositiveIntegerField(default=0)
     taged_accounts = models.ManyToManyField(
@@ -37,34 +37,42 @@ class BaseStructure(models.Model):
     def total_likes(self):
         return self.likes.count()
 
+    @property
+    def total_comments(self):
+        return Comment.objects.filter(post=self).count()
+
+    def __str__(self):
+        return self.content[:40]
+
     class Meta:
         ordering = ["-created_at"]
 
 
 class ContentImage(models.Model):
+
     post = models.ForeignKey(
-        BaseStructure, on_delete=models.CASCADE, related_name="content_images"
+        Post, on_delete=models.CASCADE, related_name="content_images"
     )
     content_image = models.ImageField(upload_to="media/")
 
     image_hash = models.CharField(max_length=300, blank=True, null=True)
 
 
-class Post(BaseStructure):
-    PRIVACY_CHOICES = (("F", "Followers"), ("AF", "Friends"),("E", "Everyone"), ("O", "Only me"))
-    is_draft = models.BooleanField(default=False)
-    open_to = models.CharField(choices=PRIVACY_CHOICES, max_length=5, default="E")
+class Comment(models.Model):
+    content = models.TextField()
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_edited = models.DateTimeField(auto_now=True)
+    likes = models.ManyToManyField(Account, related_name="comment_likes", blank=True)
+    dislikes = models.ManyToManyField(
+        Account, related_name="comment_dislikes", blank=True
+    )
+    views = models.PositiveIntegerField(default=0)
+    taged_accounts = models.ManyToManyField(
+        Account, blank=True, related_name="mentioned_in_comment"
+    )
 
-    @property
-    def total_comments(self):
-        return self.comments.count()
-
-    def __str__(self):
-        return self.content[:30]
-
-
-class Comment(BaseStructure):
-    post_commented = models.ForeignKey(
+    post = models.ForeignKey(
         Post, on_delete=models.CASCADE, related_name="comments"
     )
     parent = models.ForeignKey(
