@@ -18,7 +18,6 @@ except:
     PRIVATE_KEY=""
     PUBLIC_KEY=""
 
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -32,7 +31,6 @@ DATABASES = {
         },
     }
 }
-
 
 CLOUDINARY_STORAGE = {
     "CLOUD_NAME": "dodcxvbqu",
