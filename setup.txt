@@ -1,0 +1,11 @@
+Generate Private and Public key.
+ssh-keygen -t rsa -b 4096 -m PEM -f private_key.pem
+ssh-keygen -y -f private_key.pem > public_key.pem
+
+Generate SECRET_KEY
+python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
+
+
+Env. variables
+SECRET_KEY
+DJANGO_SETTINGS_MODULE
