@@ -9,6 +9,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from .models import Post,ContentImage
 from .serializers import CreatePostSerializer,PostSerializer,ContentImageSerializer,SuggestedAccountsSerializer
+from rest_framework.permissions import AllowAny
 
 
 @api_view(["POST"])
@@ -172,3 +173,33 @@ def get_accounts_to_tag(request):
         return Response(serializer.data,status=status.HTTP_200_OK)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def search(request):
+    query = request.GET.get("query")
+    if query==None or query.strip()=='':
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    accounts = Account.objects.filter(
+        Q(username__icontains=query) | Q(name__icontains=query)
+    )
+    accounts_data = AccountSerializer(accounts, many=True)
+    
+    
+    posts=Post.objects.filter(
+        Q(content__icontains=query) 
+    )
+    
+    posts_data=PostSerializer(posts,many=True)
+    
+    
+    
+    
+    response={
+        'accounts':accounts_data.data,
+        'posts':posts_data.data
+    }
+    return Response(response, status=status.HTTP_200_OK)
+    

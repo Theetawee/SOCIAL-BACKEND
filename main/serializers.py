@@ -81,13 +81,19 @@ class PostSerializer(serializers.ModelSerializer):
         ]
 
     def get_is_liked(self, obj):
-        user = self.context.get("request").user
-        return obj.is_liked(user)
+        try:
+            user = self.context.get("request").user
+            return obj.is_liked(user)
+        except:
+            return False
 
     def get_is_disliked(self, obj):
-        user = self.context.get("request").user
-        return obj.is_disliked(user)
-
+        try:
+            user = self.context.get("request").user
+        
+            return obj.is_disliked(user)
+        except:
+            return False
 
 class SuggestedAccountsSerializer(serializers.ModelSerializer):
     class Meta:
