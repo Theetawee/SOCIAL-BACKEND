@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Account,Badge,FriendRequest,Friendship,Hobby,UserDevice
+from .models import Account, Badge, FriendRequest, Friendship, Hobby, UserDevice
 from django.contrib.auth.admin import UserAdmin
 
 # Register your models here.

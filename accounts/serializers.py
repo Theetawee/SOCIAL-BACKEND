@@ -4,7 +4,6 @@ from allauth.account import app_settings as allauth_account_settings
 from allauth.account.adapter import get_adapter
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils.translation import gettext_lazy as _
-from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from dj_rest_auth.registration.serializers import RegisterSerializer as Cast
 from allauth.socialaccount.models import EmailAddress

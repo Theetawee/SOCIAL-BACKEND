@@ -1,30 +1,26 @@
-from .models import Account,FriendRequest,Hobby
+from .models import Account, FriendRequest, Hobby
 from rest_framework.decorators import api_view
 from rest_framework import status
-from rest_framework.generics import ListAPIView,RetrieveAPIView
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from .serializers import (
     AccountSerializer,
-    AccountSerializer,
     HobbySerializer,
     UpdateProfileImageSerializer,
-    AccountUpdateSerializer,FriendRequestSerializer,UpdateHobbySerializer
+    AccountUpdateSerializer,
+    FriendRequestSerializer,
 )
 from dj_rest_auth.app_settings import api_settings
 
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.generics import get_object_or_404
-from allauth.account.admin import EmailAddress
 from allauth.account.utils import send_email_confirmation
-from rest_framework.response import Response
-from rest_framework import status
 from rest_framework.exceptions import APIException
 import blurhash
 from PIL import Image
 from allauth.account.models import EmailAddress
 from dj_rest_auth.views import LoginView
-from .utils import set_device
 from dj_rest_auth.jwt_auth import set_jwt_cookies
 from django.utils import timezone
 from rest_framework_simplejwt.settings import (
@@ -44,7 +40,7 @@ class NewEmailConfirmation(APIView):
             emailAddress = EmailAddress.objects.filter(
                 user=user, verified=True
             ).exists()
-        except Exception as e:
+        except Exception :
             return Response(
                 {"message": "This email does not exist"},
                 status=status.HTTP_403_FORBIDDEN,
@@ -79,14 +75,10 @@ class CustomLoginView(LoginView):
     def get_response(self):
         serializer_class = self.get_response_serializer()
 
-        set_device(self.user,self.request)
+        # set_device(self.user,self.request)
 
-        access_token_expiration = (
-            timezone.now() + jwt_settings.ACCESS_TOKEN_LIFETIME
-        )
-        refresh_token_expiration = (
-            timezone.now() + jwt_settings.REFRESH_TOKEN_LIFETIME
-        )
+        access_token_expiration = timezone.now() + jwt_settings.ACCESS_TOKEN_LIFETIME
+        refresh_token_expiration = timezone.now() + jwt_settings.REFRESH_TOKEN_LIFETIME
         return_expiration_times = api_settings.JWT_AUTH_RETURN_EXPIRATION
 
         data = {
@@ -108,7 +100,6 @@ class CustomLoginView(LoginView):
 
         set_jwt_cookies(response, self.access_token, self.refresh_token)
         return response
-
 
 
 @api_view(["GET"])
@@ -170,20 +161,24 @@ def user_details(request, username):
         user_is_friend = request.user in account.friends.all()
 
         # Check if the authenticated user has sent a friend request to the requested account
-        user_sent_friend_request = FriendRequest.objects.filter(sender=request.user, recipient=account, status='pending').exists()
+        user_sent_friend_request = FriendRequest.objects.filter(
+            sender=request.user, recipient=account, status="pending"
+        ).exists()
 
         # Check if the requested account has sent a friend request to the authenticated user
-        account_sent_friend_request = FriendRequest.objects.filter(sender=account, recipient=request.user, status='pending').exists()
+        account_sent_friend_request = FriendRequest.objects.filter(
+            sender=account, recipient=request.user, status="pending"
+        ).exists()
 
         # Serialize the account data
         serializer = AccountSerializer(account)
-        data=serializer.data
+        data = serializer.data
         # Add additional data to the serialized account
-        data['is_self'] = is_self
-        data['account_is_friend'] = account_is_friend
-        data['user_is_friend'] = user_is_friend
-        data['user_sent_friend_request'] = user_sent_friend_request
-        data['account_sent_friend_request'] = account_sent_friend_request
+        data["is_self"] = is_self
+        data["account_is_friend"] = account_is_friend
+        data["user_is_friend"] = user_is_friend
+        data["user_sent_friend_request"] = user_sent_friend_request
+        data["account_sent_friend_request"] = account_sent_friend_request
         # Return the serialized data as a response
         return Response(data, status=status.HTTP_200_OK)
 
@@ -193,46 +188,50 @@ def user_details(request, username):
 
 
 @api_view(["POST"])
-def send_friend_request(request,username):
+def send_friend_request(request, username):
     user = request.user
     try:
-        account=Account.objects.get(username=username)
+        account = Account.objects.get(username=username)
     except Account.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    if(account == user):
+    if account == user:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    if(FriendRequest.objects.filter(sender=user,recipient=account).exists()):
+    if FriendRequest.objects.filter(sender=user, recipient=account).exists():
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    friend_request = FriendRequest.objects.create(sender=user,recipient=account)
+    friend_request = FriendRequest.objects.create(sender=user, recipient=account)
     friend_request.save()
     return Response(status=status.HTTP_200_OK)
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 def get_user_friend_requests(request):
-    value=request.GET.get('value')
+    value = request.GET.get("value")
     if value:
-        value=int(value)
-        friend_requests=FriendRequest.objects.filter(recipient=request.user,status='pending')[:value]
+        value = int(value)
+        friend_requests = FriendRequest.objects.filter(
+            recipient=request.user, status="pending"
+        )[:value]
     else:
-        friend_requests=FriendRequest.objects.filter(recipient=request.user,status='pending')
-    serializer=FriendRequestSerializer(friend_requests,many=True)
-    return Response(serializer.data,status=status.HTTP_200_OK)
+        friend_requests = FriendRequest.objects.filter(
+            recipient=request.user, status="pending"
+        )
+    serializer = FriendRequestSerializer(friend_requests, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 # Accept a friend request
-@api_view(['POST'])
-def accept_friend_request(request,requestId):
+@api_view(["POST"])
+def accept_friend_request(request, requestId):
     user = request.user
     try:
-        friend_request=FriendRequest.objects.get(id=requestId)
+        friend_request = FriendRequest.objects.get(id=requestId)
     except Account.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-    account=friend_request.sender
-    friend_request.status='accepted'
+    account = friend_request.sender
+    friend_request.status = "accepted"
     friend_request.save()
     user.friends.add(account)
     user.save()
@@ -241,14 +240,14 @@ def accept_friend_request(request,requestId):
 
 # Decline a friend request
 
-@api_view(['POST'])
-def decline_friend_request(request,requestId):
-    user = request.user
+
+@api_view(["POST"])
+def decline_friend_request(request, requestId):
     try:
-        friend_request=FriendRequest.objects.get(id=requestId)
+        friend_request = FriendRequest.objects.get(id=requestId)
     except Account.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-    friend_request.status='declined'
+    friend_request.status = "declined"
     friend_request.save()
     return Response(status=status.HTTP_200_OK)
 
@@ -258,18 +257,19 @@ class GetHobbies(ListAPIView):
     queryset = Hobby.objects.all()
     pagination_class = None
 
-get_hobbies=GetHobbies.as_view()
+
+get_hobbies = GetHobbies.as_view()
 
 
 @api_view(["POST"])
 def update_hobbies(request):
-    hobbies=request.data.get('hobbies')
+    hobbies = request.data.get("hobbies")
     if hobbies:
         try:
             request.user.hobbies.set(hobbies)
             request.user.save()
             return Response(status=status.HTTP_200_OK)
-        except:
+        except Exception:
             return Response(status=status.HTTP_400_BAD_REQUEST)
     else:
 

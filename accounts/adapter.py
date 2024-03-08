@@ -1,5 +1,4 @@
 from allauth.account.adapter import DefaultAccountAdapter
-from allauth.utils import build_absolute_uri
 from django.conf import settings
 
 
@@ -16,13 +15,13 @@ class CustomAccountAdapter(DefaultAccountAdapter):
 
     def get_from_email(self):
         return "accounts@waanverse.com"
+
     def save_user(self, request, user, form, commit=True):
         """
         Saves a new `User` instance using information provided in the
         signup form.
         """
         from allauth.account.utils import (
-            user_field,
             user_email,
             user_field,
             user_username,

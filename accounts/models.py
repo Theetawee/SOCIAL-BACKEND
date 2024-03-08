@@ -124,7 +124,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
     profile_image_hash = models.CharField(
         max_length=255, default="LTL55tj[~qof?bfQIUj[j[fQM{ay"
     )
-    hobbies=models.ManyToManyField("Hobby", blank=True)
+    hobbies = models.ManyToManyField("Hobby", blank=True)
     friends = models.ManyToManyField(
         "self", through=Friendship, symmetrical=False, blank=True
     )
@@ -186,6 +186,7 @@ class FriendRequest(models.Model):
         unique_together = ("sender", "recipient")
         ordering = ["-date_sent"]
 
+
 # model for hobbies
 class Hobby(models.Model):
     name = models.CharField(max_length=255)
@@ -197,9 +198,7 @@ class Hobby(models.Model):
 
 
 class UserDevice(models.Model):
-    user = models.ForeignKey(
-        Account, on_delete=models.CASCADE
-    )
+    user = models.ForeignKey(Account, on_delete=models.CASCADE)
     os_name = models.CharField(max_length=255, null=True, blank=True)
     os_version = models.CharField(max_length=255, null=True, blank=True)
     engine = models.CharField(max_length=255, null=True, blank=True)
@@ -211,7 +210,7 @@ class UserDevice(models.Model):
     client_type = models.CharField(max_length=255, null=True, blank=True)
     client_version = models.CharField(max_length=255, null=True, blank=True)
     last_used = models.DateTimeField(auto_now=True)
-    date_added= models.DateTimeField(auto_now_add=True)
+    date_added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.user.username}'s Device"
@@ -228,7 +227,7 @@ def social_account_signed_up(request, user, **kwargs):
         user.name = names
         user.profile_url = extra_data
         user.save()
-    except:
+    except Exception:
         pass
 
 

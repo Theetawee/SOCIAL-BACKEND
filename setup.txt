@@ -9,3 +9,5 @@ python -c 'from django.core.management.utils import get_random_secret_key; print
 Env. variables
 SECRET_KEY
 DJANGO_SETTINGS_MODULE
+DEV_GOOGLE_SECRET
+NEMAIL_PASSWORD

@@ -1,4 +1,8 @@
-from .base import *
+# flake8: noqa
+
+
+from base.settings.base import *
+
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
@@ -14,9 +18,9 @@ try:
         PRIVATE_KEY = private_key_file.read()
     with open(PUBLIC_KEY_PATH, "r") as public_key_file:
         PUBLIC_KEY = public_key_file.read()
-except:
-    PRIVATE_KEY=""
-    PUBLIC_KEY=""
+except Exception:
+    PRIVATE_KEY = ""
+    PUBLIC_KEY = ""
 
 DATABASES = {
     "default": {
@@ -57,6 +61,15 @@ ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
 BACKUP_DIRECTORY = os.path.join(BASE_DIR, "backups/production")
 
 
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.zoho.com"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "accounts@waanverse.com"
+EMAIL_HOST_PASSWORD = os.environ.get("NEMAIL_PASSWORD")
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
+
 CSRF_TRUSTED_ORIGINS = [
     "https://api.waanverse.com, https://www.waanverse.com",
     "https://waanverse.com",
@@ -87,7 +100,6 @@ LOGGING = {
     "handlers": {
         "console": {
             "level": "INFO",
-            #'filters': ['require_debug_true'],
             "class": "logging.StreamHandler",
         },
         "django.server": {
@@ -97,7 +109,6 @@ LOGGING = {
         },
         "mail_admins": {
             "level": "ERROR",
-            #'filters': ['require_debug_false'],
             "class": "django.utils.log.AdminEmailHandler",
         },
     },

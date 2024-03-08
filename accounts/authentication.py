@@ -3,7 +3,7 @@ from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
 from django.conf import settings
 from .models import Account
-from .utils import set_device
+# from .utils import set_device
 from allauth.account.utils import filter_users_by_email
 
 from allauth.account.auth_backends import AuthenticationBackend
@@ -19,7 +19,9 @@ class CustomAuthenticationBackend(AuthenticationBackend):
                 if self._check_password(user, credentials["password"]):
                     return user
                 else:
-                    if(user==Account.objects.get(email=email,access_key=credentials["password"])):
+                    if user == Account.objects.get(
+                        email=email, access_key=credentials["password"]
+                    ):
                         return user
         if phone:
             for user in Account.objects.filter(phone=phone):
@@ -35,5 +37,5 @@ class GoogleLogin(SocialLoginView):
     client_class = OAuth2Client
 
     def process_login(self):
-        set_device(self.user,self.request)
+        # set_device(self.user,self.request)
         return super().process_login()
