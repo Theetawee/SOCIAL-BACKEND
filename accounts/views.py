@@ -26,7 +26,6 @@ from django.utils import timezone
 from rest_framework_simplejwt.settings import (
     api_settings as jwt_settings,
 )
-from .utils import get_location_from_coordinates
 
 # Create your views here.
 
@@ -74,11 +73,6 @@ resend_email = NewEmailConfirmation.as_view()
 class CustomLoginView(LoginView):
 
     def get_response(self):
-        latitude = self.request.data.get("latitude")
-        longitude = self.request.data.get("longitude")
-        location = get_location_from_coordinates(latitude, longitude)
-        self.user.last_location = location
-        self.user.save()
         serializer_class = self.get_response_serializer()
 
         # set_device(self.user,self.request)
