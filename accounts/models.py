@@ -129,6 +129,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
         "self", through=Friendship, symmetrical=False, blank=True
     )
     username_last_update = models.DateTimeField(blank=True, null=True)
+    last_location = models.CharField(max_length=255, blank=True, null=True)
 
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["name", "email"]

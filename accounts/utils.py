@@ -3,6 +3,7 @@ import hashlib
 from .models import Account, UserDevice
 from django.utils import timezone
 from device_detector import DeviceDetector
+from geopy.geocoders import Nominatim
 
 
 def generate_secure_key(length=64):
@@ -46,3 +47,9 @@ def set_device(user, request):
 
     user_device.last_used = timezone.now()
     user_device.save()
+
+
+def get_location_from_coordinates(latitude, longitude):
+    geolocator = Nominatim(user_agent="waanverse")
+    location = geolocator.reverse((latitude, longitude), exactly_one=True)
+    return location.address if location else None
