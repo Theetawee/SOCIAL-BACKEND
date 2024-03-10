@@ -37,10 +37,6 @@ class Base(models.Model):
     def total_likes(self):
         return self.likes.count()
 
-    @property
-    def total_comments(self):
-        return Comment.objects.filter(post=self).count()
-
     def __str__(self):
         return self.content[:40]
 
@@ -50,7 +46,10 @@ class Base(models.Model):
 
 
 class Post(Base):
-    pass
+
+    @property
+    def total_comments(self):
+        return Comment.objects.filter(post=self).count()
 
 
 class Comment(Base):
@@ -63,10 +62,18 @@ class Comment(Base):
 
 class ContentImage(models.Model):
     comment = models.ForeignKey(
-        Comment, on_delete=models.CASCADE, blank=True, null=True, related_name="comment_content_images"
+        Comment,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name="comment_content_images",
     )
     post = models.ForeignKey(
-        Post, on_delete=models.CASCADE, related_name="content_images", blank=True, null=True
+        Post,
+        on_delete=models.CASCADE,
+        related_name="content_images",
+        blank=True,
+        null=True,
     )
     content_image = models.ImageField(upload_to="media/")
 

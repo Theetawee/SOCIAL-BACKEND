@@ -230,8 +230,7 @@ class Comments(generics.ListAPIView):
 
     def get_queryset(self):
         postId = self.kwargs.get("pk")
-        post = get_object_or_404(Post, id=postId)
-        queryset = Comment.objects.filter(post=post).all()
+        queryset = Comment.objects.filter(post_id=postId)
 
         return queryset
 
