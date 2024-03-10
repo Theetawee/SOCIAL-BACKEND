@@ -5,14 +5,21 @@ from django.db.models import Q
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from .models import Post, ContentImage
+from .models import Post, ContentImage, Comment
 
-from main.serializers.create.serializers import CreatePostSerializer
+from main.serializers.create.serializers import (
+    CreatePostSerializer,
+    CreateCommentSerializer,
+)
 from accounts.serializers.view.serializers import (
     SuggestedAccountsSerializer,
     AccountSerializer,
 )
-from main.serializers.view.serializers import PostSerializer, ContentImageSerializer
+from main.serializers.view.serializers import (
+    PostSerializer,
+    ContentImageSerializer,
+    CommentSerializer,
+)
 
 
 @api_view(["GET"])
@@ -25,6 +32,22 @@ def ping_server(request):
 def create_post(request):
     if request.method == "POST":
         serializer = CreatePostSerializer(
+            data=request.data, context={"request": request}
+        )
+        if serializer.is_valid():
+            serializer.save(account=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    return Response(
+        {"error": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED
+    )
+
+
+@api_view(["POST"])
+def create_comment(request):
+    if request.method == "POST":
+        serializer = CreateCommentSerializer(
             data=request.data, context={"request": request}
         )
         if serializer.is_valid():
@@ -202,15 +225,15 @@ def search(request):
     return Response(response, status=status.HTTP_200_OK)
 
 
-# class Comments(generics.ListAPIView):
-#     serializer_class = CommentSerializer
+class Comments(generics.ListAPIView):
+    serializer_class = CommentSerializer
 
-#     def get_queryset(self):
+    def get_queryset(self):
+        postId = self.kwargs.get("pk")
+        post = get_object_or_404(Post, id=postId)
+        queryset = Comment.objects.filter(post=post).all()
 
-#         # Filter comments based on privacy settings
-#         queryset = Comment.objects.select_related("account").all()
-
-#         return queryset
+        return queryset
 
 
-# comments = Comments.as_view
+comments = Comments.as_view()

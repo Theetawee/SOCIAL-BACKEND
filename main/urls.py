@@ -8,6 +8,8 @@ from .views import (
     get_accounts_to_tag,
     search,
     ping_server,
+    comments,
+    create_comment,
 )
 from django.urls import path
 
@@ -21,4 +23,6 @@ urlpatterns = [
     path("post/images/<int:pk>/", get_post_image),
     path("s/accounts/", get_accounts_to_tag),
     path("search/", search),
+    path("post/comments/<int:pk>/", comments),
+    path("comment/", create_comment),
 ]

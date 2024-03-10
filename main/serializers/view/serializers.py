@@ -32,6 +32,7 @@ class BaseContentSerializer(serializers.ModelSerializer):
             "account",
             "created_at",
             "timestamp",
+            "updated_at",
             "id",
             "is_liked",
             "is_disliked",

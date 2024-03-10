@@ -53,22 +53,24 @@ class Post(Base):
     pass
 
 
-class ContentImage(models.Model):
-
-    post = models.ForeignKey(
-        Post, on_delete=models.CASCADE, related_name="content_images"
-    )
-    content_image = models.ImageField(upload_to="media/")
-
-    image_hash = models.CharField(max_length=300, blank=True, null=True)
-
-
 class Comment(Base):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
     parent = models.ForeignKey(
         "self", on_delete=models.CASCADE, null=True, blank=True, related_name="replies"
     )
     pass
+
+
+class ContentImage(models.Model):
+    comment = models.ForeignKey(
+        Comment, on_delete=models.CASCADE, blank=True, null=True, related_name="comment_content_images"
+    )
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name="content_images", blank=True, null=True
+    )
+    content_image = models.ImageField(upload_to="media/")
+
+    image_hash = models.CharField(max_length=300, blank=True, null=True)
 
 
 @receiver(post_save, sender=ContentImage)
