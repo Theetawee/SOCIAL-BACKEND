@@ -3,13 +3,19 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
-from .serializers import (
+
+from accounts.serializers.create.serializers import (
+    UpdateProfileImageSerializer,
+    AccountUpdateSerializer
+)
+
+from accounts.serializers.view.serializers import (
+    FriendRequestSerializer,
     AccountSerializer,
     HobbySerializer,
-    UpdateProfileImageSerializer,
-    AccountUpdateSerializer,
-    FriendRequestSerializer,
 )
+
+
 from dj_rest_auth.app_settings import api_settings
 
 from rest_framework.views import APIView

@@ -9,19 +9,19 @@ from PIL import Image
 # Create your models here.
 
 
-class Post(models.Model):
-    content = models.TextField()
+class Base(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    last_edited = models.DateTimeField(auto_now=True)
-    likes = models.ManyToManyField(Account, related_name="post_likes", blank=True)
+    content = models.TextField()
+    likes = models.ManyToManyField(Account, related_name="%(class)s_likes", blank=True)
     dislikes = models.ManyToManyField(
-        Account, related_name="post_dislikes", blank=True
+        Account, related_name="%(class)s_dislikes", blank=True
     )
     views = models.PositiveIntegerField(default=0)
     taged_accounts = models.ManyToManyField(
-        Account, blank=True, related_name="mentioned"
+        Account, blank=True, related_name="%(class)s_tagged"
     )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     @property
     def timestamp(self):
@@ -45,7 +45,12 @@ class Post(models.Model):
         return self.content[:40]
 
     class Meta:
+        abstract = True
         ordering = ["-created_at"]
+
+
+class Post(Base):
+    pass
 
 
 class ContentImage(models.Model):
@@ -58,29 +63,12 @@ class ContentImage(models.Model):
     image_hash = models.CharField(max_length=300, blank=True, null=True)
 
 
-class Comment(models.Model):
-    content = models.TextField()
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    last_edited = models.DateTimeField(auto_now=True)
-    likes = models.ManyToManyField(Account, related_name="comment_likes", blank=True)
-    dislikes = models.ManyToManyField(
-        Account, related_name="comment_dislikes", blank=True
-    )
-    views = models.PositiveIntegerField(default=0)
-    taged_accounts = models.ManyToManyField(
-        Account, blank=True, related_name="mentioned_in_comment"
-    )
-
-    post = models.ForeignKey(
-        Post, on_delete=models.CASCADE, related_name="comments"
-    )
+class Comment(Base):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
     parent = models.ForeignKey(
         "self", on_delete=models.CASCADE, null=True, blank=True, related_name="replies"
     )
-
-    def __str__(self):
-        return self.content[:40]
+    pass
 
 
 @receiver(post_save, sender=ContentImage)

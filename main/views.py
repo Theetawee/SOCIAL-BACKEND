@@ -1,15 +1,24 @@
-import time
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
-from accounts.serializers import AccountSerializer
 from accounts.models import Account
 from django.db.models import Q
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from .models import Post,ContentImage
-from .serializers import CreatePostSerializer,PostSerializer,ContentImageSerializer,SuggestedAccountsSerializer
-from rest_framework.permissions import AllowAny
+from .models import Post, ContentImage
+
+from main.serializers.create.serializers import CreatePostSerializer
+from accounts.serializers.view.serializers import (
+    SuggestedAccountsSerializer,
+    AccountSerializer,
+)
+from main.serializers.view.serializers import PostSerializer, ContentImageSerializer
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def ping_server(request):
+    return Response(status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])
@@ -34,7 +43,6 @@ class Posts(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         is_admin = user.is_staff
-        user_agent = self.request.headers.get('User-Agent')
         account_param = self.request.query_params.get("account", None)
         if account_param:
             try:
@@ -46,8 +54,8 @@ class Posts(generics.ListAPIView):
                         Post.objects.select_related("account")
                         .prefetch_related("likes")
                         .filter(account=account)
-
-                    .all())
+                        .all()
+                    )
 
                 return queryset
             except Account.DoesNotExist:
@@ -61,7 +69,8 @@ class Posts(generics.ListAPIView):
             else:
                 queryset = (
                     Post.objects.select_related("account")
-                    .prefetch_related("likes").all()
+                    .prefetch_related("likes")
+                    .all()
                 )
 
                 return queryset
@@ -137,12 +146,10 @@ class PostDetail(generics.RetrieveAPIView):
     serializer_class = PostSerializer
 
     def get_queryset(self):
-        user = self.request.user
 
         # Filter posts based on privacy settings
         queryset = (
-            Post.objects.select_related("account")
-            .prefetch_related("likes")
+            Post.objects.select_related("account").prefetch_related("likes")
         ).all()
 
         return queryset
@@ -162,15 +169,15 @@ def get_post_image(request, pk):
         return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
-
-
 @api_view(["GET"])
 def get_accounts_to_tag(request):
-    account=request.GET.get('account',None)
-    if(account):
-        accounts=Account.objects.filter(username__icontains=account).exclude(id=request.user.id)
-        serializer=SuggestedAccountsSerializer(accounts,many=True)
-        return Response(serializer.data,status=status.HTTP_200_OK)
+    account = request.GET.get("account", None)
+    if account:
+        accounts = Account.objects.filter(username__icontains=account).exclude(
+            id=request.user.id
+        )
+        serializer = SuggestedAccountsSerializer(accounts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -179,27 +186,31 @@ def get_accounts_to_tag(request):
 @permission_classes([AllowAny])
 def search(request):
     query = request.GET.get("query")
-    if query==None or query.strip()=='':
+    if query is None or query.strip() == "":
         return Response(status=status.HTTP_400_BAD_REQUEST)
-    
+
     accounts = Account.objects.filter(
         Q(username__icontains=query) | Q(name__icontains=query)
     )
     accounts_data = AccountSerializer(accounts, many=True)
-    
-    
-    posts=Post.objects.filter(
-        Q(content__icontains=query) 
-    )
-    
-    posts_data=PostSerializer(posts,many=True)
-    
-    
-    
-    
-    response={
-        'accounts':accounts_data.data,
-        'posts':posts_data.data
-    }
+
+    posts = Post.objects.filter(Q(content__icontains=query))
+
+    posts_data = PostSerializer(posts, many=True)
+
+    response = {"accounts": accounts_data.data, "posts": posts_data.data}
     return Response(response, status=status.HTTP_200_OK)
-    
+
+
+# class Comments(generics.ListAPIView):
+#     serializer_class = CommentSerializer
+
+#     def get_queryset(self):
+
+#         # Filter comments based on privacy settings
+#         queryset = Comment.objects.select_related("account").all()
+
+#         return queryset
+
+
+# comments = Comments.as_view
