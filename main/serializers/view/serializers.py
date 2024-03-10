@@ -65,6 +65,3 @@ class CommentSerializer(BaseContentSerializer):
 
     class Meta(BaseContentSerializer.Meta):
         model = Comment
-
-
-
