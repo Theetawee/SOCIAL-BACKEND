@@ -26,7 +26,7 @@ class PostSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model=Post
+        model = Post
         fields = [
             "content",
             "total_likes",
@@ -55,7 +55,6 @@ class PostSerializer(serializers.ModelSerializer):
             return obj.is_disliked(user)
         except Exception:
             return False
-
 
 
 class CommentSerializer(serializers.ModelSerializer):

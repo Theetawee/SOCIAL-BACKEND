@@ -1,12 +1,14 @@
 from .models import Account, FriendRequest, Hobby
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
+from rest_framework.permissions import AllowAny
+
 from accounts.serializers.create.serializers import (
     UpdateProfileImageSerializer,
-    AccountUpdateSerializer
+    AccountUpdateSerializer,
 )
 
 from accounts.serializers.view.serializers import (
@@ -19,7 +21,6 @@ from accounts.serializers.view.serializers import (
 from dj_rest_auth.app_settings import api_settings
 
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny
 from rest_framework.generics import get_object_or_404
 from allauth.account.utils import send_email_confirmation
 from rest_framework.exceptions import APIException
@@ -152,19 +153,26 @@ def update_profile_info(request):
 
 
 @api_view(["GET"])
+@permission_classes([AllowAny])
 def user_details(request, username):
     try:
-        # Check if the requested username is the same as the authenticated user
+        # Retrieve the account associated with the username
+        account = get_object_or_404(Account, username=username)
+    except Account.DoesNotExist:
+        # Return a 404 response if the account does not exist
+        return Response(
+            {"error": "Account not found."}, status=status.HTTP_404_NOT_FOUND
+        )
+
+    if request.user.is_authenticated:
+        # Check if the authenticated user is the same as the requested user
         is_self = request.user.username == username
 
-        # Get the account associated with the username
-        account = Account.objects.get(username=username)
+        # Check friendship status between the authenticated user and the requested account
+        account_is_friend = request.user.friends.filter(pk=account.pk).exists()
 
-        # Check if the authenticated user is friends with the requested account
-        account_is_friend = account in request.user.friends.all()
-
-        # Check if the requested account is friends with the authenticated user
-        user_is_friend = request.user in account.friends.all()
+        # Check friendship status between the requested account and the authenticated user
+        user_is_friend = account.friends.filter(pk=request.user.pk).exists()
 
         # Check if the authenticated user has sent a friend request to the requested account
         user_sent_friend_request = FriendRequest.objects.filter(
@@ -180,17 +188,21 @@ def user_details(request, username):
         serializer = AccountSerializer(account)
         data = serializer.data
         # Add additional data to the serialized account
-        data["is_self"] = is_self
-        data["account_is_friend"] = account_is_friend
-        data["user_is_friend"] = user_is_friend
-        data["user_sent_friend_request"] = user_sent_friend_request
-        data["account_sent_friend_request"] = account_sent_friend_request
+        data.update(
+            {
+                "is_self": is_self,
+                "account_is_friend": account_is_friend,
+                "user_is_friend": user_is_friend,
+                "user_sent_friend_request": user_sent_friend_request,
+                "account_sent_friend_request": account_sent_friend_request,
+            }
+        )
         # Return the serialized data as a response
         return Response(data, status=status.HTTP_200_OK)
-
-    except Account.DoesNotExist:
-        # Return a 404 response if the account does not exist
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    else:
+        # If the user is not authenticated, return basic details without friendship information
+        serializer = AccountSerializer(account)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])
@@ -259,6 +271,7 @@ def decline_friend_request(request, requestId):
 
 
 class GetHobbies(ListAPIView):
+    permission_classes = [AllowAny]
     serializer_class = HobbySerializer
     queryset = Hobby.objects.all()
     pagination_class = None
@@ -268,6 +281,7 @@ get_hobbies = GetHobbies.as_view()
 
 
 @api_view(["POST"])
+
 def update_hobbies(request):
     hobbies = request.data.get("hobbies")
     if hobbies:
