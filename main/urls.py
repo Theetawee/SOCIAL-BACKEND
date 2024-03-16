@@ -10,6 +10,7 @@ from .views import (
     ping_server,
     comments,
     create_comment,
+    delete_post
 )
 from django.urls import path
 
@@ -25,4 +26,5 @@ urlpatterns = [
     path("search/", search),
     path("post/comments/<int:pk>/", comments),
     path("comment/", create_comment),
+    path("post/delete/<int:pk>/", delete_post),
 ]

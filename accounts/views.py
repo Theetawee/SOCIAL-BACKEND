@@ -281,7 +281,6 @@ get_hobbies = GetHobbies.as_view()
 
 
 @api_view(["POST"])
-
 def update_hobbies(request):
     hobbies = request.data.get("hobbies")
     if hobbies:

@@ -236,3 +236,16 @@ class Comments(generics.ListAPIView):
 
 
 comments = Comments.as_view()
+
+
+@api_view(["POST"])
+def delete_post(request, pk):
+    try:
+        post = get_object_or_404(Post, id=pk)
+        if post.account == request.user:
+            post.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+    except Post.DoesNotExist:
+        return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
