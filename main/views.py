@@ -108,8 +108,7 @@ def like_post(request, pk, type="post"):
         if type == "post":
             post = get_object_or_404(Post, id=pk)
         elif type == "comment":
-            pass
-            # post = get_object_or_404(Comment, id=pk)
+            post = get_object_or_404(Comment, id=pk)
         else:
             return Response(
                 {"error": "Invalid type"}, status=status.HTTP_400_BAD_REQUEST
@@ -142,8 +141,7 @@ def dislike_post(request, pk, type="post"):
         if type == "post":
             post = get_object_or_404(Post, id=pk)
         elif type == "comment":
-            pass
-            # post = get_object_or_404(Comment, id=pk)
+            post = get_object_or_404(Comment, id=pk)
         else:
             return Response(
                 {"error": "Invalid type"}, status=status.HTTP_400_BAD_REQUEST
