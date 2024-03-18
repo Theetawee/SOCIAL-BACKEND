@@ -5,6 +5,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 import blurhash
 from PIL import Image
+from django.urls import reverse
 
 # Create your models here.
 
@@ -39,6 +40,9 @@ class Base(models.Model):
 
     def __str__(self):
         return self.content[:40]
+
+    def get_absolute_url(self):
+        return reverse("post", kwargs={"pk": self.pk})
 
     class Meta:
         abstract = True

@@ -9,7 +9,7 @@ from allauth.account.signals import user_signed_up
 from allauth.socialaccount.models import SocialAccount
 from django.dispatch import receiver
 from django.contrib.humanize.templatetags.humanize import naturalday
-
+from django.urls import reverse
 
 from django.db.models.signals import post_save
 import blurhash
@@ -164,6 +164,9 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
     def has_module_perms(self, app_label):
         return True
+    
+    def get_absolute_url(self):
+        return reverse('account', kwargs={'username': self.username})
 
 
 class FriendRequest(models.Model):

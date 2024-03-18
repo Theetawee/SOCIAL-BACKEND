@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "cloudinary",
     "debug_toolbar",
     "sockets",
+    "django.contrib.sitemaps",
 ]
 
 SITE_ID = 1
