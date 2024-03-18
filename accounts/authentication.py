@@ -3,6 +3,7 @@ from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
 from django.conf import settings
 from .models import Account
+
 # from .utils import set_device
 from allauth.account.utils import filter_users_by_email
 
@@ -18,12 +19,8 @@ class CustomAuthenticationBackend(AuthenticationBackend):
 
                 if self._check_password(user, credentials["password"]):
                     return user
-                else:
-                    if user == Account.objects.get(
-                        email=email, access_key=credentials["password"]
-                    ):
-                        return user
-        if phone:
+
+        elif phone:
             for user in Account.objects.filter(phone=phone):
                 if self._check_password(user, credentials["password"]):
                     return user

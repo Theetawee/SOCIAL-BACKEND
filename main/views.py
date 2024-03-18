@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from .models import Post, ContentImage, Comment
-
+from sockets.utils import create_notification
 from main.serializers.create.serializers import (
     CreatePostSerializer,
     CreateCommentSerializer,
@@ -126,6 +126,7 @@ def like_post(request, pk, type="post"):
             )
         else:
             post.likes.add(request.user)
+            create_notification(request.user, post.account, "like")
             return Response(
                 {"is_liked": True, "total_likes": post.total_likes},
                 status=status.HTTP_201_CREATED,

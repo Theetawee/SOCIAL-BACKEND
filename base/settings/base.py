@@ -12,6 +12,7 @@ AUTH_USER_MODEL = "accounts.Account"
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.sites",
     "django.contrib.auth",
