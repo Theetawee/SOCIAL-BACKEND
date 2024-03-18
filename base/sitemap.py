@@ -56,5 +56,5 @@ class AccountSitemap(Sitemap):
         return obj.last_login
 
     def location(self, obj):
-        
+
         return f"/{obj.username}"

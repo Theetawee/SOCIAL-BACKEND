@@ -303,14 +303,15 @@ def unfriend_account(request, username):
         user = request.user
 
         # Retrieve the friendship object
-        friendship = Friendship.objects.filter(
+        friendships = Friendship.objects.filter(
             (Q(account1=user) & Q(account2=account))
             | (Q(account1=account) & Q(account2=user))
-        ).first()
+        )
 
         # If the friendship exists, delete it
-        if friendship:
-            friendship.delete()
+        if friendships:
+            for friendship in friendships:
+                friendship.delete()
             return Response(
                 {"message": "Friendship unfriended successfully"},
                 status=status.HTTP_200_OK,

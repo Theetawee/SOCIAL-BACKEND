@@ -45,7 +45,6 @@ class CreateCommentSerializer(serializers.ModelSerializer):
         fields = ["content", "account", "taged_accounts", "post"]
 
     def create(self, validated_data):
-        print(validated_data)
         taged_accounts_data = validated_data.pop("taged_accounts", [])
         files = self.context["request"].FILES.getlist("files")
 
