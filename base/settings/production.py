@@ -49,7 +49,7 @@ STATIC_URL = "https://theetawee.github.io/social_app_files/"
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-CORS_ALLOWED_ORIGINS = ["https://www.waanverse.com", "https://api.waanverse.com"]
+CORS_ALLOWED_ORIGINS = ["https://www.waanverse.com", "https://api.waanverse.com","https://abs.waanverse.com"]
 
 
 GOOGLE_REDIRECT_URI = "https://www.waanverse.com/accounts/oauth2/google/"
@@ -73,8 +73,7 @@ EMAIL_USE_SSL = False
 CSRF_TRUSTED_ORIGINS = [
     "https://api.waanverse.com, https://www.waanverse.com",
     "https://waanverse.com",
-    "https://accounts.waanverse.com",
-    "https://savelog.waanverse.com",
+    "https://abs.waanverse.com",
 ]
 
 
