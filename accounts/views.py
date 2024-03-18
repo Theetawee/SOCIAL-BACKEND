@@ -217,7 +217,8 @@ def send_friend_request(request, username):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     if FriendRequest.objects.filter(
-        sender=user, recipient=account, status="accepted"
+        (Q(sender=user) & Q(recipient=account))
+        | (Q(sender=account) & Q(recipient=user))
     ).exists():
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
