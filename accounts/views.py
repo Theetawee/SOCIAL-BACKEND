@@ -5,7 +5,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from django.db.models import Q
 from rest_framework.permissions import AllowAny
-
+from main.serializers.view.serializers import PostAccountSerializer
 from accounts.serializers.create.serializers import (
     UpdateProfileImageSerializer,
     AccountUpdateSerializer,
@@ -326,3 +326,17 @@ def unfriend_account(request, username):
         return Response(
             {"message": "Account not found"}, status=status.HTTP_404_NOT_FOUND
         )
+
+
+class GetFriends(ListAPIView):
+    serializer_class = PostAccountSerializer
+
+    def get_queryset(self):
+        # user = self.request.user
+        username = self.kwargs['username']
+        account = get_object_or_404(Account, username=username)
+        friends = account.friends.all()
+        return friends
+
+
+friends = GetFriends.as_view()

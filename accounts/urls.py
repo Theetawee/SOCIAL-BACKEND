@@ -12,6 +12,7 @@ from .views import (
     decline_friend_request,
     unfriend_account,
     get_hobbies,
+    friends,
     CustomLoginView,
 )
 from dj_rest_auth.registration.views import VerifyEmailView
@@ -55,4 +56,5 @@ urlpatterns = [
     path("hobbies/", get_hobbies),
     path("hobbies/update/", update_hobbies),
     path("unfriend/<str:username>/", unfriend_account),
+    path("friends/<str:username>/", friends),
 ]

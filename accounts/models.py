@@ -168,6 +168,9 @@ class Account(AbstractBaseUser, PermissionsMixin):
     def get_absolute_url(self):
         return reverse("account", kwargs={"username": self.username})
 
+    class Meta:
+        ordering = ["-id"]
+
 
 class FriendRequest(models.Model):
     STATUS = (
