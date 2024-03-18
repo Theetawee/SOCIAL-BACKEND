@@ -10,6 +10,7 @@ from .views import (
     accept_friend_request,
     update_hobbies,
     decline_friend_request,
+    unfriend_account,
     get_hobbies,
     CustomLoginView,
 )
@@ -53,4 +54,5 @@ urlpatterns = [
     path("decline-friend-request/<int:requestId>/", decline_friend_request),
     path("hobbies/", get_hobbies),
     path("hobbies/update/", update_hobbies),
+    path("unfriend/<str:username>/", unfriend_account),
 ]

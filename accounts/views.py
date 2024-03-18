@@ -1,9 +1,9 @@
-from .models import Account, FriendRequest, Hobby
+from .models import Account, FriendRequest, Hobby, Friendship
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
-
+from django.db.models import Q
 from rest_framework.permissions import AllowAny
 
 from accounts.serializers.create.serializers import (
@@ -216,7 +216,9 @@ def send_friend_request(request, username):
     if account == user:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    if FriendRequest.objects.filter(sender=user, recipient=account).exists():
+    if FriendRequest.objects.filter(
+        sender=user, recipient=account, status="accepted"
+    ).exists():
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     friend_request = FriendRequest.objects.create(sender=user, recipient=account)
@@ -249,8 +251,7 @@ def accept_friend_request(request, requestId):
     except Account.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     account = friend_request.sender
-    friend_request.status = "accepted"
-    friend_request.save()
+    friend_request.delete()
     user.friends.add(account)
     user.save()
     return Response(status=status.HTTP_200_OK)
@@ -293,3 +294,34 @@ def update_hobbies(request):
     else:
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+def unfriend_account(request, username):
+    try:
+        account = Account.objects.get(username=username)
+        user = request.user
+
+        # Retrieve the friendship object
+        friendship = Friendship.objects.filter(
+            (Q(account1=user) & Q(account2=account))
+            | (Q(account1=account) & Q(account2=user))
+        ).first()
+
+        # If the friendship exists, delete it
+        if friendship:
+            friendship.delete()
+            return Response(
+                {"message": "Friendship unfriended successfully"},
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response(
+                {"message": "Friendship does not exist"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+    except Account.DoesNotExist:
+        return Response(
+            {"message": "Account not found"}, status=status.HTTP_404_NOT_FOUND
+        )

@@ -126,7 +126,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
     )
     hobbies = models.ManyToManyField("Hobby", blank=True)
     friends = models.ManyToManyField(
-        "self", through=Friendship, symmetrical=False, blank=True
+        "self", through=Friendship, symmetrical=True, blank=True
     )
     username_last_update = models.DateTimeField(blank=True, null=True)
     last_location = models.CharField(max_length=255, blank=True, null=True)
@@ -164,9 +164,9 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
     def has_module_perms(self, app_label):
         return True
-    
+
     def get_absolute_url(self):
-        return reverse('account', kwargs={'username': self.username})
+        return reverse("account", kwargs={"username": self.username})
 
 
 class FriendRequest(models.Model):
