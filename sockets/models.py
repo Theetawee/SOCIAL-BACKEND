@@ -16,9 +16,15 @@ class Notification(models.Model):
         "accounts.Account", on_delete=models.CASCADE, related_name="to_user"
     )
     notification_type = models.CharField(max_length=30, choices=NOTIFICATION_TYPES)
+    post = models.ForeignKey(
+        "main.Post", on_delete=models.CASCADE, blank=True, null=True
+    )
     seen = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'{self.from_user.username} - {self.notification_type}'
+        return f"{self.from_user.username} - {self.notification_type}"
+
+    class Meta:
+        ordering = ["-created_at"]

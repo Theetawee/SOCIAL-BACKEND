@@ -11,6 +11,7 @@ from .views import (
     comments,
     create_comment,
     delete_post,
+    get_notifications,
 )
 from django.urls import path
 
@@ -27,4 +28,5 @@ urlpatterns = [
     path("post/comments/<int:pk>/", comments),
     path("comment/", create_comment),
     path("post/delete/<int:pk>/", delete_post),
+    path("notifications/", get_notifications),
 ]
