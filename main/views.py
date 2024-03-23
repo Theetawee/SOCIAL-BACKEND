@@ -168,10 +168,10 @@ def dislike_post(request, pk, type="post"):
 
 class PostDetail(generics.RetrieveAPIView):
     serializer_class = PostSerializer
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
 
-        # Filter posts based on privacy settings
         queryset = (
             Post.objects.select_related("account").prefetch_related("likes")
         ).all()
@@ -228,6 +228,7 @@ def search(request):
 
 class Comments(generics.ListAPIView):
     serializer_class = CommentSerializer
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         postId = self.kwargs.get("pk")
