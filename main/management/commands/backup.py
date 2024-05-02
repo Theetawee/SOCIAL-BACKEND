@@ -27,7 +27,7 @@ class Command(BaseCommand):
 
             # Run the command
             subprocess.run(
-                f"python -Xutf8 manage.py dumpdata --exclude auth.permission --exclude contenttypes --exclude sessions.Session > {backup_path}",
+                f"python -Xutf8 manage.py dumpdata --exclude auth.permission --exclude contenttypes --exclude sessions.Session --exclude admin.logentry > {backup_path}",
                 shell=True,
                 check=True,
                 text=True,

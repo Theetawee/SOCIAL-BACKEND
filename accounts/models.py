@@ -151,11 +151,12 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
     @property
     def image(self):
-        if self.profile_image:
+        if self.profile_url:
+            return self.profile_url
+        elif self.profile_image:
             url = self.profile_image.url
             return url
-        elif self.profile_url:
-            return self.profile_url
+        
         else:
             return None
 

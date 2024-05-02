@@ -18,6 +18,7 @@ class Base(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     content_type = models.CharField(max_length=255, choices=CONTENTTYPE, default="Post")
+    likes = models.ManyToManyField(Account, blank=True, related_name="%(class)s_likes")
 
     @property
     def creation_date(self):
@@ -29,17 +30,20 @@ class Base(models.Model):
     def get_absolute_url(self):
         return reverse("post", kwargs={"pk": self.pk})
 
+    def total_likes(self):
+        return self.likes.all().count()
+
+    def is_liked(self, user):
+        if user in self.likes.all():
+            return True
+        return False
+
     class Meta:
         abstract = True
         ordering = ["-created_at"]
 
 
 class Post(Base):
-    @property
-    def is_liked(self, user):
-        if Like.objects.filter(account=user, post=self).exists():
-            return True
-        return False
 
     @property
     def is_bookmarked(self, user):
@@ -52,10 +56,6 @@ class Post(Base):
         return Bookmark.objects.filter(post=self).count()
 
     @property
-    def total_likes(self):
-        return Like.objects.filter(post=self).count()
-
-    @property
     def total_comments(self):
         return Comment.objects.filter(post=self).count()
 
@@ -65,16 +65,6 @@ class Comment(Base):
     parent = models.ForeignKey(
         "self", on_delete=models.CASCADE, null=True, blank=True, related_name="replies"
     )
-
-    @property
-    def total_likes(self):
-        return Like.objects.filter(comment=self).count()
-
-    @property
-    def is_liked(self, user):
-        if Like.objects.filter(account=user, comment=self).exists():
-            return True
-        return False
 
 
 class ContentImage(models.Model):
@@ -95,17 +85,6 @@ class ContentImage(models.Model):
     content_image = models.ImageField(upload_to="media/")
 
     image_hash = models.CharField(max_length=300, blank=True, null=True)
-
-
-class Like(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, blank=True, null=True)
-    comment = models.ForeignKey(
-        Comment, on_delete=models.CASCADE, blank=True, null=True
-    )
-
-    def __str__(self):
-        return f"{self.account.username} liked Post-{self.post.id}"
 
 
 class Bookmark(models.Model):

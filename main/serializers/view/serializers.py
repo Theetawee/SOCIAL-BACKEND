@@ -20,6 +20,7 @@ class ContentImageSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     account = PostAccountSerializer()
     is_liked = serializers.SerializerMethodField()
+    likes = PostAccountSerializer(many=True)
     post_images = ContentImageSerializer(
         many=True, read_only=True, source="content_images"
     )
@@ -37,21 +38,16 @@ class PostSerializer(serializers.ModelSerializer):
             "total_comments",
             "post_images",
             "total_bookmarks",
-            "views"
+            "views",
+            "likes",
         ]
 
     def get_is_liked(self, obj):
         try:
             user = self.context.get("request").user
             return obj.is_liked(user)
-        except Exception:
-            return False
-
-    def get_is_disliked(self, obj):
-        try:
-            user = self.context.get("request").user
-            return obj.is_disliked(user)
-        except Exception:
+        except Exception as e:
+            print(e, "test")
             return False
 
 
