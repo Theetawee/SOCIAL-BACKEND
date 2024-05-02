@@ -20,8 +20,6 @@ class ContentImageSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     account = PostAccountSerializer()
     is_liked = serializers.SerializerMethodField()
-    is_disliked = serializers.SerializerMethodField()
-    taged_accounts = PostAccountSerializer(many=True)
     post_images = ContentImageSerializer(
         many=True, read_only=True, source="content_images"
     )
@@ -32,15 +30,14 @@ class PostSerializer(serializers.ModelSerializer):
             "content",
             "total_likes",
             "account",
-            "created_at",
-            "timestamp",
+            "creation_date",
             "updated_at",
             "id",
             "is_liked",
-            "is_disliked",
-            "taged_accounts",
             "total_comments",
             "post_images",
+            "total_bookmarks",
+            "views"
         ]
 
     def get_is_liked(self, obj):
