@@ -5,7 +5,6 @@ from django.db.models import Q
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Post, ContentImage, Comment
-from sockets.utils import create_notification
 from main.serializers.create.serializers import (
     CreatePostSerializer,
     CreateCommentSerializer,
@@ -18,9 +17,7 @@ from main.serializers.view.serializers import (
     PostSerializer,
     ContentImageSerializer,
     CommentSerializer,
-    NotificationSerializer,
 )
-from sockets.models import Notification
 
 
 @api_view(["POST"])
@@ -121,7 +118,6 @@ def like_post(request, pk, type="post"):
             )
         else:
             post.likes.add(request.user)
-            create_notification(request.user, post.account, "like", post=post)
             return Response(
                 {"is_liked": True, "total_likes": post.total_likes},
                 status=status.HTTP_201_CREATED,
@@ -241,14 +237,3 @@ def delete_post(request, pk):
             return Response(status=status.HTTP_403_FORBIDDEN)
     except Post.DoesNotExist:
         return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
-
-
-class GetNotifications(generics.ListAPIView):
-    serializer_class = NotificationSerializer
-
-    def get_queryset(self):
-        user = self.request.user
-        return Notification.objects.filter(to_user=user)
-
-
-get_notifications = GetNotifications.as_view()

@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from accounts.models import Account
 from main.models import ContentImage, Post, Comment
-from sockets.models import Notification
 
 
 class PostAccountSerializer(serializers.ModelSerializer):
@@ -89,12 +88,3 @@ class CommentSerializer(serializers.ModelSerializer):
             return obj.is_disliked(user)
         except Exception:
             return False
-
-
-class NotificationSerializer(serializers.ModelSerializer):
-    from_user = PostAccountSerializer()
-    to_user = PostAccountSerializer()
-
-    class Meta:
-        model = Notification
-        fields = "__all__"

@@ -12,7 +12,6 @@ AUTH_USER_MODEL = "accounts.Account"
 # Application definition
 
 INSTALLED_APPS = [
-    "daphne",
     "django.contrib.admin",
     "django.contrib.sites",
     "django.contrib.auth",
@@ -34,7 +33,6 @@ INSTALLED_APPS = [
     "cloudinary_storage",
     "cloudinary",
     "debug_toolbar",
-    "sockets",
     "django.contrib.sitemaps",
 ]
 
