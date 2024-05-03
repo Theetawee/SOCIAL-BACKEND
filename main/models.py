@@ -44,6 +44,9 @@ class Base(models.Model):
 
 
 class Post(Base):
+    taged_accounts = models.ManyToManyField(
+        Account, blank=True, related_name="taged_posts"
+    )
 
     @property
     def is_bookmarked(self, user):

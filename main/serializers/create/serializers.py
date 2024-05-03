@@ -28,10 +28,8 @@ class CreatePostSerializer(serializers.ModelSerializer):
             taged_accounts_data = taged_accounts_data[0]
             taged_accounts_data = json.loads(taged_accounts_data)
             for account in taged_accounts_data:
-                account_id = account["id"]
-                if account_id:
-                    tagged_account = Account.objects.get(id=account_id)
-                    post.taged_accounts.add(tagged_account)
+                tagged_account = Account.objects.get(username=account)
+                post.taged_accounts.add(tagged_account)
 
         return post
 

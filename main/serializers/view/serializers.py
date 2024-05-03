@@ -23,6 +23,7 @@ class PostSerializer(serializers.ModelSerializer):
     post_images = ContentImageSerializer(
         many=True, read_only=True, source="content_images"
     )
+    taged_accounts = PostAccountSerializer(many=True)
 
     class Meta:
         model = Post
@@ -39,6 +40,7 @@ class PostSerializer(serializers.ModelSerializer):
             "total_bookmarks",
             "views",
             "likes",
+            "taged_accounts",
         ]
 
     def get_is_liked(self, obj):
