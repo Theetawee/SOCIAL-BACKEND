@@ -156,7 +156,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
         elif self.profile_image:
             url = self.profile_image.url
             return url
-        
+
         else:
             return None
 

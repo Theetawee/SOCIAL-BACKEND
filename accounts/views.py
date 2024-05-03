@@ -17,7 +17,6 @@ from accounts.serializers.view.serializers import (
     HobbySerializer,
 )
 
-
 from dj_rest_auth.app_settings import api_settings
 
 from rest_framework.views import APIView
@@ -342,3 +341,19 @@ class GetFriends(ListAPIView):
 
 
 friends = GetFriends.as_view()
+
+
+class SuggestedAccounts(ListAPIView):
+    serializer_class = PostAccountSerializer
+    pagination_class = None
+
+    def get_queryset(self):
+        query = self.request.GET.get("query")
+        print(query)
+        if query is None or query.strip() == "":
+            return []
+        queryset = Account.objects.filter(username__icontains=query)[:5]
+        return queryset
+
+
+suggested_accounts = SuggestedAccounts.as_view()

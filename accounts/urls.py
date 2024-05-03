@@ -14,6 +14,7 @@ from .views import (
     get_hobbies,
     friends,
     CustomLoginView,
+    suggested_accounts,
 )
 from dj_rest_auth.registration.views import VerifyEmailView
 from accounts.authentication import GoogleLogin
@@ -57,4 +58,5 @@ urlpatterns = [
     path("hobbies/update/", update_hobbies),
     path("unfriend/<str:username>/", unfriend_account),
     path("friends/<str:username>/", friends),
+    path('suggestions/', suggested_accounts),
 ]
