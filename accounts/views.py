@@ -1,10 +1,10 @@
 from .models import Account, FriendRequest, Hobby, Friendship
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework import status
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from django.db.models import Q
-from rest_framework.permissions import AllowAny
 from main.serializers.view.serializers import PostAccountSerializer
 from accounts.serializers.create.serializers import (
     UpdateProfileImageSerializer,
@@ -38,6 +38,7 @@ from rest_framework_simplejwt.settings import (
 
 
 class NewEmailConfirmation(APIView):
+
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -334,7 +335,7 @@ class GetFriends(ListAPIView):
 
     def get_queryset(self):
         # user = self.request.user
-        username = self.kwargs['username']
+        username = self.kwargs["username"]
         account = get_object_or_404(Account, username=username)
         friends = account.friends.all()
         return friends

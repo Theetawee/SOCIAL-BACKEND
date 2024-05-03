@@ -7,7 +7,6 @@ from .views import (
     get_post_image,
     get_accounts_to_tag,
     search,
-    ping_server,
     comments,
     create_comment,
     delete_post,
@@ -17,7 +16,6 @@ from django.urls import path
 
 urlpatterns = [
     path("compose/", create_post, name="compose"),
-    path("ping/", ping_server),
     path("posts/", posts, name="posts"),
     path("like/<int:pk>/<str:type>/", like_post),
     path("unlike/<int:pk>/<str:type>/", dislike_post),

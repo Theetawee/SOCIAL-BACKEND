@@ -2,8 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from accounts.models import Account
 from django.db.models import Q
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Post, ContentImage, Comment
 from sockets.utils import create_notification
@@ -22,12 +21,6 @@ from main.serializers.view.serializers import (
     NotificationSerializer,
 )
 from sockets.models import Notification
-
-
-@api_view(["GET"])
-@permission_classes([AllowAny])
-def ping_server(request):
-    return Response(status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])
@@ -168,7 +161,6 @@ def dislike_post(request, pk, type="post"):
 
 class PostDetail(generics.RetrieveAPIView):
     serializer_class = PostSerializer
-    permission_classes = [AllowAny]
 
     def get_queryset(self):
 
@@ -207,7 +199,6 @@ def get_accounts_to_tag(request):
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
 def search(request):
     query = request.GET.get("query")
     if query is None or query.strip() == "":
@@ -228,7 +219,6 @@ def search(request):
 
 class Comments(generics.ListAPIView):
     serializer_class = CommentSerializer
-    permission_classes = [AllowAny]
 
     def get_queryset(self):
         postId = self.kwargs.get("pk")
