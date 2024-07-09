@@ -6,6 +6,7 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 import blurhash
 from PIL import Image
+from django_ckeditor_5.fields import CKEditor5Field
 
 
 def validate_minimum_size(image, width=300, height=300):
@@ -40,9 +41,9 @@ class Category(models.Model):
 
 class Article(models.Model):
     title = models.CharField(max_length=200)
-    summary = models.CharField(max_length=400)
+    summary = models.TextField(max_length=400)
     slug = models.SlugField(max_length=200, blank=True, null=True, unique=True)
-    content = models.TextField()
+    content = CKEditor5Field("Text", config_name="extends")
     created_at = models.DateTimeField(auto_now_add=True)
     category = models.ForeignKey(
         Category, on_delete=models.CASCADE, blank=True, null=True

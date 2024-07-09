@@ -9,6 +9,7 @@ urlpatterns = [
     path("accounts/", include("accounts.urls")),
     path("accounts/", include("dj_rest_auth.urls")),
     path("", include("main.urls")),
+    path("ckeditor5/", include("django_ckeditor_5.urls")),
 ]
 
 
