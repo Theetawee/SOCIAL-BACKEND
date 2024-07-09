@@ -1,5 +1,6 @@
-from accounts.models import Account
+from .models import Account
 from rest_framework import serializers
+
 from allauth.account import app_settings as allauth_account_settings
 from allauth.account.adapter import get_adapter
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -67,32 +68,22 @@ class RegisterSerializer(Cast):
         return user
 
 
-class UpdateProfileImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Account
-        fields = ["profile_image", "profile_image_hash"]
-
-
-class AccountUpdateSerializer(serializers.ModelSerializer):
+class BasicAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         fields = [
-            "phone",
-            "gender",
-            "date_of_birth",
-            "bio",
+            "id",
+            "username",
             "name",
-            "location",
-            "hobbies",
+            "verified",
         ]
 
 
-class UpdateHobbySerializer(serializers.ModelSerializer):
-    class Meta:
+class AccountSerializer(BasicAccountSerializer):
+    class Meta(BasicAccountSerializer.Meta):
         model = Account
-        fields = ["hobbies"]
-
-    def update(self, instance, validated_data):
-        instance.hobbies.set(validated_data.get("hobbies", instance.hobbies))
-        instance.save()
-        return instance
+        fields = BasicAccountSerializer.Meta.fields + [
+            "email",
+            "date_joined",
+            "last_login",
+        ]

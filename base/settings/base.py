@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "cloudinary",
     "debug_toolbar",
     "django.contrib.sitemaps",
+    "taggit",
 ]
 
 SITE_ID = 1
@@ -106,7 +107,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
     ],
-    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+    # "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_PAGINATION_CLASS": "base.utils.CustomPageNumberPagination",
     "PAGE_SIZE": 10,
 }
@@ -147,11 +148,11 @@ REST_AUTH = {
     "JWT_AUTH_COOKIE": "_Waanverse__",
     "JWT_AUTH_REFRESH_COOKIE": "_Secure-RT",
     "JWT_AUTH_RETURN_EXPIRATION": False,
-    "REGISTER_SERIALIZER": "accounts.serializers.create.serializers.RegisterSerializer",
-    "USER_DETAILS_SERIALIZER": "accounts.serializers.view.serializers.AccountSerializer",
+    "REGISTER_SERIALIZER": "accounts.serializers.RegisterSerializer",
+    "USER_DETAILS_SERIALIZER": "accounts.serializers.BasicAccountSerializer",
     "PASSWORD_RESET_USE_SITES_DOMAIN": True,
     "OLD_PASSWORD_FIELD_ENABLED": True,
-    "JWT_TOKEN_CLAIMS_SERIALIZER": "accounts.serializers.create.serializers.MyTokenObtainPairSerializer",
+    # "JWT_TOKEN_CLAIMS_SERIALIZER": "accounts.serializers.create.serializers.MyTokenObtainPairSerializer",
 }
 
 
@@ -164,3 +165,5 @@ SIMPLE_JWT = {
     "UPDATE_LAST_LOGIN": True,
     "ALGORITHM": "RS256",
 }
+
+TAGGIT_CASE_INSENSITIVE = True

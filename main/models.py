@@ -1,109 +1,103 @@
 from django.db import models
-from accounts.models import Account
-from django.contrib.humanize.templatetags.humanize import naturaltime
-from django.db.models.signals import post_save
+from taggit.managers import TaggableManager
+from django.core.exceptions import ValidationError
+from django.utils.text import slugify
+from django.db.models.signals import pre_save
 from django.dispatch import receiver
 import blurhash
 from PIL import Image
-from django.urls import reverse
-
-# Create your models here.
 
 
-class Base(models.Model):
-    CONTENTTYPE = (("Post", "Post"), ("Comment", "Comment"))
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+def validate_minimum_size(image, width=300, height=300):
+    error = False
+    if width is not None and image.width < width:
+        error = True
+    if height is not None and image.height < height:
+        error = True
+    if error:
+        raise ValidationError([f"Size should be at least {width} x {height} pixels."])
+
+
+def validate_image_size(fieldfile_obj):
+    filesize = fieldfile_obj.file.size
+    megabyte_limit = 2.0
+    if filesize > megabyte_limit * 1024 * 1024:
+        raise ValidationError("Max file size is %sMB" % str(megabyte_limit))
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=100, blank=True, null=True, unique=True)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+
+class Article(models.Model):
+    title = models.CharField(max_length=200)
+    summary = models.CharField(max_length=400)
+    slug = models.SlugField(max_length=200, blank=True, null=True, unique=True)
     content = models.TextField()
-    views = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
+    category = models.ForeignKey(
+        Category, on_delete=models.CASCADE, blank=True, null=True
+    )
     updated_at = models.DateTimeField(auto_now=True)
-    content_type = models.CharField(max_length=255, choices=CONTENTTYPE, default="Post")
-    likes = models.ManyToManyField(Account, blank=True, related_name="%(class)s_likes")
-
-    @property
-    def creation_date(self):
-        return naturaltime(self.created_at)
-
-    def __str__(self):
-        return f"Post-{self.id}"
-
-    def get_absolute_url(self):
-        return reverse("post", kwargs={"pk": self.pk})
-
-    def total_likes(self):
-        return self.likes.all().count()
-
-    def is_liked(self, user):
-        if user in self.likes.all():
-            return True
-        return False
-
-    class Meta:
-        abstract = True
-        ordering = ["-created_at"]
-
-
-class Post(Base):
-    taged_accounts = models.ManyToManyField(
-        Account, blank=True, related_name="taged_posts"
+    author = models.ForeignKey(
+        "accounts.Account", on_delete=models.CASCADE, blank=True, null=True
     )
-
-    @property
-    def is_bookmarked(self, user):
-        if Bookmark.objects.filter(account=user, post=self).exists():
-            return True
-        return False
-
-    @property
-    def total_bookmarks(self):
-        return Bookmark.objects.filter(post=self).count()
-
-    @property
-    def total_comments(self):
-        return Comment.objects.filter(post=self).count()
-
-
-class Comment(Base):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
-    parent = models.ForeignKey(
-        "self", on_delete=models.CASCADE, null=True, blank=True, related_name="replies"
-    )
-
-
-class ContentImage(models.Model):
-    comment = models.ForeignKey(
-        Comment,
-        on_delete=models.CASCADE,
+    featured = models.BooleanField(default=False)
+    cover_image = models.ImageField(
+        upload_to="articles/",
         blank=True,
         null=True,
-        related_name="comment_content_images",
+        validators=[validate_minimum_size, validate_image_size],
     )
-    post = models.ForeignKey(
-        Post,
-        on_delete=models.CASCADE,
-        related_name="content_images",
-        blank=True,
-        null=True,
+    image_alt = models.CharField(max_length=200, blank=True, null=True)
+    image_hash = models.CharField(
+        max_length=200, default="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
     )
-    content_image = models.ImageField(upload_to="media/")
-
-    image_hash = models.CharField(max_length=300, blank=True, null=True)
-
-
-class Bookmark(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    tags = TaggableManager(blank=True)
 
     def __str__(self):
-        return f"{self.account.username} bookmarked Post-{self.post.id}"
+        return self.title
+
+    def image(self):
+        if self.cover_image:
+            return self.cover_image.url
+        return None
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+
+        image_file = self.cover_image
+        with Image.open(image_file) as image:
+            image.thumbnail((100, 100))
+            hash_value = blurhash.encode(image, x_components=4, y_components=3)
+            self.image_hash = hash_value
+
+        super().save(*args, **kwargs)
 
 
-@receiver(post_save, sender=ContentImage)
-def create_image_hash(sender, instance, created, **kwargs):
-    if created:
-        if instance.content_image:
-            with Image.open(instance.content_image) as image:
-                image.thumbnail((100, 100))
-                hash = blurhash.encode(image, x_components=4, y_components=3)
-                instance.image_hash = hash
-                instance.save()
+@receiver(pre_save, sender=Article)
+def create_article_slug(sender, instance, **kwargs):
+    if not instance.slug:
+        instance.slug = slugify(instance.title)
+        # Ensure slug is unique
+        while Article.objects.filter(slug=instance.slug).exists():
+            instance.slug = f"{instance.slug}-{instance.id}"
+
+
+@receiver(pre_save, sender=Category)
+def create_category_slug(sender, instance, **kwargs):
+    if not instance.slug:
+        instance.slug = slugify(instance.name)
+        # Ensure slug is unique
+        while Category.objects.filter(slug=instance.slug).exists():
+            instance.slug = f"{instance.slug}-{instance.id}"

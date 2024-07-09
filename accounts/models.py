@@ -1,3 +1,4 @@
+import blurhash
 from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -12,7 +13,6 @@ from django.contrib.humanize.templatetags.humanize import naturalday
 from django.urls import reverse
 
 from django.db.models.signals import post_save
-import blurhash
 from PIL import Image
 
 
@@ -41,30 +41,6 @@ class AccountManager(BaseUserManager):
             raise ValueError("Superuser must have is_superuser=True.")
 
         return self.create_user(email, username, name, password, **extra_fields)
-
-
-class Friendship(models.Model):
-    account1 = models.ForeignKey(
-        "Account", on_delete=models.CASCADE, related_name="friendships_as_account1"
-    )
-    account2 = models.ForeignKey(
-        "Account", on_delete=models.CASCADE, related_name="friendships_as_account2"
-    )
-    date_started = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(
-        max_length=20,
-        choices=[
-            ("acquaintance", "Acquaintance"),
-            ("close_friend", "Close Friend"),
-            ("best_friend", "Best Friend"),
-        ],
-        default="acquaintance",
-    )
-    is_one_sided = models.BooleanField(default=False)
-    notes = models.TextField(blank=True)
-
-    def __str__(self):
-        return f"{self.account1.username} - {self.account2.username}"
 
 
 class Badge(models.Model):
@@ -124,10 +100,6 @@ class Account(AbstractBaseUser, PermissionsMixin):
     profile_image_hash = models.CharField(
         max_length=255, default="LTL55tj[~qof?bfQIUj[j[fQM{ay"
     )
-    hobbies = models.ManyToManyField("Hobby", blank=True)
-    friends = models.ManyToManyField(
-        "self", through=Friendship, symmetrical=True, blank=True
-    )
     username_last_update = models.DateTimeField(blank=True, null=True)
     last_location = models.CharField(max_length=255, blank=True, null=True)
 
@@ -171,57 +143,6 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         ordering = ["-id"]
-
-
-class FriendRequest(models.Model):
-    STATUS = (
-        ("pending", "pending"),
-        ("accepted", "accepted"),
-        ("declined", "declined"),
-    )
-    sender = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="sender")
-    recipient = models.ForeignKey(
-        Account, on_delete=models.CASCADE, related_name="recipient"
-    )
-
-    date_sent = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=20, choices=STATUS, default="pending")
-
-    def __str__(self):
-        return f"{self.sender} sent request to {self.recipient}"
-
-    class Meta:
-        unique_together = ("sender", "recipient")
-        ordering = ["-date_sent"]
-
-
-# model for hobbies
-class Hobby(models.Model):
-    name = models.CharField(max_length=255)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.name
-
-
-class UserDevice(models.Model):
-    user = models.ForeignKey(Account, on_delete=models.CASCADE)
-    os_name = models.CharField(max_length=255, null=True, blank=True)
-    os_version = models.CharField(max_length=255, null=True, blank=True)
-    engine = models.CharField(max_length=255, null=True, blank=True)
-    device_name = models.CharField(max_length=255, null=True, blank=True)
-    device_brand = models.CharField(max_length=255, null=True, blank=True)
-    device_model = models.CharField(max_length=255, null=True, blank=True)
-    device_type = models.CharField(max_length=255, null=True, blank=True)
-    client_name = models.CharField(max_length=255, null=True, blank=True)
-    client_type = models.CharField(max_length=255, null=True, blank=True)
-    client_version = models.CharField(max_length=255, null=True, blank=True)
-    last_used = models.DateTimeField(auto_now=True)
-    date_added = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.user.username}'s Device"
 
 
 @receiver(user_signed_up)
