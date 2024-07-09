@@ -31,4 +31,5 @@ class ArticleSerializer(serializers.ModelSerializer, TaggitSerializer):
             "author",
             "tags",
             "image_hash",
+            "image_alt"
         ]
