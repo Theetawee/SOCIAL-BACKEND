@@ -1,19 +1,11 @@
-import blurhash
 from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser,
     PermissionsMixin,
     BaseUserManager,
 )
-from phonenumber_field.modelfields import PhoneNumberField
-from allauth.account.signals import user_signed_up
-from allauth.socialaccount.models import SocialAccount
-from django.dispatch import receiver
 from django.contrib.humanize.templatetags.humanize import naturalday
 from django.urls import reverse
-
-from django.db.models.signals import post_save
-from PIL import Image
 
 
 class AccountManager(BaseUserManager):
@@ -82,13 +74,12 @@ class Account(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255)
     username = models.CharField(max_length=150, unique=True)
     email = models.EmailField(max_length=255, unique=True, verbose_name="Email")
-    phone = PhoneNumberField(null=True, blank=True, unique=True)
+    phone = models.CharField(max_length=12, null=True, blank=True, unique=True)
     gender = models.CharField(
         max_length=10, blank=True, null=True, choices=GENDER_OPTIONS
     )
     date_of_birth = models.DateField(blank=True, null=True)
     profile_image = models.ImageField(upload_to="profiles/", blank=True, null=True)
-    profile_url = models.URLField(blank=True, null=True)
     date_joined = models.DateTimeField(auto_now_add=True, verbose_name="Date joined")
     last_login = models.DateTimeField(auto_now=True, verbose_name="Last login")
     is_active = models.BooleanField(default=True)
@@ -123,9 +114,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
     @property
     def image(self):
-        if self.profile_url:
-            return self.profile_url
-        elif self.profile_image:
+        if self.profile_image:
             url = self.profile_image.url
             return url
 
@@ -143,29 +132,3 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         ordering = ["-id"]
-
-
-@receiver(user_signed_up)
-def social_account_signed_up(request, user, **kwargs):
-    try:
-        social_account = SocialAccount.objects.get(user=user)
-        extra_data = social_account.extra_data.get("picture")
-        names = social_account.extra_data.get("name")
-        username = social_account.extra_data.get("given_name")
-        user.username = username.lower().replace(" ", "_")
-        user.name = names
-        user.profile_url = extra_data
-        user.save()
-    except Exception:
-        pass
-
-
-@receiver(post_save, sender=Badge)
-def create_image_hash(sender, instance, created, **kwargs):
-    if created:
-        if instance.badge_image:
-            with Image.open(instance.badge_image) as image:
-                image.thumbnail((100, 100))
-                hash = blurhash.encode(image, x_components=4, y_components=3)
-                instance.image_hash = hash
-                instance.save()

@@ -1,7 +1,6 @@
+from .views import post_list
 from django.urls import path
-from .views import homepage, ArticleDetail
 
 urlpatterns = [
-    path("", homepage, name="index"),
-    path("article/<slug:slug>/", ArticleDetail.as_view()),
+    path("", post_list, name="post_list"),
 ]

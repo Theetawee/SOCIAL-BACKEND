@@ -63,29 +63,5 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
 
-SOCIALACCOUNT_PROVIDERS = {
-    "google": {
-        "EMAIL_AUTHENTICATION": True,
-        "APP": {
-            "client_id": "414400776439-b6b43ok80hcp9atqmiintqvvntu89qim.apps.googleusercontent.com",
-            "secret": os.environ.get("DEV_GOOGLE_SECRET"),
-            "key": "",
-        },
-        "SCOPE": [
-            "profile",
-            "email",
-        ],
-        "AUTH_PARAMS": {
-            "access_type": "offline",
-        },
-        "FETCH_USERINFO": True,
-    }
-}
-EMAIL_VERIFICATION_URL = "http://localhost:5173/accounts/"
-
-
-REST_AUTH["JWT_AUTH_SECURE"] = False
-
-
 SIMPLE_JWT["SIGNING_KEY"] = PRIVATE_KEY
 SIMPLE_JWT["VERIFYING_KEY"] = PUBLIC_KEY

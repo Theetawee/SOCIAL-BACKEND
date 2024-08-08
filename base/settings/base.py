@@ -22,20 +22,12 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "accounts",
-    "dj_rest_auth",
-    "rest_framework.authtoken",
-    "allauth",
-    "allauth.account",
-    "allauth.socialaccount",
-    "dj_rest_auth.registration",
-    "allauth.socialaccount.providers.google",
     "main",
     "cloudinary_storage",
     "cloudinary",
     "debug_toolbar",
     "django.contrib.sitemaps",
-    "taggit",
-    "django_ckeditor_5",
+    "dj_waanverse_auth",
 ]
 
 SITE_ID = 1
@@ -49,8 +41,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "allauth.account.middleware.AccountMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "dj_waanverse_auth.middleware.CookiesHandlerMiddleware",
 ]
 
 ROOT_URLCONF = "base.urls"
@@ -105,56 +97,19 @@ CORS_ALLOW_CREDENTIALS = True
 
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
-    ],
-    # "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
-    "DEFAULT_PAGINATION_CLASS": "base.utils.CustomPageNumberPagination",
-    "PAGE_SIZE": 10,
+    "DEFAULT_AUTHENTICATION_CLASSES": ("dj_waanverse_auth.backends.JWTAuthentication",),
+    # "DEFAULT_PAGINATION_CLASS": "base.utils.CustomPageNumberPagination",
+    # "PAGE_SIZE": 10,
 }
 
 
-# Django allauth
 AUTHENTICATION_BACKENDS = [
+    "dj_waanverse_auth.backends.CustomAuthBackend",
     "django.contrib.auth.backends.ModelBackend",
-    "accounts.authentication.CustomAuthenticationBackend",
 ]
 
 
-ACCOUNT_AUTHENTICATION_METHOD = "username_email"
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_CHANGE_EMAIL = False
-ACCOUNT_CONFIRM_EMAIL_ON_GET = False
-ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-# ACCOUNT_EMAIL_VERIFICATION = "none"
-
-ACCOUNT_EMAIL_SUBJECT_PREFIX = "Waanverse - "
-ACCOUNT_PRESERVE_USERNAME_CASING = False
-ACCOUNT_USERNAME_MIN_LENGTH = 4
-ACCOUNT_ADAPTER = "accounts.adapter.CustomAccountAdapter"
-ACCOUNT_EMAIL_CONFIRMATION_COOLDOWN = 60
-ACCOUNT_USERNAME_BLACKLIST = ["waanverse"]
-SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
-ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
-VAPID_PRIVATE_KEY = os.environ.get("VAPID_PRIVATE_KEY")
-VAPID_ADMIN_EMAIL = "tawee.drake@gmail.com"
-
-
 ASGI_APPLICATION = "base.asgi.application"
-
-
-REST_AUTH = {
-    "USE_JWT": True,
-    "JWT_AUTH_COOKIE": "_Waanverse__",
-    "JWT_AUTH_REFRESH_COOKIE": "_Secure-RT",
-    "JWT_AUTH_RETURN_EXPIRATION": False,
-    "REGISTER_SERIALIZER": "accounts.serializers.RegisterSerializer",
-    "USER_DETAILS_SERIALIZER": "accounts.serializers.BasicAccountSerializer",
-    "PASSWORD_RESET_USE_SITES_DOMAIN": True,
-    "OLD_PASSWORD_FIELD_ENABLED": True,
-    # "JWT_TOKEN_CLAIMS_SERIALIZER": "accounts.serializers.create.serializers.MyTokenObtainPairSerializer",
-}
 
 
 # SIMPLE_JWT SETTINGS
@@ -167,146 +122,5 @@ SIMPLE_JWT = {
     "ALGORITHM": "RS256",
 }
 
-TAGGIT_CASE_INSENSITIVE = True
 
-
-customColorPalette = [
-    {"color": "hsl(4, 90%, 58%)", "label": "Red"},
-    {"color": "hsl(340, 82%, 52%)", "label": "Pink"},
-    {"color": "hsl(291, 64%, 42%)", "label": "Purple"},
-    {"color": "hsl(262, 52%, 47%)", "label": "Deep Purple"},
-    {"color": "hsl(231, 48%, 48%)", "label": "Indigo"},
-    {"color": "hsl(207, 90%, 54%)", "label": "Blue"},
-]
-
-CKEDITOR_5_CONFIGS = {
-    "default": {
-        "toolbar": [
-            "heading",
-            "|",
-            "bold",
-            "italic",
-            "link",
-            "bulletedList",
-            "numberedList",
-            "blockQuote",
-            "imageUpload",
-        ],
-    },
-    "extends": {
-        "blockToolbar": [
-            "paragraph",
-            "heading1",
-            "heading2",
-            "heading3",
-            "|",
-            "bulletedList",
-            "numberedList",
-            "|",
-            "blockQuote",
-        ],
-        "toolbar": [
-            "heading",
-            "|",
-            "outdent",
-            "indent",
-            "|",
-            "bold",
-            "italic",
-            "link",
-            "underline",
-            "strikethrough",
-            "code",
-            "subscript",
-            "superscript",
-            "highlight",
-            "|",
-            "codeBlock",
-            "sourceEditing",
-            "insertImage",
-            "bulletedList",
-            "numberedList",
-            "todoList",
-            "|",
-            "blockQuote",
-            "imageUpload",
-            "|",
-            "fontSize",
-            "fontFamily",
-            "fontColor",
-            "fontBackgroundColor",
-            "mediaEmbed",
-            "removeFormat",
-            "insertTable",
-        ],
-        "image": {
-            "toolbar": [
-                "imageTextAlternative",
-                "|",
-                "imageStyle:alignLeft",
-                "imageStyle:alignRight",
-                "imageStyle:alignCenter",
-                "imageStyle:side",
-                "|",
-            ],
-            "styles": [
-                "full",
-                "side",
-                "alignLeft",
-                "alignRight",
-                "alignCenter",
-            ],
-        },
-        "table": {
-            "contentToolbar": [
-                "tableColumn",
-                "tableRow",
-                "mergeTableCells",
-                "tableProperties",
-                "tableCellProperties",
-            ],
-            "tableProperties": {
-                "borderColors": customColorPalette,
-                "backgroundColors": customColorPalette,
-            },
-            "tableCellProperties": {
-                "borderColors": customColorPalette,
-                "backgroundColors": customColorPalette,
-            },
-        },
-        "heading": {
-            "options": [
-                {
-                    "model": "paragraph",
-                    "title": "Paragraph",
-                    "class": "ck-heading_paragraph",
-                },
-                {
-                    "model": "heading1",
-                    "view": "h1",
-                    "title": "Heading 1",
-                    "class": "ck-heading_heading1",
-                },
-                {
-                    "model": "heading2",
-                    "view": "h2",
-                    "title": "Heading 2",
-                    "class": "ck-heading_heading2",
-                },
-                {
-                    "model": "heading3",
-                    "view": "h3",
-                    "title": "Heading 3",
-                    "class": "ck-heading_heading3",
-                },
-            ]
-        },
-    },
-    "list": {
-        "properties": {
-            "styles": "true",
-            "startIndex": "true",
-            "reversed": "true",
-        }
-    },
-}
+ACCOUNTS_CONFIG = {}
