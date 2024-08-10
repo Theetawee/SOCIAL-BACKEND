@@ -49,7 +49,11 @@ STATIC_URL = "https://theetawee.github.io/social_app_files/"
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-CORS_ALLOWED_ORIGINS = ["https://www.waanverse.com", "https://api.waanverse.com","https://abs.waanverse.com"]
+CORS_ALLOWED_ORIGINS = [
+    "https://www.waanverse.com",
+    "https://api.waanverse.com",
+    "https://abs.waanverse.com",
+]
 
 
 GOOGLE_REDIRECT_URI = "https://www.waanverse.com/accounts/oauth2/google/"
@@ -59,15 +63,6 @@ ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
 
 
 BACKUP_DIRECTORY = os.path.join(BASE_DIR, "backups/production")
-
-
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.zoho.com"
-EMAIL_PORT = 587
-EMAIL_HOST_USER = "accounts@waanverse.com"
-EMAIL_HOST_PASSWORD = os.environ.get("NEMAIL_PASSWORD")
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
 
 
 CSRF_TRUSTED_ORIGINS = [
@@ -145,10 +140,6 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 EMAIL_VERIFICATION_URL = "https://www.waanverse.com/accounts/"
-
-
-REST_AUTH["JWT_AUTH_SECURE"] = True
-REST_AUTH["JWT_AUTH_COOKIE_DOMAIN"] = ".waanverse.com"
 
 
 SIMPLE_JWT["SIGNING_KEY"] = PRIVATE_KEY

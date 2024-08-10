@@ -54,14 +54,6 @@ ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"
 BACKUP_DIRECTORY = os.path.join(BASE_DIR, "backups/development")
 
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 587
-EMAIL_HOST_USER = "waanversecorp@gmail.com"
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASSWORD")
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
-
 
 SIMPLE_JWT["SIGNING_KEY"] = PRIVATE_KEY
 SIMPLE_JWT["VERIFYING_KEY"] = PUBLIC_KEY
