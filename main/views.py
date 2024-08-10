@@ -15,6 +15,14 @@ class PostList(generics.ListAPIView):
 post_list = PostList.as_view()
 
 
+class PostDetail(generics.RetrieveAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+
+post_detail = PostDetail.as_view()
+
+
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def create_post(request):
