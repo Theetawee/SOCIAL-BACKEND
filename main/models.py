@@ -28,6 +28,9 @@ class Post(models.Model):
     def __str__(self):
         return f"{self.author.username}: {self.content[:50]}"
 
+    class Meta:
+        ordering = ("-created_at",)
+
 
 class Media(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="media")

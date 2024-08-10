@@ -136,4 +136,5 @@ EMAIL_USE_TLS = True
 WAANVERSE_AUTH = {
     "USER_CLAIM_SERIALIZER": "accounts.serializers.BasicAccountSerializer",
     "USER_DETAIL_SERIALIZER": "accounts.serializers.BasicAccountSerializer",
+    "EMAIL_ON_LOGIN": False,
 }
