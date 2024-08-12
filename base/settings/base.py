@@ -98,8 +98,8 @@ CORS_ALLOW_CREDENTIALS = True
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ("dj_waanverse_auth.backends.JWTAuthentication",),
-    # "DEFAULT_PAGINATION_CLASS": "base.utils.CustomPageNumberPagination",
-    # "PAGE_SIZE": 10,
+    "DEFAULT_PAGINATION_CLASS": "base.utils.CustomPageNumberPagination",
+    "PAGE_SIZE": 3,
 }
 
 

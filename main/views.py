@@ -1,3 +1,4 @@
+
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -24,6 +25,7 @@ class PostDetail(generics.RetrieveAPIView):
     serializer_class = PostSerializer
 
     def get(self, request, *args, **kwargs):
+
         post = self.get_object()
 
         # Increment the view count

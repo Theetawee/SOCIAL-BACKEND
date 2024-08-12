@@ -7,7 +7,7 @@ class CustomPageNumberPagination(PageNumberPagination):
         return Response(
             {
                 "next": self.get_next_page_number(),
-                "previous": self.get_previous_link(),
+                "previous": self.get_previous_page_number(),
                 "count": self.page.paginator.count,
                 "results": data,
             }
@@ -17,3 +17,8 @@ class CustomPageNumberPagination(PageNumberPagination):
         if not self.page.has_next():
             return None
         return self.page.next_page_number()
+
+    def get_previous_page_number(self):
+        if not self.page.has_previous():
+            return None
+        return self.page.previous_page_number()
