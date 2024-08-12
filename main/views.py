@@ -1,15 +1,19 @@
-from rest_framework import generics
-from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
 from .models import Post
-from .serializers import PostSerializer, CreatePostSerializer
+from .serializers import CreatePostSerializer, PostSerializer
 
 
 class PostList(generics.ListAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+
+    def get_queryset(self):
+        posts = Post.objects.filter(parent=None)
+        return posts
 
 
 post_list = PostList.as_view()
@@ -19,14 +23,39 @@ class PostDetail(generics.RetrieveAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
 
+    def get(self, request, *args, **kwargs):
+        post = self.get_object()
+
+        # Increment the view count
+        post.views += 1
+        post.save(update_fields=["views"])
+
+        return super().get(request, *args, **kwargs)
+
 
 post_detail = PostDetail.as_view()
 
 
+class PostCommentsList(generics.ListAPIView):
+    serializer_class = PostSerializer
+
+    def get_queryset(self):
+        post_id = self.kwargs.get("pk")
+        parent_post = Post.objects.get(id=post_id)
+        posts = Post.objects.filter(parent=parent_post)
+
+        return posts
+
+
+comment_list = PostCommentsList.as_view()
+
+
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
-def create_post(request):
-    serializer = CreatePostSerializer(data=request.data, context={"request": request})
+def create_post(request, post_id=None):
+    serializer = CreatePostSerializer(
+        data=request.data, context={"request": request, "post_id": post_id}
+    )
 
     if serializer.is_valid():
         post = serializer.save()

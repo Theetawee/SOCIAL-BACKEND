@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
 
 Account = get_user_model()
 
@@ -12,6 +12,7 @@ class Post(models.Model):
     parent = models.ForeignKey(
         "self", null=True, blank=True, on_delete=models.CASCADE, related_name="replies"
     )
+    views = models.IntegerField(default=0)
 
     # For handling retweets
     original_post = models.ForeignKey(
