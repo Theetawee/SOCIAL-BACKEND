@@ -49,6 +49,7 @@ comment_list = PostCommentsList.as_view()
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def create_post(request, post_id=None):
+    print(request.data)
     serializer = CreatePostSerializer(
         data=request.data, context={"request": request, "post_id": post_id}
     )

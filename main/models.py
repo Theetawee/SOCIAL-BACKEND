@@ -22,7 +22,9 @@ class Post(models.Model):
         on_delete=models.SET_NULL,
         related_name="retweets",
     )
-
+    tagged_accounts = models.ManyToManyField(
+        Account, related_name="tagged_posts", blank=True
+    )
     # Fields for tracking interactions
     likes = models.ManyToManyField(Account, related_name="liked_posts", blank=True)
 
