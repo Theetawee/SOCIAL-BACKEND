@@ -4,7 +4,6 @@
 from base.settings.base import *
 
 
-SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # ALLOWED_HOSTS = ["api.waanverse.com", "waanverse.onrender.com"]
 DEBUG = False

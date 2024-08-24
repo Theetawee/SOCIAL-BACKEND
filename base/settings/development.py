@@ -6,15 +6,14 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-SECRET_KEY = "btj0el@hukhbdgbja!8leaq@fdvgi-8zhr#d74*@h!qgdye8v2"
 
 STATIC_URL = "static/"
 
 MEDIA_URL = "media/"
 
 
-PRIVATE_KEY_PATH = os.path.join(BASE_DIR, "private_key.pem")
-PUBLIC_KEY_PATH = os.path.join(BASE_DIR, "public_key.pem")
+PRIVATE_KEY_PATH = os.path.join(BASE_DIR, "secrets/private_key.pem")
+PUBLIC_KEY_PATH = os.path.join(BASE_DIR, "secrets/public_key.pem")
 
 with open(PRIVATE_KEY_PATH, "r") as private_key_file:
     PRIVATE_KEY = private_key_file.read()
