@@ -1,0 +1,27 @@
+{% extends 'emails/base.html' %} 
+{% load waanverse_tags %} 
+
+{% block content %}
+<div>
+    <p>Hello {{ name|default:'there' }},</p>
+
+    <p>We want to inform you that new Multi-Factor Authentication (MFA) recovery codes have been successfully generated for your {{ PLATFORM_NAME }} account.</p>
+
+    <p>If you did not request this change, please contact our support team immediately to secure your account.</p>
+
+    <p>These recovery codes are important for accessing your account and should be stored securely.</p>
+
+    <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;" />
+
+    <p><strong>Account:</strong> {{ username }} ({{ email }})</p>
+    <p><strong>Time of Action:</strong> {{ time }}</p>
+    <p><strong>IP Address:</strong> {{ ip_address }}</p>
+    <p><strong>Device Information:</strong> {{ user_agent|device_info }}</p>
+
+    <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;" />
+
+    <p>If you recognize this activity, no further action is required. Otherwise, please take steps to secure your account immediately.</p>
+
+    <p>Thank you for maintaining the security of your account.</p>
+</div>
+{% endblock %}

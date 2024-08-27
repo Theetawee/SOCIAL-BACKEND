@@ -44,8 +44,6 @@ INTERNAL_IPS = [
 CORS_ALLOW_ALL_ORIGINS = True
 
 
-GOOGLE_REDIRECT_URI = "http://localhost:5173/accounts/oauth2/google/"
-
 
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"
 

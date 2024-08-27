@@ -104,7 +104,7 @@ REST_FRAMEWORK = {
 
 
 AUTHENTICATION_BACKENDS = [
-    "dj_waanverse_auth.backends.CustomAuthBackend",
+    "dj_waanverse_auth.backends.AuthBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
 
@@ -137,4 +137,10 @@ WAANVERSE_AUTH = {
     "USER_CLAIM_SERIALIZER": "accounts.serializers.BasicAccountSerializer",
     "USER_DETAIL_SERIALIZER": "accounts.serializers.BasicAccountSerializer",
     "EMAIL_ON_LOGIN": False,
+    "PLATFORM_NAME": "Driblet",
 }
+
+
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
+GOOGLE_REDIRECT_URI = os.environ.get("GOOGLE_REDIRECT_URI")

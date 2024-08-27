@@ -55,7 +55,6 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 
-GOOGLE_REDIRECT_URI = "https://www.waanverse.com/accounts/oauth2/google/"
 
 
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
