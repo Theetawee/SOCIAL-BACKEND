@@ -138,6 +138,7 @@ WAANVERSE_AUTH = {
     "USER_DETAIL_SERIALIZER": "accounts.serializers.BasicAccountSerializer",
     "EMAIL_ON_LOGIN": False,
     "PLATFORM_NAME": "Driblet",
+    "REGISTRATION_SERIALIZER_CLASS": "accounts.serializers.SignupSerializer",
 }
 
 

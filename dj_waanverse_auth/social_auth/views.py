@@ -1,8 +1,10 @@
+import string
 from urllib.parse import urlencode
 
 import requests
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.utils.crypto import get_random_string
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import AuthenticationFailed
@@ -10,9 +12,15 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from dj_waanverse_auth.serializers import SignupSerializer
+from dj_waanverse_auth.settings import accounts_config
+from dj_waanverse_auth.utils import (
+    check_mfa_status,
+    generate_tokens,
+    get_serializer,
+    set_cookies,
+)
 
-from .utils import get_username
+from .utils import get_serializer_fields, get_username
 
 Account = get_user_model()
 
@@ -75,20 +83,49 @@ class GoogleAuthCallbackView(APIView):
         user_info_params = {"access_token": access_token}
         user_info_response = requests.get(user_info_url, params=user_info_params)
         user_info = user_info_response.json()
+        USER_CLAIM_SERIALIZER = get_serializer(
+            accounts_config.USER_CLAIM_SERIALIZER_CLASS
+        )
 
         # Implement user authentication or creation
         user = self.authenticate_or_create_user(user_info)
-
+        mfa_status = check_mfa_status(user)
+        if mfa_status:
+            pass
+        else:
+            tokens = generate_tokens(user)
+            response = Response(
+                data={
+                    "access_token": tokens.get("access_token"),
+                    "refresh_token": tokens.get("refresh_token"),
+                    "user": USER_CLAIM_SERIALIZER(user).data,
+                },
+                status=status.HTTP_201_CREATED,
+            )
+            new_response = set_cookies(
+                response=response,
+                access_token=tokens.get("access_token"),
+                refresh_token=tokens.get("refresh_token"),
+            )
         # Generate JWT or any other token for the authenticated user
-        tokens = self.generate_tokens_for_user(user)
 
-        return Response({"tokens": tokens}, status=status.HTTP_200_OK)
+        return new_response
 
-    def authenticate_or_create_user(self, user_info, serializer_class):
+    def authenticate_or_create_user(self, user_info):
         email = user_info.get("email")
         username = get_username(user_info)
-        random_password = Account.objects.make_random_password()
-
+        name = user_info.get("name", "user")
+        email_verified = user_info.get("email_verified", False)
+        allowed_chars = string.ascii_letters + string.digits + string.punctuation
+        password = get_random_string(
+            length=16,
+            allowed_chars=allowed_chars,
+        )
+        CREATION_SERIALIZER = get_serializer(
+            accounts_config.REGISTRATION_SERIALIZER_CLASS
+        )
+        fields = get_serializer_fields(CREATION_SERIALIZER)
+        print(fields)
         if not email:
             raise AuthenticationFailed("No email associated with Google account")
 
@@ -101,22 +138,15 @@ class GoogleAuthCallbackView(APIView):
             user_data = {
                 "email": email,
                 "username": username,
-                # Since the passwords are handled by the SignupSerializer, you can set a random one here
-                "password1": random_password,
-                "password2": random_password,  # Same as password1
+                "password1": password,
+                "password2": password,
+                "name": name,
+                "verified": email_verified,
             }
             # Instantiate and validate the serializer
-            serializer = SignupSerializer(data=user_data)
+            serializer = CREATION_SERIALIZER(data=user_data)
             if serializer.is_valid():
                 user = serializer.save()
             else:
                 raise AuthenticationFailed(serializer.errors)
         return user
-
-    def generate_tokens_for_user(self, user):
-        # Example function to generate JWT tokens for the user
-        refresh = "test"
-        return {
-            "refresh": str(refresh),
-            "access": str(refresh.access_token),
-        }

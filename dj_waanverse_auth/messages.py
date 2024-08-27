@@ -41,6 +41,7 @@ class MessagesSchema(TypedDict):
     password_mismatch: str
     verify_email_subject: str
     login_email_subject: str
+    password_validation_error: str
 
 
 class Messages(MessagesSchema):

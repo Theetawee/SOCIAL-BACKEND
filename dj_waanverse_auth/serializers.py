@@ -15,18 +15,11 @@ from dj_waanverse_auth.messages import Messages
 
 from .models import EmailConfirmationCode, MultiFactorAuth, ResetPasswordCode
 from .settings import accounts_config
-from .utils import (
-    check_mfa_status,
-    generate_password_reset_code,
-    generate_tokens,
-    get_client_ip,
-    get_email_verification_status,
-    get_user_agent,
-    handle_email_mechanism,
-    handle_email_verification,
-    handle_user_login,
-    user_email_address,
-)
+from .utils import (check_mfa_status, generate_password_reset_code,
+                    generate_tokens, get_client_ip,
+                    get_email_verification_status, get_user_agent,
+                    handle_email_mechanism, handle_email_verification,
+                    handle_user_login, user_email_address)
 from .validators import password_validator
 from .validators import validate_username as username_validator
 
@@ -172,7 +165,7 @@ class VerifyEmailSerializer(serializers.Serializer):
 
 class SignupSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
-    username = serializers.CharField(required=True, max_length=10)
+    username = serializers.CharField(required=True, max_length=30)
     password1 = serializers.CharField(required=True, write_only=True)
     password2 = serializers.CharField(required=True, write_only=True)
     verified = serializers.BooleanField(required=False, default=False)
@@ -195,12 +188,13 @@ class SignupSerializer(serializers.Serializer):
 
     def validate(self, data):
         """Validate that the passwords match."""
+        print(data.get("password1", "Password"))
         if data.get("password1") != data.get("password2"):
             raise serializers.ValidationError(Messages.password_mismatch)
         password_res, is_valid = password_validator(data.get("password1"))
         if not is_valid:
             raise serializers.ValidationError(
-                {"password": Messages.password_validation_error}
+                {"password": "Password is not strong enough."}
             )
         return data
 
@@ -223,7 +217,8 @@ class SignupSerializer(serializers.Serializer):
             else:
                 email_address.verified = True
                 email_address.save()
-        except Exception:
+        except Exception as e:
+            print(e)
             raise serializers.ValidationError({"msg": Messages.user_creation_error})
 
         return user

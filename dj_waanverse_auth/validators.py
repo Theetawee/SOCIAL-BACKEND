@@ -1,5 +1,4 @@
 import re
-import string
 
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -59,7 +58,6 @@ def password_validator(password: str, user=None) -> tuple:
             any(char.isdigit() for char in password)
             and any(char.isupper() for char in password)
             and any(char.islower() for char in password)
-            and any(char in string.punctuation for char in password)
         ):
             return password, False
 
