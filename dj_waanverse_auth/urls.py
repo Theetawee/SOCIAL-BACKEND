@@ -1,5 +1,6 @@
-from django.urls import path
+from django.urls import include, path
 
+from .social_auth import urls as social_auth_urls
 from .views import (
     DeactivateMfaView,
     enable_mfa,
@@ -36,4 +37,5 @@ urlpatterns = [
     path("password/reset", reset_password, name="reset_password"),
     path("password/reset/new", verify_reset_password, name="verify_reset_password"),
     path("", index, name="index"),
+    path("google/", include(social_auth_urls)),
 ]
