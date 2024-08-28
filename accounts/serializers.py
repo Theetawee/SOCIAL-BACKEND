@@ -33,7 +33,10 @@ class AccountSerializer(serializers.ModelSerializer):
             "profile_image_hash",
             "is_self",
             "header",
-            "cover_image_hash"
+            "cover_image_hash",
+            "bio",
+            "location",
+            "date_joined",
         ]
 
     def get_is_self(self, obj):
