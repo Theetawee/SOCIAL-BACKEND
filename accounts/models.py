@@ -1,10 +1,10 @@
-from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser,
-    PermissionsMixin,
     BaseUserManager,
+    PermissionsMixin,
 )
 from django.contrib.humanize.templatetags.humanize import naturalday
+from django.db import models
 from django.urls import reverse
 
 
@@ -93,6 +93,8 @@ class Account(AbstractBaseUser, PermissionsMixin):
     )
     username_last_update = models.DateTimeField(blank=True, null=True)
     last_location = models.CharField(max_length=255, blank=True, null=True)
+    cover_image = models.ImageField(upload_to="profile_covers/", blank=True, null=True)
+    cover_image_hash = models.CharField(blank=True, null=True, max_length=200)
 
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["name", "email"]
