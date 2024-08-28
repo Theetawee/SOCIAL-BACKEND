@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from accounts.models import Account
 
-from .serializers import BasicAccountSerializer
+from .serializers import AccountSerializer, BasicAccountSerializer
 
 
 class UserList(generics.ListAPIView):
@@ -20,3 +20,13 @@ class UserList(generics.ListAPIView):
 
 
 user_list = UserList.as_view()
+
+
+class UserDetail(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = AccountSerializer
+    queryset = Account.objects.all()
+    lookup_field = "username"
+
+
+user_detail = UserDetail.as_view()

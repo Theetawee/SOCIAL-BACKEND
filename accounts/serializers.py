@@ -16,3 +16,16 @@ class SignupSerializer(WaanverseSignupSerializer):
 
     def get_additional_fields(self, validated_data):
         return {"name": validated_data["name"]}
+
+
+class AccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = [
+            "username",
+            "email",
+            "name",
+            "image",
+            "verified",
+            "profile_image_hash",
+        ]
