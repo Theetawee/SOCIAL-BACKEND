@@ -19,6 +19,8 @@ class SignupSerializer(WaanverseSignupSerializer):
 
 
 class AccountSerializer(serializers.ModelSerializer):
+    is_self = serializers.SerializerMethodField()
+
     class Meta:
         model = Account
         fields = [
@@ -28,4 +30,11 @@ class AccountSerializer(serializers.ModelSerializer):
             "image",
             "verified",
             "profile_image_hash",
+            "is_self",
         ]
+
+    def get_is_self(self, obj):
+        request = self.context.get("request", None)
+        if request and request.user:
+            return obj == request.user
+        return False

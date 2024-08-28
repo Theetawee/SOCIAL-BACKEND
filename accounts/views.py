@@ -28,5 +28,11 @@ class UserDetail(generics.RetrieveAPIView):
     queryset = Account.objects.all()
     lookup_field = "username"
 
+    def get_serializer_context(self):
+        """Add additional context to the serializer."""
+        context = super().get_serializer_context()
+        context.update({"request": self.request})
+        return context
+
 
 user_detail = UserDetail.as_view()
