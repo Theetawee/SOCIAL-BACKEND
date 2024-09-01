@@ -3,7 +3,11 @@ from rest_framework.permissions import IsAuthenticated
 
 from accounts.models import Account
 
-from .serializers import AccountSerializer, BasicAccountSerializer
+from .serializers import (
+    AccountSerializer,
+    BasicAccountSerializer,
+    UpdateProfileSerializer,
+)
 
 
 class UserList(generics.ListAPIView):
@@ -36,3 +40,20 @@ class UserDetail(generics.RetrieveAPIView):
 
 
 user_detail = UserDetail.as_view()
+
+
+class UpdateProfileView(generics.UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = UpdateProfileSerializer
+    queryset = Account.objects.all()
+    lookup_field = "username"
+
+    def get_object(self):
+        user = self.request.user
+        return Account.objects.get(username=user.username)
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
+
+update_profile = UpdateProfileView.as_view()

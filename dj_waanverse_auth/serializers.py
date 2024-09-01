@@ -15,11 +15,18 @@ from dj_waanverse_auth.messages import Messages
 
 from .models import EmailConfirmationCode, MultiFactorAuth, ResetPasswordCode
 from .settings import accounts_config
-from .utils import (check_mfa_status, generate_password_reset_code,
-                    generate_tokens, get_client_ip,
-                    get_email_verification_status, get_user_agent,
-                    handle_email_mechanism, handle_email_verification,
-                    handle_user_login, user_email_address)
+from .utils import (
+    check_mfa_status,
+    generate_password_reset_code,
+    generate_tokens,
+    get_client_ip,
+    get_email_verification_status,
+    get_user_agent,
+    handle_email_mechanism,
+    handle_email_verification,
+    handle_user_login,
+    user_email_address,
+)
 from .validators import password_validator
 from .validators import validate_username as username_validator
 
@@ -181,9 +188,9 @@ class SignupSerializer(serializers.Serializer):
         username = username.lower()
         valid, message = username_validator(username)
         if not valid:
-            raise serializers.ValidationError({"msg": message})
+            raise serializers.ValidationError(message)
         if Account.objects.filter(username=username).exists():
-            raise serializers.ValidationError({"msg": Messages.username_exists})
+            raise serializers.ValidationError(Messages.username_exists)
         return username
 
     def validate(self, data):

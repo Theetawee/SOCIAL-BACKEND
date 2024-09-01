@@ -1,3 +1,5 @@
+import blurhash
+from PIL import Image
 from rest_framework import serializers
 
 from dj_waanverse_auth.serializers import SignupSerializer as WaanverseSignupSerializer
@@ -50,3 +52,25 @@ class AccountSerializer(serializers.ModelSerializer):
             return obj.cover_image.url
         else:
             return None
+
+
+class UpdateProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = ["name", "bio", "location", "profile_image"]
+
+    def update(self, instance, validated_data):
+        print(validated_data)
+        if validated_data.get("profile_image"):
+            print("has image")
+            try:
+                with Image.open(validated_data["profile_image"]) as image:
+                    image.thumbnail((100, 100))
+                    hash = blurhash.encode(image, x_components=4, y_components=3)
+                    instance.profile_image_hash = hash
+            except Exception:
+                pass
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
