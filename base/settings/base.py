@@ -134,9 +134,9 @@ EMAIL_USE_TLS = True
 
 
 WAANVERSE_AUTH = {
-    "USER_CLAIM_SERIALIZER": "accounts.serializers.BasicAccountSerializer",
-    "USER_DETAIL_SERIALIZER": "accounts.serializers.BasicAccountSerializer",
-    "EMAIL_ON_LOGIN": False,
+    "USER_CLAIM_SERIALIZER_CLASS": "accounts.serializers.BasicAccountSerializer",
+    "USER_DETAIL_SERIALIZER_CLASS": "accounts.serializers.BasicAccountSerializer",
+    "ENABLE_EMAIL_ON_LOGIN": False,
     "PLATFORM_NAME": "Driblet",
     "REGISTRATION_SERIALIZER_CLASS": "accounts.serializers.SignupSerializer",
 }

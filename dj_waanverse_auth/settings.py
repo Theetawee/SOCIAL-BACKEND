@@ -71,6 +71,7 @@ class AccountConfig:
         self.DISALLOWED_USERNAMES = settings_dict.get(
             "DISALLOWED_USERNAMES", ["waanverse"]
         )
+
         self.USER_DETAIL_SERIALIZER_CLASS = settings_dict.get(
             "USER_DETAIL_SERIALIZER_CLASS",
             "dj_waanverse_auth.serializers.AccountSerializer",
