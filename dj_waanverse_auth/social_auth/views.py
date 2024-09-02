@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from dj_waanverse_auth.settings import accounts_config
+from dj_waanverse_auth.signals import user_created_via_google
 from dj_waanverse_auth.utils import (
     check_mfa_status,
     generate_tokens,
@@ -20,7 +21,7 @@ from dj_waanverse_auth.utils import (
     set_cookies,
 )
 
-from .utils import get_serializer_fields, get_username
+from .utils import get_username
 
 Account = get_user_model()
 
@@ -114,7 +115,6 @@ class GoogleAuthCallbackView(APIView):
     def authenticate_or_create_user(self, user_info):
         email = user_info.get("email")
         username = get_username(user_info)
-        name = user_info.get("name", "user")
         email_verified = user_info.get("email_verified", False)
         allowed_chars = string.ascii_letters + string.digits + string.punctuation
         password = get_random_string(
@@ -124,8 +124,6 @@ class GoogleAuthCallbackView(APIView):
         CREATION_SERIALIZER = get_serializer(
             accounts_config.REGISTRATION_SERIALIZER_CLASS
         )
-        fields = get_serializer_fields(CREATION_SERIALIZER)
-        print(fields)
         if not email:
             raise AuthenticationFailed("No email associated with Google account")
 
@@ -140,13 +138,16 @@ class GoogleAuthCallbackView(APIView):
                 "username": username,
                 "password1": password,
                 "password2": password,
-                "name": name,
                 "verified": email_verified,
             }
             # Instantiate and validate the serializer
             serializer = CREATION_SERIALIZER(data=user_data)
             if serializer.is_valid():
                 user = serializer.save()
+                user_created_via_google.send(
+                    sender=self.__class__, user=user, user_info=user_info
+                )
+
             else:
                 raise AuthenticationFailed(serializer.errors)
         return user

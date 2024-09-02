@@ -14,10 +14,10 @@ class BasicAccountSerializer(serializers.ModelSerializer):
 
 
 class SignupSerializer(WaanverseSignupSerializer):
-    name = serializers.CharField(required=True)
+    name = serializers.CharField(required=False)
 
     def get_additional_fields(self, validated_data):
-        return {"name": validated_data["name"]}
+        return {"name": validated_data.get("name", "")}
 
 
 class AccountSerializer(serializers.ModelSerializer):

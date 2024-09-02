@@ -4,18 +4,19 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from django.contrib.humanize.templatetags.humanize import naturalday
-from django.db import models
+from django.db import models, transaction
+from django.dispatch import receiver
 from django.urls import reverse
+
+from dj_waanverse_auth.signals import user_created_via_google
 
 
 class AccountManager(BaseUserManager):
-    def create_user(self, email, username, name, password=None, **extra_fields):
+    def create_user(self, email, username, name=None, password=None, **extra_fields):
         if not email:
             raise ValueError("Please enter your email")
         if not username:
             raise ValueError("Please enter your username")
-        if not name:
-            raise ValueError("Please enter your name")
         email = self.normalize_email(email)
         user = self.model(email=email, username=username, name=name, **extra_fields)
 
@@ -23,7 +24,9 @@ class AccountManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, username, email, name, password=None, **extra_fields):
+    def create_superuser(
+        self, username, email, name=None, password=None, **extra_fields
+    ):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
 
@@ -71,7 +74,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
         ("female", "female"),
         ("other", "other"),
     )
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, blank=True, null=True)
     username = models.CharField(max_length=150, unique=True)
     email = models.EmailField(max_length=255, unique=True, verbose_name="Email")
     phone = models.CharField(max_length=12, null=True, blank=True, unique=True)
@@ -80,6 +83,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
     )
     date_of_birth = models.DateField(blank=True, null=True)
     profile_image = models.ImageField(upload_to="profiles/", blank=True, null=True)
+    profile_image_url = models.URLField(blank=True, null=True)
     date_joined = models.DateTimeField(auto_now_add=True, verbose_name="Date joined")
     last_login = models.DateTimeField(auto_now=True, verbose_name="Last login")
     is_active = models.BooleanField(default=True)
@@ -97,7 +101,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
     cover_image_hash = models.CharField(blank=True, null=True, max_length=200)
 
     USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = ["name", "email"]
+    REQUIRED_FIELDS = ["email"]
 
     objects = AccountManager()
 
@@ -105,18 +109,16 @@ class Account(AbstractBaseUser, PermissionsMixin):
         return self.email
 
     def get_full_name(self):
-        return self.name
+        return self.name or self.username
 
     def get_short_name(self):
         return self.username
 
     @property
-    def joined(self):
-        return naturalday(self.date_joined)
-
-    @property
     def image(self):
-        if self.profile_image:
+        if self.profile_image_url:
+            return self.profile_image_url
+        elif self.profile_image:
             url = self.profile_image.url
             return url
 
@@ -134,3 +136,14 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         ordering = ["-id"]
+
+
+@receiver(user_created_via_google, dispatch_uid="handle_user_created_via_google")
+def handle_user_created_via_google(sender, user, user_info, **kwargs):
+    try:
+        with transaction.atomic():
+            user.profile_image_url = user_info.get("picture")
+            user.name = user_info.get("name")
+            user.save(update_fields=["profile_image_url", "name"])
+    except Exception:
+        pass

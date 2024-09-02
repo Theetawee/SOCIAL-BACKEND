@@ -35,16 +35,3 @@ def get_username(user_info):
         counter += 1
 
     return username
-
-
-def get_serializer_fields(serializer_class):
-    """Retrieve the field names from a serializer class.
-
-    Args:
-        serializer_class (serializers.Serializer): The serializer class.
-
-    Returns:
-        list: A list of field names defined in the serializer.
-    """
-    serializer = serializer_class()
-    return list(serializer.fields.keys())

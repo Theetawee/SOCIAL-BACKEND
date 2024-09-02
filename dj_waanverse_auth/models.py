@@ -4,18 +4,20 @@ Custom user model     """
 import secrets
 from datetime import timedelta
 
-from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from .settings import accounts_config
 
-User = get_user_model()
+Account = settings.AUTH_USER_MODEL
 
 
 class MultiFactorAuth(models.Model):
-    account = models.OneToOneField(User, related_name="mfa", on_delete=models.CASCADE)
+    account = models.OneToOneField(
+        Account, related_name="mfa", on_delete=models.CASCADE
+    )
     activated = models.BooleanField(default=False)
     activated_at = models.DateTimeField(null=True, blank=True)
     recovery_codes = models.JSONField(default=list, blank=True)
@@ -36,13 +38,15 @@ class MultiFactorAuth(models.Model):
 
 
 class EmailConfirmationCode(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(Account, on_delete=models.CASCADE)
     code = models.CharField(max_length=6)
     created_at = models.DateTimeField(auto_now=True)
 
     @property
     def is_expired(self):
-        expiration_time = self.created_at + timedelta(minutes=accounts_config.EMAIL_VERIFICATION_CODE_DURATION)
+        expiration_time = self.created_at + timedelta(
+            minutes=accounts_config.EMAIL_VERIFICATION_CODE_DURATION
+        )
         return timezone.now() >= expiration_time
 
     def __str__(self):
@@ -96,7 +100,7 @@ class EmailAddress(models.Model):
     verified = models.BooleanField(default=False)
     primary = models.BooleanField(default=False)
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="email_address"
+        Account, on_delete=models.CASCADE, related_name="email_address"
     )
 
     def __str__(self):

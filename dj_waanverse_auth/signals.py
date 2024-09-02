@@ -1,6 +1,6 @@
 from django.contrib.auth import user_logged_in, user_login_failed
 from django.core.exceptions import ImproperlyConfigured
-from django.dispatch import receiver
+from django.dispatch import Signal, receiver
 
 from .messages import Messages
 from .models import UserLoginActivity
@@ -54,3 +54,7 @@ def log_user_logged_in_failed(sender, credentials, request, **kwargs):
     except Exception:
         # log the error
         pass
+
+
+# Define a custom signal for user creation via Google sign-in
+user_created_via_google = Signal()

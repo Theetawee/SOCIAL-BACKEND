@@ -195,7 +195,6 @@ class SignupSerializer(serializers.Serializer):
 
     def validate(self, data):
         """Validate that the passwords match."""
-        print(data.get("password1", "Password"))
         if data.get("password1") != data.get("password2"):
             raise serializers.ValidationError(Messages.password_mismatch)
         password_res, is_valid = password_validator(data.get("password1"))
@@ -224,8 +223,7 @@ class SignupSerializer(serializers.Serializer):
             else:
                 email_address.verified = True
                 email_address.save()
-        except Exception as e:
-            print(e)
+        except Exception:
             raise serializers.ValidationError({"msg": Messages.user_creation_error})
 
         return user
