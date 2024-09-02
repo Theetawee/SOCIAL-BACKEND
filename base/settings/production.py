@@ -3,9 +3,7 @@
 
 from base.settings.base import *
 
-
-
-# ALLOWED_HOSTS = ["api.waanverse.com", "waanverse.onrender.com"]
+ALLOWED_HOSTS = ["api.alloqet.com"]
 DEBUG = False
 ALLOWED_HOSTS = ["*"]
 
@@ -21,6 +19,7 @@ except Exception:
     PRIVATE_KEY = ""
     PUBLIC_KEY = ""
 
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -35,10 +34,11 @@ DATABASES = {
     }
 }
 
+
 CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": "dodcxvbqu",
-    "API_KEY": "926972112538678",
-    "API_SECRET": os.environ.get("STORAGE_SECRET"),
+    "CLOUD_NAME": os.environ.get("IMAGE_CLOUD_NAME"),
+    "API_KEY": os.environ.get("IMAGE_CLOUD_KEY"),
+    "API_SECRET": os.environ.get("IMAGE_CLOUD_SECRET"),
 }
 
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
@@ -48,13 +48,7 @@ STATIC_URL = "https://theetawee.github.io/social_app_files/"
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-CORS_ALLOWED_ORIGINS = [
-    "https://www.waanverse.com",
-    "https://api.waanverse.com",
-    "https://abs.waanverse.com",
-]
-
-
+CORS_ALLOWED_ORIGINS = ["https://social.alloqet.com"]
 
 
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
@@ -63,11 +57,7 @@ ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
 BACKUP_DIRECTORY = os.path.join(BASE_DIR, "backups/production")
 
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://api.waanverse.com, https://www.waanverse.com",
-    "https://waanverse.com",
-    "https://abs.waanverse.com",
-]
+CSRF_TRUSTED_ORIGINS = ["https://social.alloqet.com"]
 
 
 LOGGING = {
@@ -116,29 +106,6 @@ LOGGING = {
         },
     },
 }
-
-
-SOCIALACCOUNT_PROVIDERS = {
-    "google": {
-        "EMAIL_AUTHENTICATION": True,
-        "APP": {
-            "client_id": "414400776439-npsvquoa24a34ehbgvu3d1ni923rl6jh.apps.googleusercontent.com",
-            "secret": os.environ.get("PROD_GOOGLE_SECRET"),
-            "key": "",
-        },
-        "SCOPE": [
-            "profile",
-            "email",
-        ],
-        "AUTH_PARAMS": {
-            "access_type": "offline",
-        },
-        "FETCH_USERINFO": True,
-    }
-}
-
-EMAIL_VERIFICATION_URL = "https://www.waanverse.com/accounts/"
-
 
 SIMPLE_JWT["SIGNING_KEY"] = PRIVATE_KEY
 SIMPLE_JWT["VERIFYING_KEY"] = PUBLIC_KEY
