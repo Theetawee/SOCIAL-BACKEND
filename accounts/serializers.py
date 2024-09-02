@@ -60,9 +60,7 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
         fields = ["name", "bio", "location", "profile_image"]
 
     def update(self, instance, validated_data):
-        print(validated_data)
         if validated_data.get("profile_image"):
-            print("has image")
             try:
                 with Image.open(validated_data["profile_image"]) as image:
                     image.thumbnail((100, 100))
