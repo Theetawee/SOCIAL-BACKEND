@@ -4,10 +4,3 @@ ssh-keygen -y -f private_key.pem > public_key.pem
 
 Generate SECRET_KEY
 python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
-
-
-Env. variables
-SECRET_KEY
-DJANGO_SETTINGS_MODULE
-DEV_GOOGLE_SECRET
-NEMAIL_PASSWORD

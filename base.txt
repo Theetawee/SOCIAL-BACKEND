@@ -1,0 +1,12 @@
+blurhash-python
+cloudinary
+Django
+django-cloudinary-storage
+django-cors-headers
+django-debug-toolbar
+django-dotenv
+djangorestframework
+djangorestframework-simplejwt
+pillow
+psycopg
+psycopg-binary
