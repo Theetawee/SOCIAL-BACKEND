@@ -107,3 +107,7 @@ CSRF_COOKIE_SECURE = True
 
 
 ADMINS = [("Tawee", "tawee.drake@gmail.com")]
+
+GOOGLE_PROD_CLIENT_ID = os.environ.get("GOOGLE_PROD_CLIENT_ID")
+GOOGLE_PROD_CLIENT_SECRET = os.environ.get("GOOGLE_PROD_CLIENT_SECRET")
+GOOGLE_PROD_REDIRECT_URI = os.environ.get("GOOGLE_PROD_REDIRECT_URI")
