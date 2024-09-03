@@ -10,7 +10,7 @@ from .models import Account
 class BasicAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = ["username", "name", "id", "profile_image", "verified", "profile_image_hash"]
+        fields = ["username", "name", "id", "image", "verified", "profile_image_hash"]
 
 
 class SignupSerializer(WaanverseSignupSerializer):
@@ -30,7 +30,7 @@ class AccountSerializer(serializers.ModelSerializer):
             "username",
             "email",
             "name",
-            "profile_image",
+            "image",
             "verified",
             "profile_image_hash",
             "is_self",
