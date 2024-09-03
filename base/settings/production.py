@@ -58,49 +58,33 @@ BACKUP_DIRECTORY = os.path.join(BASE_DIR, "backups/production")
 
 CSRF_TRUSTED_ORIGINS = ["https://social.alloqet.com"]
 
-
 LOGGING = {
     "version": 1,
-    "disable_existing_loggers": True,
-    # 'disable_existing_loggers': False,
-    "filters": {
-        "require_debug_false": {
-            "()": "django.utils.log.RequireDebugFalse",
-        },
-        "require_debug_true": {
-            "()": "django.utils.log.RequireDebugTrue",
-        },
-    },
+    "disable_existing_loggers": False,
     "formatters": {
-        "django.server": {
-            "()": "django.utils.log.ServerFormatter",
-            "format": "[{server_time}] {message}",
+        "simple": {
+            "format": "[{asctime}] {levelname} {message}",
             "style": "{",
-        }
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
     },
     "handlers": {
         "console": {
-            "level": "INFO",
+            "level": "WARNING",
             "class": "logging.StreamHandler",
+            "formatter": "simple",
         },
-        "django.server": {
-            "level": "INFO",
-            "class": "logging.StreamHandler",
-            "formatter": "django.server",
-        },
-        "mail_admins": {
-            "level": "ERROR",
-            "class": "django.utils.log.AdminEmailHandler",
-        },
+        "mail_admins": {"level": "DEBUG"},
     },
     "loggers": {
         "django": {
             "handlers": ["console", "mail_admins"],
-            "level": "INFO",
+            "level": "WARNING",
+            "propagate": True,
         },
-        "django.server": {
-            "handlers": ["django.server"],
-            "level": "INFO",
+        "django.request": {
+            "handlers": ["mail_admins"],
+            "level": "ERROR",
             "propagate": False,
         },
     },
