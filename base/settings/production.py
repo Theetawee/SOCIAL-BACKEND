@@ -5,7 +5,6 @@ from base.settings.base import *
 
 ALLOWED_HOSTS = ["api.alloqet.com"]
 DEBUG = False
-ALLOWED_HOSTS = ["*"]
 
 try:
     PRIVATE_KEY_PATH = "/etc/secrets/private_key.pem"
@@ -118,3 +117,6 @@ SECURE_HSTS_PRELOAD = True
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+
+
+ADMINS = [("Tawee", "tawee.drake@gmail.com")]
