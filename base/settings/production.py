@@ -57,7 +57,6 @@ BACKUP_DIRECTORY = os.path.join(BASE_DIR, "backups/production")
 
 
 CSRF_TRUSTED_ORIGINS = ["https://social.alloqet.com"]
-
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -74,17 +73,21 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "simple",
         },
-        "mail_admins": {"level": "DEBUG"},
+        "mail_admins": {
+            "level": "INFO",
+            "class": "django.utils.log.AdminEmailHandler",
+            "formatter": "simple",
+        },
     },
     "loggers": {
         "django": {
-            "handlers": ["console", "mail_admins"],
+            "handlers": ["console"],
             "level": "WARNING",
             "propagate": True,
         },
         "django.request": {
             "handlers": ["mail_admins"],
-            "level": "INFO",
+            "level": "ERROR",
             "propagate": False,
         },
     },
