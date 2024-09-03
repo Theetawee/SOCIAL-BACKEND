@@ -2,6 +2,7 @@
 
 
 from base.settings.base import *
+
 ALLOWED_HOSTS = ["api.alloqet.com"]
 DEBUG = False
 ALLOWED_HOSTS = ["*"]
@@ -109,6 +110,7 @@ LOGGING = {
 SIMPLE_JWT["SIGNING_KEY"] = PRIVATE_KEY
 SIMPLE_JWT["VERIFYING_KEY"] = PUBLIC_KEY
 
+REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = ["rest_framework.renderers.JSONRenderer"]
 
 SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
