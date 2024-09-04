@@ -1,7 +1,9 @@
+from django.contrib.humanize.templatetags.humanize import naturalday
 from rest_framework import serializers
 
-from accounts.serializers import BasicAccountSerializer
 from accounts.models import Account
+from accounts.serializers import BasicAccountSerializer
+
 from .models import Post
 
 
@@ -10,6 +12,7 @@ class PostSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField()
     is_liked = serializers.SerializerMethodField()
     likes_count = serializers.SerializerMethodField()
+    pub_date = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
@@ -17,7 +20,7 @@ class PostSerializer(serializers.ModelSerializer):
             "id",
             "content",
             "author",
-            "created_at",
+            "pub_date",
             "updated_at",
             "parent",
             "original_post",
@@ -42,6 +45,9 @@ class PostSerializer(serializers.ModelSerializer):
 
     def get_likes_count(self, obj):
         return len(obj.likes.all())
+
+    def get_pub_date(self, obj):
+        return naturalday(obj.created_at)
 
 
 class CreatePostSerializer(serializers.Serializer):
