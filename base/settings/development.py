@@ -1,11 +1,17 @@
 # flake8: noqa
 
+import cloudinary
+import cloudinary.api
+import cloudinary.uploader
+
+
 from .base import *
 
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
+SITE_URL="http://localhost:8000"
 
 STATIC_URL = "static/"
 
@@ -57,3 +63,10 @@ SIMPLE_JWT["VERIFYING_KEY"] = PUBLIC_KEY
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_DEV_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_DEV_CLIENT_SECRET")
 GOOGLE_REDIRECT_URI = os.environ.get("GOOGLE_DEV_REDIRECT_URI")
+
+
+cloudinary.config(
+    cloud_name=os.environ.get("IMAGE_CLOUD_NAME"),
+    api_key=os.environ.get("IMAGE_CLOUD_KEY"),
+    api_secret=os.environ.get("IMAGE_CLOUD_SECRET"),
+)

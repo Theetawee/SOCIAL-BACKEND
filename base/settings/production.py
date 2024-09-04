@@ -1,6 +1,10 @@
 # flake8: noqa
 
 
+import cloudinary
+import cloudinary.api
+import cloudinary.uploader
+
 from base.settings.base import *
 
 ALLOWED_HOSTS = ["api.alloqet.com"]
@@ -32,6 +36,13 @@ DATABASES = {
         },
     }
 }
+
+
+cloudinary.config(
+    cloud_name=os.environ.get("IMAGE_CLOUD_NAME"),
+    api_key=os.environ.get("IMAGE_CLOUD_KEY"),
+    api_secret=os.environ.get("IMAGE_CLOUD_SECRET"),
+)
 
 
 CLOUDINARY_STORAGE = {

@@ -1,3 +1,4 @@
+from dj_waanverse_auth.signals import user_created_via_google
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -7,8 +8,6 @@ from django.contrib.humanize.templatetags.humanize import naturalday
 from django.db import models, transaction
 from django.dispatch import receiver
 from django.urls import reverse
-
-from dj_waanverse_auth.signals import user_created_via_google
 
 
 class AccountManager(BaseUserManager):
@@ -82,7 +81,6 @@ class Account(AbstractBaseUser, PermissionsMixin):
         max_length=10, blank=True, null=True, choices=GENDER_OPTIONS
     )
     date_of_birth = models.DateField(blank=True, null=True)
-    profile_image = models.ImageField(upload_to="profiles/", blank=True, null=True)
     profile_image_url = models.URLField(blank=True, null=True)
     date_joined = models.DateTimeField(auto_now_add=True, verbose_name="Date joined")
     last_login = models.DateTimeField(auto_now=True, verbose_name="Last login")
@@ -113,17 +111,6 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
     def get_short_name(self):
         return self.username
-
-    @property
-    def image(self):
-        if self.profile_image_url:
-            return self.profile_image_url
-        elif self.profile_image:
-            url = self.profile_image.url
-            return url
-
-        else:
-            return None
 
     def has_perm(self, perm, obj=None):
         return self.is_staff

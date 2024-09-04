@@ -1,5 +1,7 @@
-from rest_framework import generics
+from rest_framework import generics, status
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from accounts.models import Account
 
@@ -42,18 +44,21 @@ class UserDetail(generics.RetrieveAPIView):
 user_detail = UserDetail.as_view()
 
 
-class UpdateProfileView(generics.UpdateAPIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = UpdateProfileSerializer
-    queryset = Account.objects.all()
-    lookup_field = "username"
+@api_view(["PATCH"])
+@permission_classes([IsAuthenticated])
+def update_profile(request):
+    user = request.user
+    try:
+        account = Account.objects.get(username=user.username)
+    except Account.DoesNotExist:
+        return Response(
+            {"detail": "Account not found."}, status=status.HTTP_404_NOT_FOUND
+        )
 
-    def get_object(self):
-        user = self.request.user
-        return Account.objects.get(username=user.username)
-
-    def patch(self, request, *args, **kwargs):
-        return self.partial_update(request, *args, **kwargs)
-
-
-update_profile = UpdateProfileView.as_view()
+    serializer = UpdateProfileSerializer(
+        account, data=request.data, partial=True, context={"request": request}
+    )
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
