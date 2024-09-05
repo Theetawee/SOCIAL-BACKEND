@@ -23,9 +23,13 @@ class BasicAccountSerializer(serializers.ModelSerializer):
 
 class SignupSerializer(WaanverseSignupSerializer):
     name = serializers.CharField(required=False)
+    gender = serializers.CharField(required=False)
 
     def get_additional_fields(self, validated_data):
-        return {"name": validated_data.get("name", "")}
+        return {
+            "name": validated_data.get("name", ""),
+            "gender": validated_data.get("gender", None),
+        }
 
 
 class AccountSerializer(serializers.ModelSerializer):
