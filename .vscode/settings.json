@@ -1,3 +1,3 @@
 {
-    "cSpell.words": ["alloqet", "ASGI", "blurhash", "corsheaders", "dotenv", "keygen", "psycopg", "pyotp", "timespan", "waanie"]
+    "cSpell.words": ["alloqet", "ASGI", "blurhash", "corsheaders", "dotenv", "keygen", "levelname", "PGDATABASE", "PGHOST", "PGPORT", "PGUSER", "psycopg", "pyotp", "timespan", "waanie"]
 }

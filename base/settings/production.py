@@ -58,7 +58,7 @@ STATIC_URL = "https://theetawee.github.io/social_app_files/"
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-CORS_ALLOWED_ORIGINS = ["https://social.alloqet.com"]
+CORS_ALLOWED_ORIGINS = ["https://www.alloqet.com"]
 
 
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
@@ -67,7 +67,7 @@ ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
 BACKUP_DIRECTORY = os.path.join(BASE_DIR, "backups/production")
 
 
-CSRF_TRUSTED_ORIGINS = ["https://social.alloqet.com"]
+CSRF_TRUSTED_ORIGINS = ["https://www.alloqet.com"]
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
