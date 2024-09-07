@@ -159,5 +159,3 @@ WAANVERSE_AUTH = {
 
 ADMIN_ENABLED = os.environ.get("ADMIN_ENABLED", "False").lower() == "true"
 ADMIN_URL = os.environ.get("ADMIN_URL", "admin")
-
-
