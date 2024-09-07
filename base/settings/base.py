@@ -34,11 +34,13 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "django.contrib.sitemaps",
     "dj_waanverse_auth",
+    "django_hosts",
 ]
 
 SITE_ID = 1
 
 MIDDLEWARE = [
+    "django_hosts.middleware.HostsRequestMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -49,8 +51,10 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "dj_waanverse_auth.middleware.CookiesHandlerMiddleware",
+    "django_hosts.middleware.HostsResponseMiddleware",
 ]
-
+ROOT_HOSTCONF = "base.hosts"
+DEFAULT_HOST = "api"
 ROOT_URLCONF = "base.urls"
 
 TEMPLATES = [
@@ -155,3 +159,5 @@ WAANVERSE_AUTH = {
 
 ADMIN_ENABLED = os.environ.get("ADMIN_ENABLED", "False").lower() == "true"
 ADMIN_URL = os.environ.get("ADMIN_URL", "admin")
+
+
