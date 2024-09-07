@@ -97,6 +97,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
     last_location = models.CharField(max_length=255, blank=True, null=True)
     cover_image_url = models.URLField(blank=True, null=True)
     cover_image_hash = models.CharField(blank=True, null=True, max_length=200)
+    google_account = models.BooleanField(default=False)
 
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["email"]
@@ -130,6 +131,7 @@ def handle_user_created_via_google(sender, user, user_info, **kwargs):
     try:
         with transaction.atomic():
             user.profile_image_url = user_info.get("picture")
+            user.google_account = True
             user.name = user_info.get("name")
             user.save(update_fields=["profile_image_url", "name"])
     except Exception:
