@@ -1,4 +1,3 @@
-from dj_waanverse_auth.signals import user_created_via_google
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -8,6 +7,8 @@ from django.contrib.humanize.templatetags.humanize import naturalday
 from django.db import models, transaction
 from django.dispatch import receiver
 from django.urls import reverse
+
+from dj_waanverse_auth.signals import user_created_via_google
 
 
 class AccountManager(BaseUserManager):
@@ -133,6 +134,6 @@ def handle_user_created_via_google(sender, user, user_info, **kwargs):
             user.profile_image_url = user_info.get("picture")
             user.google_account = True
             user.name = user_info.get("name")
-            user.save(update_fields=["profile_image_url", "name"])
+            user.save(update_fields=["profile_image_url", "name", "google_account"])
     except Exception:
         pass
