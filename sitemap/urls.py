@@ -1,9 +1,9 @@
 from django.contrib.sitemaps.views import sitemap
 from django.urls import path
 
-from .views import PostSitemap
+from .views import AccountSitemap, PostSitemap, StaticSitemap
 
-sitemaps = {"posts": PostSitemap}
+sitemaps = {"posts": PostSitemap, "static": StaticSitemap, "accounts": AccountSitemap}
 
 
 urlpatterns = [
