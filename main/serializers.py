@@ -1,4 +1,4 @@
-from django.contrib.humanize.templatetags.humanize import naturalday
+from django.contrib.humanize.templatetags.humanize import naturalday, naturaltime
 from rest_framework import serializers
 
 from accounts.models import Account
@@ -12,7 +12,8 @@ class PostSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField()
     is_liked = serializers.SerializerMethodField()
     likes_count = serializers.SerializerMethodField()
-    pub_date = serializers.SerializerMethodField()
+    natural_time_created = serializers.SerializerMethodField()
+    natural_date_created = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
@@ -20,7 +21,9 @@ class PostSerializer(serializers.ModelSerializer):
             "id",
             "content",
             "author",
-            "pub_date",
+            "natural_time_created",
+            "natural_date_created",
+            "created_at",
             "updated_at",
             "parent",
             "original_post",
@@ -46,8 +49,11 @@ class PostSerializer(serializers.ModelSerializer):
     def get_likes_count(self, obj):
         return len(obj.likes.all())
 
-    def get_pub_date(self, obj):
+    def get_natural_time_created(self, obj):
         return naturalday(obj.created_at)
+
+    def get_natural_date_created(self, obj):
+        return naturaltime(obj.created_at)
 
 
 class CreatePostSerializer(serializers.Serializer):
