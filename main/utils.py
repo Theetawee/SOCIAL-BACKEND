@@ -1,8 +1,9 @@
-import cloudinary.uploader
 import os
-from django.core.files.storage import default_storage
-from django.conf import settings
 from urllib.parse import urljoin
+
+import cloudinary.uploader
+from django.conf import settings
+from django.core.files.storage import default_storage
 
 
 def upload_profile_image(file, username, folder=None, request=None):
@@ -46,4 +47,4 @@ def upload_profile_image(file, username, folder=None, request=None):
             overwrite=True,
             folder=folder,
         )
-        return response["url"]
+        return response["secure_url"]

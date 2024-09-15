@@ -42,6 +42,7 @@ cloudinary.config(
     cloud_name=os.environ.get("IMAGE_CLOUD_NAME"),
     api_key=os.environ.get("IMAGE_CLOUD_KEY"),
     api_secret=os.environ.get("IMAGE_CLOUD_SECRET"),
+    secure=True,
 )
 
 
