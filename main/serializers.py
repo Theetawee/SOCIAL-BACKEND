@@ -7,6 +7,14 @@ from accounts.serializers import BasicAccountSerializer
 from .models import Post
 
 
+class BasicPostSerializer(serializers.ModelSerializer):
+    author = BasicAccountSerializer(read_only=True)
+
+    class Meta:
+        model = Post
+        fields = ["id", "author", "parent"]
+
+
 class PostSerializer(serializers.ModelSerializer):
     author = BasicAccountSerializer(read_only=True)
     comments = serializers.SerializerMethodField()
@@ -14,6 +22,7 @@ class PostSerializer(serializers.ModelSerializer):
     likes_count = serializers.SerializerMethodField()
     natural_time_created = serializers.SerializerMethodField()
     natural_date_created = serializers.SerializerMethodField()
+    parent = BasicPostSerializer()
 
     class Meta:
         model = Post
@@ -40,20 +49,22 @@ class PostSerializer(serializers.ModelSerializer):
 
     def get_is_liked(self, obj):
         # Get the current user from the context
-        user = self.context["request"].user
-        if user.is_anonymous:
-            return False
-        # Check if the user has liked the post
-        return obj.likes.filter(id=user.id).exists()
+        request = self.context.get("request")
+        if request and not request.user.is_anonymous:
+            return obj.likes.filter(id=request.user.id).exists()
+        return False
 
     def get_likes_count(self, obj):
-        return len(obj.likes.all())
+        # Efficiently return the count of likes
+        return obj.likes.count()
 
     def get_natural_time_created(self, obj):
-        return naturalday(obj.created_at)
+        # Return the natural time (e.g., '10 minutes ago')
+        return naturaltime(obj.created_at)
 
     def get_natural_date_created(self, obj):
-        return naturaltime(obj.created_at)
+        # Return the natural day (e.g., 'today', 'yesterday')
+        return naturalday(obj.created_at)
 
 
 class CreatePostSerializer(serializers.Serializer):
