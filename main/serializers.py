@@ -23,6 +23,7 @@ class PostSerializer(serializers.ModelSerializer):
     natural_time_created = serializers.SerializerMethodField()
     natural_date_created = serializers.SerializerMethodField()
     parent = BasicPostSerializer()
+    tagged_accounts = BasicAccountSerializer(many=True)
 
     class Meta:
         model = Post
@@ -41,6 +42,7 @@ class PostSerializer(serializers.ModelSerializer):
             "views",
             "is_liked",
             "likes_count",
+            "tagged_accounts",
         ]
 
     def get_comments(self, obj):
