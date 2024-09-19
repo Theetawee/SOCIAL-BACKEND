@@ -1,7 +1,11 @@
+from django.db.models import Q
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+from accounts.models import Account
+from accounts.serializers import BasicAccountSerializer
 
 from .models import Post
 from .serializers import CreatePostSerializer, PostSerializer
@@ -95,3 +99,30 @@ def register_post_view(request, post_id):
         return Response({"msg": "success"}, status=status.HTTP_200_OK)
     except Exception:
         return Response({"msg": "error"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET"])
+def search_view(request):
+    search_term = request.GET.get("q")
+
+    if search_term:
+        # Search in Post model for content containing the search term
+        post_results = Post.objects.filter(Q(content__icontains=search_term))
+
+        # Search in Account model for username or name containing the search term
+        account_results = Account.objects.filter(
+            Q(username__icontains=search_term) | Q(name__icontains=search_term)
+        )
+
+        # Serialize the results (assume you have PostSerializer and AccountSerializer)
+        post_serializer = PostSerializer(post_results, many=True)
+        account_serializer = BasicAccountSerializer(account_results, many=True)
+
+        return Response(
+            {"posts": post_serializer.data, "accounts": account_serializer.data},
+            status=status.HTTP_200_OK,
+        )
+
+    return Response(
+        {"error": "No search term provided."}, status=status.HTTP_400_BAD_REQUEST
+    )

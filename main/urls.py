@@ -7,6 +7,7 @@ from .views import (
     post_detail,
     post_list,
     register_post_view,
+    search_view,
 )
 
 urlpatterns = [
@@ -17,4 +18,5 @@ urlpatterns = [
     path("posts/<int:pk>/comments", comment_list, name="comment_list"),
     path("posts/action/<str:action>/<int:post_id>", post_action, name="post_action"),
     path("posts/views/<int:post_id>", register_post_view, name="post_view"),
+    path("search", search_view, name="search"),
 ]
