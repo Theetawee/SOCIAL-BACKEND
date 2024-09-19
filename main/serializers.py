@@ -4,7 +4,7 @@ from rest_framework import serializers
 from accounts.models import Account
 from accounts.serializers import BasicAccountSerializer
 
-from .models import Post
+from .models import Feedback, Post
 
 
 class BasicPostSerializer(serializers.ModelSerializer):
@@ -100,3 +100,18 @@ class CreatePostSerializer(serializers.Serializer):
     def save(self, **kwargs):
         validated_data = self.validated_data
         return self.create(validated_data)
+
+
+class FeedbackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Feedback
+        fields = [
+            "id",
+            "rating",
+            "feedback",
+            "created_at",
+        ]
+        read_only_fields = [
+            "id",
+            "created_at",
+        ]

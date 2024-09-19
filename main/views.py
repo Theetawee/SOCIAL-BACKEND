@@ -8,7 +8,7 @@ from accounts.models import Account
 from accounts.serializers import BasicAccountSerializer
 
 from .models import Post
-from .serializers import CreatePostSerializer, PostSerializer
+from .serializers import CreatePostSerializer, FeedbackSerializer, PostSerializer
 
 
 class PostList(generics.ListAPIView):
@@ -126,3 +126,12 @@ def search_view(request):
     return Response(
         {"error": "No search term provided."}, status=status.HTTP_400_BAD_REQUEST
     )
+
+
+@api_view(["POST"])
+def get_feedback(request):
+    serializer = FeedbackSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

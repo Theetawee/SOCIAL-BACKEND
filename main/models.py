@@ -58,3 +58,12 @@ class Follow(models.Model):
 
     def __str__(self):
         return f"{self.follower.username} follows {self.followed.username}"
+
+
+class Feedback(models.Model):
+    rating = models.CharField(max_length=5)
+    feedback = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"feedback-{self.id}"
