@@ -154,6 +154,7 @@ WAANVERSE_AUTH = {
     "AUTO_RESEND_EMAIL": True,
     "REGISTRATION_SERIALIZER_CLASS": "accounts.serializers.SignupSerializer",
     "USE_ADMIN_PANEL": True,
+    "AUTH_METHODS": ["username", "email", "phone_number"],
 }
 
 
