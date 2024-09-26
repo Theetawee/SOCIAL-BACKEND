@@ -147,7 +147,6 @@ class CreatePostSerializer(serializers.Serializer):
             for file in files:
                 try:
                     hash = get_image_hash(file)
-                    file.seek(0)
                     image_url = upload_image(
                         file=file, request=self.context.get("request"), folder="posts"
                     )
@@ -155,11 +154,12 @@ class CreatePostSerializer(serializers.Serializer):
                         post=post, image_url=image_url, image_hash=hash
                     )
                     new_file.save()
-                    return post
                 except Exception:
                     raise serializers.ValidationError(
                         "An error occurred while uploading the image."
                     )
+
+        return post
 
     def save(self, **kwargs):
         validated_data = self.validated_data

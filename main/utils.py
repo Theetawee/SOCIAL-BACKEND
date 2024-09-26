@@ -68,7 +68,7 @@ def upload_image(file, folder=None, request=None):
     """
     # Generate a random unique name using uuid
     unique_name = f"{uuid.uuid4()}_{file.name}"
-
+    file.seek(0)  # Go to the start of the file
     if settings.DEBUG:
         # Save the file locally with the unique name
         file_path = os.path.join(folder, unique_name) if folder else unique_name
@@ -87,6 +87,8 @@ def upload_image(file, folder=None, request=None):
 
         return file_url
     else:
+        file.seek(0)
+
         # Upload the file to Cloudinary with the unique name
         response = cloudinary.uploader.upload(
             file,
