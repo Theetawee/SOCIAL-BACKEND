@@ -145,17 +145,21 @@ class CreatePostSerializer(serializers.Serializer):
         # Handle files and attach them to the post (assuming you have a PostImage model)
         if files:
             for file in files:
-                hash = get_image_hash(file)
-                file.seek(0)
-                image_url = upload_image(
-                    file=file, request=self.context.get("request"), folder="posts"
-                )
-                new_file = ImageMedia.objects.create(
-                    post=post, image_url=image_url, image_hash=hash
-                )
-                new_file.save()
-
-        return post
+                try:
+                    hash = get_image_hash(file)
+                    file.seek(0)
+                    image_url = upload_image(
+                        file=file, request=self.context.get("request"), folder="posts"
+                    )
+                    new_file = ImageMedia.objects.create(
+                        post=post, image_url=image_url, image_hash=hash
+                    )
+                    new_file.save()
+                    return post
+                except Exception:
+                    raise serializers.ValidationError(
+                        "An error occurred while uploading the image."
+                    )
 
     def save(self, **kwargs):
         validated_data = self.validated_data
