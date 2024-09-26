@@ -134,7 +134,6 @@ class CreatePostSerializer(serializers.Serializer):
             tagged_accounts = [tagged_accounts]
         # Extract files from request.FILES (since files are handled separately from validated_data)
         files = validated_data.pop("files", [])
-
         # Create the post
         post = Post.objects.create(author=user, parent=parent, **validated_data)
 
