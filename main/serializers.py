@@ -7,7 +7,7 @@ from accounts.models import Account
 from accounts.serializers import BasicAccountSerializer
 
 from .models import Feedback, ImageMedia, Post
-from .utils import get_image_hash, upload_image
+from .utils import get_image_hash, upload_images
 
 
 class PostImageSerializer(serializers.ModelSerializer):
@@ -144,20 +144,25 @@ class CreatePostSerializer(serializers.Serializer):
 
         # Handle files and attach them to the post (assuming you have a PostImage model)
         if files:
-            for file in files:
-                try:
+            try:
+                # Upload all images concurrently
+                image_urls = upload_images(
+                    files, request=self.context.get("request"), folder="posts"
+                )
+                print(image_urls)
+                for index, file in enumerate(files):
                     hash = get_image_hash(file)
-                    image_url = upload_image(
-                        file=file, request=self.context.get("request"), folder="posts"
-                    )
+                    image_url = image_urls[index]  # Get corresponding image URL
+
+                    # Create and save the image entry in the database
                     new_file = ImageMedia.objects.create(
                         post=post, image_url=image_url, image_hash=hash
                     )
                     new_file.save()
-                except Exception:
-                    raise serializers.ValidationError(
-                        "An error occurred while uploading the image."
-                    )
+            except Exception:
+                raise serializers.ValidationError(
+                    "An error occurred while uploading the images."
+                )
 
         return post
 
