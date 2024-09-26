@@ -1,14 +1,16 @@
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
+
 from accounts.models import Account
 from accounts.serializers import BasicAccountSerializer
 
-from .models import Post
+from .models import ImageMedia, Post
 from .serializers import CreatePostSerializer, FeedbackSerializer, PostSerializer
+from .utils import delete_images_from_cloudinary
 
 
 class PostList(generics.ListAPIView):
@@ -149,9 +151,18 @@ def delete_action(request, post_id):
             status=status.HTTP_403_FORBIDDEN,
         )
 
-    # Delete the post
+    # Get associated images from the ImageMedia model
+    images = ImageMedia.objects.filter(post=post)
+    image_urls = [image.image_url for image in images]
+
+    # Call the function to delete images from Cloudinary concurrently
+    delete_images_from_cloudinary(image_urls)
+
+    # Delete the post and associated images from the database
+    images.delete()
     post.delete()
 
     return Response(
-        {"detail": "Post deleted successfully."}, status=status.HTTP_204_NO_CONTENT
+        {"detail": "Post and associated images deleted successfully."},
+        status=status.HTTP_204_NO_CONTENT,
     )

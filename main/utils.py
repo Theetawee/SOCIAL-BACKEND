@@ -4,7 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import urljoin
 
 import blurhash
-import cloudinary.uploader
+from cloudinary.uploader import destroy, upload
 from django.conf import settings
 from django.core.files.storage import default_storage
 from PIL import Image
@@ -45,7 +45,7 @@ def upload_profile_image(file, username, folder=None, request=None):
 
         return file_url
     else:
-        response = cloudinary.uploader.upload(
+        response = upload(
             file,
             public_id=public_id,
             overwrite=True,
@@ -80,7 +80,7 @@ def upload_single_image(file, folder=None, request=None):
         # Reset the file pointer again for production upload
         file.seek(0)
 
-        response = cloudinary.uploader.upload(
+        response = upload(
             file,
             public_id=f"{folder}/{unique_name}" if folder else unique_name,
             overwrite=False,
@@ -137,3 +137,30 @@ def get_image_hash(image):
     # Generate BlurHash
     hash = blurhash.encode(image, x_components=4, y_components=3)
     return hash
+
+
+def delete_images_from_cloudinary(image_urls):
+    """
+    Delete a list of images from Cloudinary concurrently.
+
+    Args:
+        image_urls (list): List of image URLs to delete.
+
+    Returns:
+        None
+    """
+    if not settings.DEBUG:
+
+        def delete_single_image(image_url):
+            # Extract the public ID from the image URL (assuming standard Cloudinary URL structure)
+            public_id = image_url.split("/")[-1].split(".")[0]
+            try:
+                # Delete the image from Cloudinary using the public ID
+                destroy(public_id)
+            except Exception as e:
+                # Optionally log the error or handle it
+                print(f"Error deleting image {image_url}: {e}")
+
+        # Use ThreadPoolExecutor to delete images concurrently
+        with ThreadPoolExecutor() as executor:
+            executor.map(delete_single_image, image_urls)
