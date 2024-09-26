@@ -35,13 +35,16 @@ class Post(models.Model):
         ordering = ("-created_at",)
 
 
-class Media(models.Model):
+class ImageMedia(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="media")
-    file = models.FileField(upload_to="post_media/")
+    image_url = models.URLField()
     created_at = models.DateTimeField(auto_now_add=True)
+    image_hash = models.CharField(
+        max_length=255
+    )
 
     def __str__(self):
-        return f"Media for {self.post}"
+        return f"Image for {self.post.id}"
 
 
 class Follow(models.Model):

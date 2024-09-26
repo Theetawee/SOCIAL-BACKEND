@@ -1,9 +1,7 @@
-import blurhash
 from dj_waanverse_auth.serializers import SignupSerializer as WaanverseSignupSerializer
-from PIL import Image
 from rest_framework import serializers
 
-from main.utils import upload_profile_image
+from main.utils import get_image_hash, upload_profile_image
 
 from .models import Account
 
@@ -71,17 +69,7 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
             profile_image = validated_data.pop("profile_image")
             if profile_image:
                 try:
-                    # Ensure the file is in the correct format
-                    profile_image.seek(0)  # Go to the start of the file
-
-                    # Open the image file
-                    image = Image.open(profile_image)
-
-                    # Process the image (e.g., creating a thumbnail)
-                    image.thumbnail((100, 100))
-
-                    # Generate BlurHash
-                    hash = blurhash.encode(image, x_components=4, y_components=3)
+                    hash = get_image_hash(profile_image)
                     instance.profile_image_hash = hash
 
                     # Rewind the file pointer before uploading
