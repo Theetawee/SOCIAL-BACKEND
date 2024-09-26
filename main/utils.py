@@ -1,7 +1,7 @@
 import os
 import uuid
-from urllib.parse import urljoin
 from concurrent.futures import ThreadPoolExecutor
+from urllib.parse import urljoin
 
 import blurhash
 import cloudinary.uploader
