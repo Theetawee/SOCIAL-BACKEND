@@ -3,6 +3,7 @@ from django.urls import path
 from .views import (
     comment_list,
     create_post,
+    delete_action,
     get_feedback,
     post_action,
     post_detail,
@@ -21,4 +22,5 @@ urlpatterns = [
     path("posts/views/<int:post_id>", register_post_view, name="post_view"),
     path("search", search_view, name="search"),
     path("feedback", get_feedback, name="feedback"),
+    path("delete/<int:post_id>", delete_action, name="delete_action"),
 ]

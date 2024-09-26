@@ -3,7 +3,7 @@ from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
+from django.shortcuts import get_object_or_404
 from accounts.models import Account
 from accounts.serializers import BasicAccountSerializer
 
@@ -135,3 +135,23 @@ def get_feedback(request):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["DELETE"])
+def delete_action(request, post_id):
+    # Get the post or return a 404 response if not found
+    post = get_object_or_404(Post, id=post_id)
+
+    # Check if the user is the owner of the post
+    if post.author != request.user:
+        return Response(
+            {"detail": "You do not have permission to delete this post."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    # Delete the post
+    post.delete()
+
+    return Response(
+        {"detail": "Post deleted successfully."}, status=status.HTTP_204_NO_CONTENT
+    )
