@@ -146,6 +146,7 @@ class CreatePostSerializer(serializers.Serializer):
         if files:
             for file in files:
                 hash = get_image_hash(file)
+                file.seek(0)
                 image_url = upload_image(
                     file=file, request=self.context.get("request"), folder="posts"
                 )
