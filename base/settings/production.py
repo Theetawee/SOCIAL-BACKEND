@@ -7,7 +7,7 @@ import cloudinary.uploader
 
 from base.settings.base import *
 
-ALLOWED_HOSTS = ["api.alloqet.com", "sitemap.alloqet.com"]
+ALLOWED_HOSTS = ["api.alloqet.com", "sitemap.alloqet.com","localhost"]
 DEBUG = False
 
 try:
