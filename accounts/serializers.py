@@ -7,6 +7,8 @@ from .models import Account
 
 
 class BasicAccountSerializer(serializers.ModelSerializer):
+    is_self = serializers.SerializerMethodField()
+
     class Meta:
         model = Account
         fields = [
@@ -16,6 +18,26 @@ class BasicAccountSerializer(serializers.ModelSerializer):
             "profile_image_url",
             "verified",
             "profile_image_hash",
+            "is_self",
+        ]
+
+    def get_is_self(self, obj):
+        request = self.context.get("request", None)
+        if request and request.user:
+            return obj == request.user
+        return False
+
+
+class AccountSerializer(BasicAccountSerializer):
+    class Meta(BasicAccountSerializer.Meta):
+        model = Account
+        fields = BasicAccountSerializer.Meta.fields + [
+            "email",
+            "cover_image_hash",
+            "cover_image_url",
+            "bio",
+            "location",
+            "date_joined",
         ]
 
 
@@ -28,33 +50,6 @@ class SignupSerializer(WaanverseSignupSerializer):
             "name": validated_data.get("name", ""),
             "gender": validated_data.get("gender", None),
         }
-
-
-class AccountSerializer(serializers.ModelSerializer):
-    is_self = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Account
-        fields = [
-            "username",
-            "email",
-            "name",
-            "profile_image_url",
-            "verified",
-            "profile_image_hash",
-            "is_self",
-            "cover_image_hash",
-            "cover_image_url",
-            "bio",
-            "location",
-            "date_joined",
-        ]
-
-    def get_is_self(self, obj):
-        request = self.context.get("request", None)
-        if request and request.user:
-            return obj == request.user
-        return False
 
 
 class UpdateProfileSerializer(serializers.ModelSerializer):

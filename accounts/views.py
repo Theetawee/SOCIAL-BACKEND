@@ -62,3 +62,13 @@ def update_profile(request):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET"])
+def basic_user_info(request, username):
+    try:
+        user = Account.objects.get(username=username)
+        serializer = BasicAccountSerializer(user, context={"request": request})
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+    except Exception:
+        return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
