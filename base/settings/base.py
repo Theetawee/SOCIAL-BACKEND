@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "django.contrib.sitemaps",
     "dj_waanverse_auth",
     "django_hosts",
+    "prerender"
 ]
 
 SITE_ID = 1
