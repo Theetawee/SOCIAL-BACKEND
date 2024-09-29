@@ -29,7 +29,7 @@ def scrape_view(request):
             if result:
                 # Create or update the scraped content
                 new_content, created = ScrapedContent.objects.update_or_create(
-                    url=url, defaults={"content": result}
+                    url=path, defaults={"content": result}
                 )
                 results.append({"url": url, "content": result})
             else:

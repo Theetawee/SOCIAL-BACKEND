@@ -7,7 +7,13 @@ import cloudinary.uploader
 
 from base.settings.base import *
 
-ALLOWED_HOSTS = ["api.alloqet.com", "sitemap.alloqet.com","localhost"]
+CRAWLING = os.environ.get("CRAWLING", "False").lower() == "true"
+
+
+if CRAWLING:
+    ALLOWED_HOSTS = ["*"]
+else:
+    ALLOWED_HOSTS = ["api.alloqet.com", "sitemap.alloqet.com"]
 DEBUG = False
 
 try:
@@ -69,6 +75,7 @@ BACKUP_DIRECTORY = os.path.join(BASE_DIR, "backups/production")
 
 
 CSRF_TRUSTED_ORIGINS = ["https://www.alloqet.com"]
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -110,12 +117,13 @@ SIMPLE_JWT["VERIFYING_KEY"] = PUBLIC_KEY
 
 REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = ["rest_framework.renderers.JSONRenderer"]
 
-SECURE_HSTS_SECONDS = 31536000
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+if not CRAWLING:
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 
 ADMINS = [("Tawee", "tawee.drake@gmail.com")]
