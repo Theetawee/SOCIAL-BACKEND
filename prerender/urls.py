@@ -1,7 +1,8 @@
 from django.urls import path
 
-from .views import render_scraped_content
+from .views import index, profile_view
 
 urlpatterns = [
-    path("render/<path:url>", render_scraped_content, name="render"),
+    path("", index, name="index"),
+    path("<str:username>", profile_view, name="profile"),
 ]

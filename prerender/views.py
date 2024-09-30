@@ -1,17 +1,26 @@
-from urllib.parse import unquote
+from django.shortcuts import get_object_or_404, render
 
-from django.shortcuts import HttpResponse, get_object_or_404
-from rest_framework.serializers import ModelSerializer
-
-from .models import ScrapedContent
+from accounts.models import Account
+from main.models import Post
 
 
-class HTMLSerializer(ModelSerializer):
-    class Meta:
-        model = ScrapedContent
-        fields = ["content"]
+def index(request):
+    context = {
+        "title": "Alloqet",
+        "description": "Alloqet is an online platform that connects students with qualified local and international experts.",
+    }
+    posts = Post.objects.all()
+    context["posts"] = posts
+    return render(request, "main/index.html", context=context)
 
 
-def render_scraped_content(request, url):
-    content = get_object_or_404(ScrapedContent, url=unquote(url))
-    return HttpResponse(content.content, content_type="text/html")
+def profile_view(request, username):
+    account = get_object_or_404(Account, username=username)
+
+    context = {
+        "title": f"{account.name} (@{account.username}) on Alloqet",
+        "description": "Alloqet is an online platform that connects students with qualified local and international experts.",
+        "account": account,
+    }
+
+    return render(request, "main/profile.html", context=context)

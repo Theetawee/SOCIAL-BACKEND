@@ -35,7 +35,8 @@ INSTALLED_APPS = [
     "django.contrib.sitemaps",
     "dj_waanverse_auth",
     "django_hosts",
-    "prerender"
+    "prerender",
+    "django_cotton",
 ]
 
 SITE_ID = 1
@@ -53,6 +54,7 @@ MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "dj_waanverse_auth.middleware.CookiesHandlerMiddleware",
     "django_hosts.middleware.HostsResponseMiddleware",
+    "base.middleware.PrerenderBotMiddleware",
 ]
 ROOT_HOSTCONF = "base.hosts"
 DEFAULT_HOST = "api"
@@ -62,8 +64,19 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [os.path.join(BASE_DIR, "templates")],
-        "APP_DIRS": True,
+        "APP_DIRS": False,
         "OPTIONS": {
+            "loaders": [
+                (
+                    "django.template.loaders.cached.Loader",
+                    [
+                        "django_cotton.cotton_loader.Loader",
+                        "django.template.loaders.filesystem.Loader",
+                        "django.template.loaders.app_directories.Loader",
+                    ],
+                )
+            ],
+            "builtins": ["django_cotton.templatetags.cotton"],
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
@@ -73,6 +86,7 @@ TEMPLATES = [
         },
     },
 ]
+COTTON_DIR = "components"
 
 WSGI_APPLICATION = "base.wsgi.application"
 
