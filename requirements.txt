@@ -15,6 +15,7 @@ dj_waanverse_auth==0.0.0a3
 Django==5.1.1
 django-cloudinary-storage==0.3.0
 django-cors-headers==4.4.0
+django-cotton==1.1.1
 django-debug-toolbar==4.4.6
 django-dotenv==1.4.2
 django-hosts==6.0
