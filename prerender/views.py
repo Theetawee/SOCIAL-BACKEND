@@ -27,3 +27,12 @@ def profile_view(request, username):
     }
 
     return render(request, "main/profile.html", context=context)
+
+
+def login_view(request):
+    context = {
+        "title": "Login to Alloqet",
+        "description": "Sign in to Alloqet to access your personalized account, connect with others, and explore valuable content. Stay engaged with the latest insights and discussions.",
+        "og_url": "https://alloqet.com/i/login",
+    }
+    return render(request, "main/login.html", context=context)
