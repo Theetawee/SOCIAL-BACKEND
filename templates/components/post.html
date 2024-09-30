@@ -1,0 +1,32 @@
+<article>
+    <header>
+        <a href="{% url 'profile' post.author.username %}">
+            <img width="100" height="100" src="{{ post.author.profile_image_url }}" alt="{{ post.author.username }}'s profile image" />
+            <p>{{ post.author.name }}</p>
+            <p>{{ post.author.username }}</p>
+            {% if post.author.verified %}
+            <p>Verified account</p>
+            {% endif %}
+        </a>
+        <p>Created on: {{ post.created_at|date:"Y-m-d H:i:s" }}</p>
+        <p>Updated on: {{ post.updated_at|date:"Y-m-d H:i:s" }}</p>
+
+        {% if post.tagged_accounts.exists %}
+        <p>
+            Tagged accounts: {% for account in post.tagged_accounts.all %}
+            <a href="https://www.alloqet.com/{{ account.username }}" title="{{ account.name }}"> {{ account.name }} </a>
+            {% if not forloop.last %}, {% endif %} {% endfor %}
+        </p>
+        {% endif %}
+    </header>
+    <a href="https://www.alloqet.com/status/{{ post.id }}">
+        <section>
+            <p>{{ post.content }}</p>
+        </section>
+        <footer>
+            <p>Views: {{ post.views }}</p>
+            <p>Likes: {{ post.likes.count }}</p>
+        </footer>
+    </a>
+</article>
+<hr />
