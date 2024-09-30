@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+{% now 'Y' as year %}
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -39,6 +40,18 @@
         <meta name="theme-color" content="#ffffff" />
     </head>
     <body>
+        <header>
+            <nav>
+                <a href="https://www.alloqet.com" title="Alloqet Home">Home</a>
+                <a href="https://www.alloqet.com/i/login" title="Alloqet Login">Login</a>
+                <a href="https://www.alloqet.com/i/signup" title="Alloqet Signup">Signup</a>
+                <a href="https://www.alloqet.com/search" title="Alloqet Search">Search</a>
+            </nav>
+        </header>
         {{ slot }}
+
+        <footer>
+        <p>Copyright &copy; Alloqet {{year}}, All Rights Reserved</p>
+        </footer>
     </body>
 </html>
