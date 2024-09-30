@@ -60,7 +60,7 @@ CLOUDINARY_STORAGE = {
 
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
-STATIC_URL = "https://theetawee.github.io/driblet-assets/"
+STATIC_URL = "https://theetawee.github.io/ALLOQET_CDN/"
 
 
 CORS_ALLOW_ALL_ORIGINS = True
