@@ -43,7 +43,7 @@ class StaticSitemap(Sitemap):
 
     # Define a list of your custom URLs
     def items(self):
-        return ["/", "/add", "/i/signup", "/i/login"]
+        return ["/", "/i/signup", "/i/login"]
 
     def location(self, item):
         return item
