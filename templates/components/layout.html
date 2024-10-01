@@ -1,7 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-{% now 'Y' as year %}
+    {% now 'Y' as year %}
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -38,20 +38,59 @@
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="theme-color" content="#ffffff" />
+
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "name": "Alloqet",
+                "alternateName": "Alloqet",
+                "url": "{{ home_url }}",
+                "description": "Alloqet is more than just a social network. It's a place where communities thrive and friendships are formed. Connect with like-minded individuals, share your passions, and discover exciting new content on Alloqet",
+                "inLanguage": "en",
+                "keywords": "Alloqet, knowledge sharing, community, discussions, experts, social platform",
+                "creator": {
+                    "@type": "Organization",
+                    "name": "Waanverse Labs Inc.",
+                    "url": "https://www.waanverse.com",
+                    "logo": "{% static 'images/waanverse-logo.png'%}"
+                },
+                "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": {
+                        "@type": "EntryPoint",
+                        "urlTemplate": "{{ search_url }}?q={search_term_string}"
+                    },
+                    "query-input": "required name=search_term_string"
+                },
+                "mainEntityOfPage": {
+                    "@type": "WebPage",
+                    "@id": "{{ home_url }}"
+                },
+                "publisher": {
+                    "@type": "Organization",
+                    "name": "Waanverse Labs Inc.",
+                    "logo": {
+                        "@type": "ImageObject",
+                        "url": "{% static 'images/waanverse-logo.png'%}"
+                    }
+                }
+            }
+        </script>
     </head>
     <body>
         <header>
             <nav>
                 <a href="https://www.alloqet.com" title="Alloqet Home">Home</a>
                 <a href="https://www.alloqet.com/i/login" title="Alloqet Login">Login</a>
-                <a href="https://www.alloqet.com/i/signup" title="Alloqet Signup">Signup</a>
+                <a href="https://www.alloqet.com/i/signup" title="Alloqet Signup">Create account</a>
                 <a href="https://www.alloqet.com/search" title="Alloqet Search">Search</a>
             </nav>
         </header>
         {{ slot }}
 
         <footer>
-        <p>Copyright &copy; Alloqet {{year}}, All Rights Reserved</p>
+            <p>Copyright &copy; Alloqet {{year}}, All Rights Reserved</p>
         </footer>
     </body>
 </html>
