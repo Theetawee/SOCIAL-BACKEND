@@ -1,7 +1,9 @@
+
+
 <article>
     <header>
-        <a href="{% url 'profile' post.author.username %}">
-            <img width="100" height="100" src="{{ post.author.profile_image_url }}" alt="{{ post.author.username }}'s profile image" />
+        <a href="https://www.alloqet.com/{{post.author.username}}">
+            <img width="100" height="100" src="{{ post.author.get_image }}" alt="{{ post.author.username }}'s profile image" />
             <p>{{ post.author.name }}</p>
             <p>{{ post.author.username }}</p>
             {% if post.author.verified %}

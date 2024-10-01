@@ -1,3 +1,4 @@
+from dj_waanverse_auth.signals import user_created_via_google
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -6,9 +7,8 @@ from django.contrib.auth.models import (
 from django.contrib.humanize.templatetags.humanize import naturalday
 from django.db import models, transaction
 from django.dispatch import receiver
+from django.templatetags.static import static
 from django.urls import reverse
-
-from dj_waanverse_auth.signals import user_created_via_google
 
 
 class AccountManager(BaseUserManager):
@@ -119,6 +119,12 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
     def has_module_perms(self, app_label):
         return True
+
+    def get_image(self):
+        if self.profile_image_url:
+            return self.profile_image_url
+        else:
+            return static("images/default.webp")
 
     def get_absolute_url(self):
         return reverse("account", kwargs={"username": self.username})

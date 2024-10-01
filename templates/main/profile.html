@@ -1,5 +1,59 @@
 <c-layout>
+    <c-slot name="head">
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "ProfilePage",
+                "url": "{{ request.build_absolute_uri }}",
+                "dateCreated": "{{ account.date_joined|date:"c" }}",
+                "dateModified": "{{ account.last_login|date:"c" }}",
+                "mainEntity": {
+                    "@type": "Person",
+                    "name": "{{ account.name }}",
+                    "alternateName": "{{ account.username }}",
+                    "identifier": "{{ account.username }}",
+                    "description": "{% if account.bio %}{{ account.bio }}{% else %}{{ account.name }} on Alloqet{% endif %}",
+                    "image": "{{ account.get_image }}",
+                    "url": "https://www.alloqet.com/{{account.username}}",
+                    "interactionStatistic": [
+                        {
+                            "@type": "InteractionCounter",
+                            "interactionType": "https://schema.org/FollowAction",
+                            "userInteractionCount": 0
+                        },
+                        {
+                            "@type": "InteractionCounter",
+                            "interactionType": "https://schema.org/LikeAction",
+                            "userInteractionCount": 0
+                        },
+                        {
+                            "@type": "InteractionCounter",
+                            "interactionType": "https://schema.org/WriteAction",
+                            "userInteractionCount": 0
+                        }
+                    ]
+                }
+            }
+        </script>
+    </c-slot>
 
-<h1>{{account.name}}</h1>
+    <!-- Profile Section -->
+    <img width="200" height="200" src="{{ account.get_image }}" alt="{{ account.name }}'s Profile image" />
+    <h1>{{ account.name }}</h1>
+    {% if account.verified %} <span>Verified account</span> {% endif %}
+    <p>@{{ account.username }}</p>
+    <p>Joined Alloqet on {{ account.date_joined|date:"F j, Y" }}</p>
 
+    <!-- About Section -->
+    <h2>About {{ account.name }}</h2>
+    {% if account.bio %}
+    <p>{{ account.bio }}</p>
+    {% else %}
+    <p>{{ account.name }} is an active member on Alloqet, where they contribute valuable insights and engage with the community.</p>
+    {% endif %}
+
+    <!-- Interaction Stats -->
+    <button>Follow</button>
+    <p>Followers: 0</p>
+    <p>Friends: 0</p>
 </c-layout>

@@ -23,7 +23,7 @@ def profile_view(request, username):
         "title": f"{account.name} (@{account.username}) on Alloqet",
         "description": f"Discover valuable insights, expertise, and contributions from {account.name} (@{account.username}) on Alloqet. Connect, learn, and engage with their latest posts and activities.",
         "account": account,
-        "og_image": account.profile_image_url,
+        "og_image": account.get_image,
         "og_url": f"https://alloqet.com/{account.username}",
     }
 
