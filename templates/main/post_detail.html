@@ -19,6 +19,16 @@
         <section>
             <h1>{{ post.content }}</h1>
         </section>
+
+        {% if post.media.all %}
+        <section>
+            {% for image in post.media.all %}
+            <img src="{{image.image_url}}" width="200" height="100" alt="Post image" />
+
+            {% endfor %}
+        </section>
+
+        {%endif %}
         <h2>Comments</h2>
 
         {% if post.replies.exists %} {% for post in post.replies.all %}

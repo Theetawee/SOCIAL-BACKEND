@@ -22,5 +22,14 @@
             <p>Likes: {{ post.likes.count }}</p>
         </footer>
     </a>
+
+    {% if post.media.all %}
+        {% for image in post.media.all %}
+        <img src="{{image.image_url}}" width="200" height="100" alt="Post image">
+
+        {% endfor %}
+
+        {%endif %}
+        
 </article>
 <hr />
