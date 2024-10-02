@@ -1,22 +1,82 @@
+{% load prerender%}
+
 <c-layout>
+    <c-slot name="head">
+        <!-- Search Engine Structured Data for SEO -->
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "WebPage",
+                "name": "{{title}}",
+                "description": "{{description}}",
+                "url": "{% render_url 'pre_signup' %}",
+                "potentialAction": {
+                    "@type": "RegisterAction",
+                    "target": "{% render_url 'pre_signup' %}",
+                    "name": "Create account"
+                }
+            }
+        </script>
+    </c-slot>
+
     <form method="post">
         <header>
-            <h1>Create your Alloqet account today</h1>
+            <h1>Join Alloqet Today</h1>
+            <p>
+                By signing up for Alloqet, you agree to our
+                <a href="https://www.waanverse.com/policies/user-agreement/" target="_blank" rel="noopener noreferrer"> User Agreement </a>.
+            </p>
         </header>
+
         <section>
-            <label for="id_login_field">Username, email or phone number</label>
-            <input type="text" name="login_field" id="id_login_field" aria-label="Username, email or phone" />
+            <label for="id_name">Name</label>
+            <input type="text" name="name" id="id_name" aria-label="Full Name" required />
         </section>
 
         <section>
-            <label for="id_password">Password</label>
-            <input type="password" name="password" id="id_password" aria-label="Password" />
+            <label for="id_gender">Gender</label>
+            <div>
+                <label>
+                    <input type="radio" name="gender" value="male" aria-label="Male" required />
+                    Male
+                </label>
+                <label>
+                    <input type="radio" name="gender" value="female" aria-label="Female" required />
+                    Female
+                </label>
+                <label>
+                    <input type="radio" name="gender" value="other" aria-label="Other" required />
+                    Other
+                </label>
+            </div>
         </section>
+
         <section>
-        <p>Don't have an account? <a href="{{ signup_url }}">Signup</a></p>
+            <label for="id_email">Email Address</label>
+            <input type="email" name="email" id="id_email" aria-label="Email Address" required />
         </section>
+
         <section>
-            <button type="submit" aria-label="Log in">Log in</button>
+            <label for="id_username">Username</label>
+            <input type="text" name="username" id="id_username" aria-label="Username" required />
+        </section>
+
+        <section>
+            <label for="id_password1">Password</label>
+            <input type="password" name="password1" id="id_password1" aria-label="Password" required />
+        </section>
+
+        <section>
+            <label for="id_password2">Confirm Password</label>
+            <input type="password" name="password2" id="id_password2" aria-label="Confirm Password" required />
+        </section>
+
+        <section>
+            <p>Already have an account? <a href="{% render_url 'pre_login' %}">Log in</a></p>
+        </section>
+
+        <section>
+            <button type="submit" aria-label="Sign Up">Sign Up</button>
         </section>
     </form>
 </c-layout>
