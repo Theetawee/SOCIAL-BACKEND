@@ -99,5 +99,6 @@ def search_view(request):
         "title": title,
         "description": description,
         "results": results,
+        "og_url": "https://alloqet.com/search",
     }
     return render(request, "main/search.html", context=context)

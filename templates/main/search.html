@@ -20,7 +20,7 @@
         <input type="search" value="{{request.GET.q}}" name="q" id="id_search" placeholder="Search Alloqet" aria-label="Search Alloqet" />
         <button type="submit" aria-label="Submit search">Search</button>
     </form>
-
+{% if request.GET.q %}
     {% if results %} {% if accounts %}
     <h2>Accounts</h2>
     <ul>
@@ -43,5 +43,6 @@
     <p>No posts found matching your query.</p>
     {% endif %} {% else %}
     <p>No results found for your query '{{ request.GET.q }}'.</p>
+    {% endif %}
     {% endif %}
 </c-layout>
