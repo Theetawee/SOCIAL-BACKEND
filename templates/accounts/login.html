@@ -1,0 +1,22 @@
+<c-layout>
+    <form method="post">
+        <header>
+            <h1>Welcome back to Alloqet</h1>
+        </header>
+        <section>
+            <label for="id_login_field">Username, email or phone number</label>
+            <input type="text" name="login_field" id="id_login_field" aria-label="Username, email or phone" />
+        </section>
+
+        <section>
+            <label for="id_password">Password</label>
+            <input type="password" name="password" id="id_password" aria-label="Password" />
+        </section>
+        <section>
+        <p>Don't have an account? <a href="{{ signup_url }}">Signup</a></p>
+        </section>
+        <section>
+            <button type="submit" aria-label="Log in">Log in</button>
+        </section>
+    </form>
+</c-layout>

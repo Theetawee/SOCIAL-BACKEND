@@ -1,0 +1,47 @@
+<c-layout>
+    {% load prerender %}
+    <c-slot name="head">
+        <script type="application/ld+json">
+            {
+                "@context": "http://schema.org",
+                "@type": "WebSite",
+                "url": "{% render_url 'pre_home' %}",
+                "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": "{% render_url 'pre_search' %}?q={search_term_string}",
+                    "query-input": "required name=search_term_string"
+                }
+            }
+        </script>
+    </c-slot>
+
+    <br />
+    <form action="{% url 'pre_search' %}" method="get">
+        <input type="search" value="{{request.GET.q}}" name="q" id="id_search" placeholder="Search Alloqet" aria-label="Search Alloqet" />
+        <button type="submit" aria-label="Submit search">Search</button>
+    </form>
+
+    {% if results %} {% if accounts %}
+    <h2>Accounts</h2>
+    <ul>
+        {% for account in accounts %}
+        <c-account-card username="{{ account.username }}" name="{{ account.name }}" profile_image_url="{{ account.profile_image_url }}" bio="{{ account.bio }}" />
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No accounts found matching your query.</p>
+    {% endif %} {% if posts %}
+    <h2>Posts</h2>
+    <ul>
+        {% for post in posts %}
+        <li>
+            <c-post />
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No posts found matching your query.</p>
+    {% endif %} {% else %}
+    <p>No results found for your query '{{ request.GET.q }}'.</p>
+    {% endif %}
+</c-layout>

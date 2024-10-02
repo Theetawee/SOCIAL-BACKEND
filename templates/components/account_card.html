@@ -1,0 +1,12 @@
+{% load prerender%}
+
+<section style="border: 1px solid black">
+    <a href="{% render_url 'pre_profile' account.username %}">
+        <img width="100" height="100" src="{{ account.get_image }}" alt="{{ account.username }}'s profile image" />
+        <p>{{ account.name }}</p>
+        <p>{{ account.username }}</p>
+        {% if account.verified %}
+        <p>Verified account</p>
+        {% endif %}
+    </a>
+</section>

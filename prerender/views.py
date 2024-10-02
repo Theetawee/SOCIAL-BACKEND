@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
 from django.template.defaultfilters import truncatechars
 
@@ -47,8 +48,48 @@ def post_detail_view(request, post_id):
 
 def login_view(request):
     context = {
-        "title": "Login to Alloqet",
+        "title": "Login | Alloqet",
         "description": "Sign in to Alloqet to access your personalized account, connect with others, and explore valuable content. Stay engaged with the latest insights and discussions.",
         "og_url": "https://alloqet.com/i/login",
     }
-    return render(request, "main/login.html", context=context)
+    return render(request, "accounts/login.html", context=context)
+
+
+def signup_view(request):
+    context = {
+        "title": "Join Alloqet - Your Hub for Social Learning & Discovery",
+        "description": "Create your Alloqet account today and start engaging with a vibrant community. Learn, share, and connect with experts and friends on our innovative social platform.",
+    }
+    return render(request, "main/signup.html", context=context)
+
+
+def search_view(request):
+    query = request.GET.get("q")
+    posts = accounts = None
+    results = False
+
+    if query:
+        # Search posts by content and accounts by name or username
+        posts = Post.objects.filter(
+            Q(content__icontains=query) | Q(author__username__icontains=query)
+        )[:5]
+        accounts = Account.objects.filter(
+            Q(name__icontains=query)
+            | Q(username__icontains=query)
+            | Q(bio__icontains=query)
+        )[:5]
+    if posts or accounts:
+        results = True
+    # Set title and description based on the search query
+    title = f"Search results for '{query}' on Alloqet" if query else "Search on Alloqet"
+    description = f"Explore posts and accounts matching '{query}' on Alloqet, the platform for learning, sharing, and connecting with a vibrant community."
+
+    context = {
+        "query": query,
+        "posts": posts,
+        "accounts": accounts,
+        "title": title,
+        "description": description,
+        "results": results,
+    }
+    return render(request, "main/search.html", context=context)

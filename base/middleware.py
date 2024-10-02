@@ -1,5 +1,5 @@
-from django.conf import settings
-from django.http import Http404
+# from django.conf import settings
+# from django.http import Http404
 
 from .bots import BOT_USER_AGENTS
 
@@ -15,7 +15,8 @@ class PrerenderBotMiddleware:
 
     def __call__(self, request):
         if "/prerender" in request.path:
-            user_agent = request.META.get("HTTP_USER_AGENT", "")
+            pass
+            # user_agent = request.META.get("HTTP_USER_AGENT", "")
             # if not settings.DEBUG:
             #     if not self.is_bot(user_agent):
             #         raise Http404("Page not found.")

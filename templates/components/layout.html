@@ -1,4 +1,4 @@
-{% load static %}
+{% load static prerender %}
 <!DOCTYPE html>
 <html lang="en">
     {% now 'Y' as year %}
@@ -18,7 +18,7 @@
         <meta property="og:type" content="{{ type|default:'website' }}" />
         <meta property="og:title" content="{{ title }}" />
         <meta property="og:description" content="{{ description }}" />
-        <meta property="og:url" content="{{ og_url }}" />
+        <meta property="og:url" content="{% render_url request.resolver_match.url_name %}" />
         <meta property="og:image" content="{% if og_image %}{{ og_image }}{% else %}{% static 'images/og_image.png' %}{% endif %}" />
         <meta property="og:site_name" content="Alloqet" />
         <meta property="og:locale" content="en_US" />
@@ -32,7 +32,7 @@
         <meta name="twitter:creator" content="@waanverse" />
 
         <!-- Canonical URL -->
-        <link rel="canonical" href="{{ og_url }}" />
+        <link rel="canonical" href="{% render_url request.resolver_match.url_name %}" />
 
         <!-- Additional SEO Tags -->
         <meta property="og:image:width" content="1200" />
@@ -59,13 +59,13 @@
                     "@type": "SearchAction",
                     "target": {
                         "@type": "EntryPoint",
-                        "urlTemplate": "{{ search_url }}?q={search_term_string}"
+                        "urlTemplate": "{% render_url 'pre_search' %}?q={search_term_string}"
                     },
                     "query-input": "required name=search_term_string"
                 },
                 "mainEntityOfPage": {
                     "@type": "WebPage",
-                    "@id": "{{ home_url }}"
+                    "@id": "{% render_url 'pre_home' %}"
                 },
                 "publisher": {
                     "@type": "Organization",
@@ -82,10 +82,10 @@
     <body>
         <header>
             <nav>
-                <a href="https://www.alloqet.com" title="Alloqet Home">Home</a>
-                <a href="https://www.alloqet.com/i/login" title="Alloqet Login">Login</a>
-                <a href="https://www.alloqet.com/i/signup" title="Alloqet Signup">Create account</a>
-                <a href="https://www.alloqet.com/search" title="Alloqet Search">Search</a>
+                <a href="{% render_url 'pre_home' %}" title="Alloqet Home">Home</a>
+                <a href="{% render_url 'pre_login' %}" title="Alloqet Login">Login</a>
+                <a href="{% render_url 'pre_signup' %}" title="Alloqet Signup">Create account</a>
+                <a href="{% render_url 'pre_search' %}" title="Alloqet Search">Search</a>
             </nav>
         </header>
         {{ slot }}
