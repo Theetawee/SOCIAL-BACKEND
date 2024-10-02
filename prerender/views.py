@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
 from django.template.defaultfilters import truncatechars
@@ -7,13 +8,20 @@ from main.models import Post
 
 
 def index(request):
+    posts_list = Post.objects.all()
+    paginator = Paginator(posts_list, 10)  # Show 10 posts per page
+
+    page_number = request.GET.get(
+        "page"
+    )  # Get the current page number from the request
+    posts = paginator.get_page(page_number)  # Get the posts for that page
+
     context = {
         "title": "Alloqet: Your Social Network, Reimagined",
-        "description": "Alloqet is more than just a social network. It's a place where communities thrive and friendships are formed. Connect with like-minded individuals, share your passions, and discover exciting new content on Alloqet",
+        "description": "Alloqet is more than just a social network. It's a place where communities thrive and friendships are formed. Connect with like-minded individuals, share your passions, and discover exciting new content on Alloqet.",
         "og_url": "https://alloqet.com",
+        "posts": posts,
     }
-    posts = Post.objects.all()
-    context["posts"] = posts
     return render(request, "main/index.html", context=context)
 
 
