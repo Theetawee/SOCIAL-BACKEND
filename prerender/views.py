@@ -68,7 +68,7 @@ def signup_view(request):
         "title": "Join Alloqet - Your Hub for Social Learning & Discovery",
         "description": "Create your Alloqet account today and start engaging with a vibrant community. Learn, share, and connect with experts and friends on our innovative social platform.",
     }
-    return render(request, "main/signup.html", context=context)
+    return render(request, "accounts/signup.html", context=context)
 
 
 def search_view(request):
