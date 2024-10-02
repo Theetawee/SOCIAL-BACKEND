@@ -8,7 +8,7 @@ from main.models import Post
 
 
 def index(request):
-    posts_list = Post.objects.all()
+    posts_list = Post.objects.filter(parent=None)
     paginator = Paginator(posts_list, 10)  # Show 10 posts per page
 
     page_number = request.GET.get(
