@@ -5,6 +5,7 @@ from .views import (
     create_post,
     delete_action,
     get_feedback,
+    ping,
     post_action,
     post_detail,
     post_list,
@@ -13,6 +14,7 @@ from .views import (
 )
 
 urlpatterns = [
+    path("ping", ping, name="ping"),
     path("posts/", post_list, name="post_list"),
     path("posts/create", create_post, name="create_post"),
     path("posts/comment/<int:post_id>", create_post, name="create_post_comment"),

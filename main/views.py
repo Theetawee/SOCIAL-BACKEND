@@ -13,6 +13,11 @@ from .serializers import CreatePostSerializer, FeedbackSerializer, PostSerialize
 from .utils import delete_images_from_cloudinary
 
 
+@api_view(["GET"])
+def ping(request):
+    return Response({"msg": "pong"}, status=status.HTTP_200_OK)
+
+
 class PostList(generics.ListAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
