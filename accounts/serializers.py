@@ -19,6 +19,7 @@ class BasicAccountSerializer(serializers.ModelSerializer):
             "verified",
             "profile_image_hash",
             "is_self",
+            "verified_company",
         ]
 
     def get_is_self(self, obj):

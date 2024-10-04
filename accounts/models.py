@@ -89,6 +89,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     bio = models.TextField(blank=True, null=True)
     verified = models.BooleanField(default=False)
+    verified_company = models.BooleanField(default=False)
     location = models.CharField(max_length=20, blank=True, null=True)
     badges = models.ManyToManyField(Badge, blank=True)
     profile_image_hash = models.CharField(
