@@ -55,10 +55,11 @@ class SignupSerializer(WaanverseSignupSerializer):
 
 class UpdateProfileSerializer(serializers.ModelSerializer):
     profile_image = serializers.ImageField(write_only=True, required=False)
+    cover_image = serializers.ImageField(write_only=True, required=False)
 
     class Meta:
         model = Account
-        fields = ["name", "bio", "location", "profile_image"]
+        fields = ["name", "bio", "location", "profile_image", "cover_image"]
 
     def update(self, instance, validated_data):
         if "profile_image" in validated_data:
@@ -74,14 +75,33 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
                     # Upload the image to Cloudinary
                     url = upload_profile_image(
                         file=profile_image,
-                        username=instance.username,
+                        file_name=instance.username,
                         folder="profiles",
                         request=self.context.get("request"),
                     )
                     instance.profile_image_url = url
                 except Exception as e:
                     print(f"Error processing image: {e}")
+        if "cover_image" in validated_data:
+            cover_image = validated_data.pop("cover_image")
+            if cover_image:
+                try:
+                    hash = get_image_hash(cover_image)
+                    instance.cover_image_hash = hash
 
+                    # Rewind the file pointer before uploading
+                    cover_image.seek(0)
+
+                    # Upload the image to Cloudinary
+                    url = upload_profile_image(
+                        file=cover_image,
+                        file_name=f"cover_{instance.username}",
+                        folder="covers",
+                        request=self.context.get("request"),
+                    )
+                    instance.cover_image_url = url
+                except Exception as e:
+                    print(f"Error processing image: {e}")
         # Update other fields
         for attr, value in validated_data.items():
             setattr(instance, attr, value)

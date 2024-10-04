@@ -10,25 +10,25 @@ from django.core.files.storage import default_storage
 from PIL import Image
 
 
-def upload_profile_image(file, username, folder=None, request=None):
+def upload_profile_image(file, file_name, folder=None, request=None):
     """
     Upload image to Cloudinary in production, or handle locally in development.
-    Always name the image after the username and overwrite if it exists.
+    Always name the image after the file_name and overwrite if it exists.
 
     Args:
         file (_file_): The file to upload.
-        username (str): The username to use as the image name.
+        file_name (str): The file_name to use as the image name.
         folder (str, optional): The folder to upload the image to in Cloudinary.
         request (HttpRequest, optional): The request object to build absolute URLs.
 
     Returns:
         url: str
     """
-    # Construct the public ID using the folder and username
-    public_id = f"{folder}/{username}" if folder else username
+    # Construct the public ID using the folder and file_name
+    public_id = f"{folder}/{file_name}" if folder else file_name
 
     if settings.DEBUG:
-        file_name = f"{username}_{file.name}"
+        file_name = f"{file_name}_{file.name}"
         file_path = os.path.join(folder, file_name) if folder else file_name
 
         # Save the file locally
