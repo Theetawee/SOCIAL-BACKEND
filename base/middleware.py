@@ -2,10 +2,12 @@ from django.http import Http404
 
 from .bots import BOT_USER_AGENTS
 
+from django.http import Http404
+
 
 class PrerenderBotMiddleware:
     def __init__(self, get_response):
-        self.BOT_USER_AGENTS = BOT_USER_AGENTS
+        self.BOT_USER_AGENTS = BOT_USER_AGENTS  # List of bot user agents
         self.get_response = get_response
 
     def is_bot(self, user_agent):
@@ -20,8 +22,12 @@ class PrerenderBotMiddleware:
             if request.user.is_authenticated and request.user.is_staff:
                 return self.get_response(request)
 
-            # If in DEBUG mode, restrict access for non-bots
-            if not self.is_bot(user_agent):
-                raise Http404("Page not found.")
+            # If it's a bot, allow access
+            if self.is_bot(user_agent):
+                return self.get_response(request)
 
+            # For everyone else, raise 404
+            raise Http404("Page not found.")
+
+        # Proceed with normal request processing
         return self.get_response(request)
