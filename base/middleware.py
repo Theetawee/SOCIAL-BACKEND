@@ -17,7 +17,6 @@ class PrerenderBotMiddleware:
     def __call__(self, request):
         if "/prerender" in request.path:
             user_agent = request.META.get("HTTP_USER_AGENT", "").lower()
-            print(user_agent)
             # Allow access if user is authenticated and staff
             if request.user.is_authenticated and request.user.is_staff:
                 return self.get_response(request)
