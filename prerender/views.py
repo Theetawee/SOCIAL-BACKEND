@@ -27,10 +27,12 @@ def index(request):
 
 def profile_view(request, username):
     account = get_object_or_404(Account, username=username)
-
+    desc = f"Discover valuable insights, expertise, and contributions from {account.name} (@{account.username}) on Alloqet. Connect, learn, and engage with their latest posts and activities."
+    if account.bio and account.bio.strip():
+        desc = account.bio.strip()
     context = {
         "title": f"{account.name} (@{account.username}) on Alloqet",
-        "description": f"Discover valuable insights, expertise, and contributions from {account.name} (@{account.username}) on Alloqet. Connect, learn, and engage with their latest posts and activities.",
+        "description": desc,
         "account": account,
         "og_image": account.get_image,
         "og_url": f"https://alloqet.com/{account.username}",
