@@ -55,6 +55,7 @@ MIDDLEWARE = [
     "dj_waanverse_auth.middleware.CookiesHandlerMiddleware",
     "django_hosts.middleware.HostsResponseMiddleware",
     "base.middleware.PrerenderBotMiddleware",
+    "base.middleware.MinifyHTMLMiddleware",
 ]
 ROOT_HOSTCONF = "base.hosts"
 DEFAULT_HOST = "api"

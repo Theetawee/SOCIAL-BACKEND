@@ -1,22 +1,96 @@
 <c-layout>
+    {% load static prerender %}
+    <c-slot name="head">
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "name": "Alloqet",
+                "alternateName": "Alloqet",
+                "url": "{% render_url 'pre_home' %}",
+                "description": "Alloqet is more than just a social network. It's a place where communities thrive and friendships are formed. Connect with like-minded individuals, share your passions, and discover exciting new content on Alloqet",
+                "inLanguage": "en",
+                "keywords": "Alloqet, knowledge sharing, community, discussions, experts, social platform",
+                "creator": {
+                    "@type": "Organization",
+                    "name": "Waanverse Labs Inc.",
+                    "url": "https://www.waanverse.com",
+                    "logo": "{% static 'images/waanverse-logo.png'%}"
+                },
+                "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": {
+                        "@type": "EntryPoint",
+                        "urlTemplate": "{% render_url 'pre_search' %}?q={search_term_string}"
+                    },
+                    "query-input": "required name=search_term_string"
+                },
+                "mainEntityOfPage": {
+                    "@type": "WebPage",
+                    "@id": "{% render_url 'pre_home' %}"
+                },
+                "publisher": {
+                    "@type": "Organization",
+                    "name": "Waanverse Labs Inc.",
+                    "logo": {
+                        "@type": "ImageObject",
+                        "url": "{% static 'images/waanverse-logo.png'%}"
+                    }
+                }
+            }
+        </script>
+
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "url": "{% render_url 'pre_home' %}",
+                "name": "Alloqet",
+                "description": "Alloqet is a social network reimagined, where users can connect, share stories, and exchange knowledge, learning something new every minute.",
+                "publisher": {
+                    "@type": "Organization",
+                    "name": "Waanverse Labs",
+                    "logo": {
+                        "@type": "ImageObject",
+                        "url": "{% static 'images/waanverse-logo.png' %}",
+                        "width": 512,
+                        "height": 512
+                    }
+                },
+                "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": "{% render_url 'pre_search' %}?query={search_term_string}",
+                    "query-input": "required name=search_term_string"
+                },
+                "mainEntityOfPage": {
+                    "@type": "WebPage",
+                    "@id": "{% render_url 'pre_home' %}"
+                }
+            }
+        </script>
+    </c-slot>
+
+    <h1>Alloqet: Your Social Network Reimagined</h1>
+    <p>Welcome to Alloqet, the innovative social platform designed for seamless connections, meaningful interactions, and knowledge sharing. Discover a reimagined way to connect with friends, share your stories, and build your online community effortlessly. Whether you're here to share insights or learn something new, Alloqet ensures that every moment spent on the platform adds value to your knowledge and social experience.</p>
+
+    <!-- Posts Section -->
+    <h2>Posts</h2>
     {% for post in posts %}
-
     <c-post />
-
     {% endfor %}
 
     <div class="pagination">
         <span class="step-links">
             {% if posts.has_previous %}
-            <a href="?page=1">&laquo; first</a>
-            <a href="?page={{ posts.previous_page_number }}">previous</a>
+            <a href="?page=1">&laquo; First</a>
+            <a href="?page={{ posts.previous_page_number }}">Previous</a>
             {% endif %}
 
-            <span class="current"> Page {{ posts.number }} of {{ posts.paginator.num_pages }}. </span>
+            <span class="current">Page {{ posts.number }} of {{ posts.paginator.num_pages }}.</span>
 
             {% if posts.has_next %}
-            <a href="?page={{ posts.next_page_number }}">next</a>
-            <a href="?page={{ posts.paginator.num_pages }}">last &raquo;</a>
+            <a href="?page={{ posts.next_page_number }}">Next</a>
+            <a href="?page={{ posts.paginator.num_pages }}">Last &raquo;</a>
             {% endif %}
         </span>
     </div>

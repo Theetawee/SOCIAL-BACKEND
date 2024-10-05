@@ -38,50 +38,11 @@
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="theme-color" content="#ffffff" />
-
-        <script type="application/ld+json">
-            {
-                "@context": "https://schema.org",
-                "@type": "WebSite",
-                "name": "Alloqet",
-                "alternateName": "Alloqet",
-                "url": "{{ home_url }}",
-                "description": "Alloqet is more than just a social network. It's a place where communities thrive and friendships are formed. Connect with like-minded individuals, share your passions, and discover exciting new content on Alloqet",
-                "inLanguage": "en",
-                "keywords": "Alloqet, knowledge sharing, community, discussions, experts, social platform",
-                "creator": {
-                    "@type": "Organization",
-                    "name": "Waanverse Labs Inc.",
-                    "url": "https://www.waanverse.com",
-                    "logo": "{% static 'images/waanverse-logo.png'%}"
-                },
-                "potentialAction": {
-                    "@type": "SearchAction",
-                    "target": {
-                        "@type": "EntryPoint",
-                        "urlTemplate": "{% render_url 'pre_search' %}?q={search_term_string}"
-                    },
-                    "query-input": "required name=search_term_string"
-                },
-                "mainEntityOfPage": {
-                    "@type": "WebPage",
-                    "@id": "{% render_url 'pre_home' %}"
-                },
-                "publisher": {
-                    "@type": "Organization",
-                    "name": "Waanverse Labs Inc.",
-                    "logo": {
-                        "@type": "ImageObject",
-                        "url": "{% static 'images/waanverse-logo.png'%}"
-                    }
-                }
-            }
-        </script>
         {{head}}
     </head>
     <body>
         <header>
-            <nav>
+            <nav style="display: flex;align-items: center;gap: 1rem;flex-wrap: wrap;">
                 <a href="{% render_url 'pre_home' %}" title="Alloqet Home">Home</a>
                 <a href="{% render_url 'pre_login' %}" title="Alloqet Login">Login</a>
                 <a href="{% render_url 'pre_signup' %}" title="Alloqet Signup">Create account</a>

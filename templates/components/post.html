@@ -2,8 +2,8 @@
 <article>
     <header>
         <c-account-card :account="post.author" />
-        <p>Created on: {{ post.created_at|date:"Y-m-d H:i:s" }}</p>
-        <p>Updated on: {{ post.updated_at|date:"Y-m-d H:i:s" }}</p>
+        <p>Published on: {{ post.created_at }}</p>
+        <p>Last updated on: {{ post.updated_at }}</p>
 
         {% if post.tagged_accounts.exists %}
         <p>
