@@ -39,6 +39,8 @@ class AccountSerializer(BasicAccountSerializer):
             "bio",
             "location",
             "date_joined",
+            "website",
+            "tagline",
         ]
 
 
@@ -59,7 +61,15 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Account
-        fields = ["name", "bio", "location", "profile_image", "cover_image"]
+        fields = [
+            "name",
+            "bio",
+            "location",
+            "profile_image",
+            "cover_image",
+            "website",
+            "tagline",
+        ]
 
     def update(self, instance, validated_data):
         if "profile_image" in validated_data:

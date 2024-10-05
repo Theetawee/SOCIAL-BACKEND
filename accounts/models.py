@@ -87,6 +87,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
     last_login = models.DateTimeField(auto_now=True, verbose_name="Last login")
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    tagline = models.CharField(max_length=255, blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
     verified = models.BooleanField(default=False)
     verified_company = models.BooleanField(default=False)
@@ -100,6 +101,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
     cover_image_url = models.URLField(blank=True, null=True)
     cover_image_hash = models.CharField(blank=True, null=True, max_length=200)
     google_account = models.BooleanField(default=False)
+    website = models.URLField(blank=True, null=True)
 
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["email"]
