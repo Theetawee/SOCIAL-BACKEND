@@ -11,6 +11,7 @@ from .views import (
     post_list,
     register_post_view,
     search_view,
+    set_reaction,
 )
 
 urlpatterns = [
@@ -25,4 +26,5 @@ urlpatterns = [
     path("search", search_view, name="search"),
     path("feedback", get_feedback, name="feedback"),
     path("delete/<int:post_id>", delete_action, name="delete_action"),
+    path("post/react/<int:post_id>", set_reaction, name="set_reaction"),
 ]

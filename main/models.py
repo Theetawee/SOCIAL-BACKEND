@@ -35,13 +35,33 @@ class Post(models.Model):
         ordering = ("-created_at",)
 
 
+class Reaction(models.Model):
+    REACTION_CHOICES = [
+        ("anger", "Anger"),
+        ("laughing", "Laughing"),
+        ("sad", "Sad"),
+        ("disbelief", "Disbelief"),
+        ("love", "Love"),
+        ("thumbs-up", "ThumbsUp"),
+        ("thumbs-down", "ThumbsDown"),
+    ]
+
+    post = models.ForeignKey(Post, related_name="reactions", on_delete=models.CASCADE)
+    user = models.ForeignKey(Account, on_delete=models.CASCADE)
+    emoji = models.CharField(max_length=50, choices=REACTION_CHOICES)
+
+    def __str__(self):
+        return f"Post: {self.post.id} {self.user.username} reacted with {self.emoji}"
+
+    class Meta:
+        unique_together = ("post", "user", "emoji")  # Prevent duplicate reactions
+
+
 class ImageMedia(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="media")
     image_url = models.URLField()
     created_at = models.DateTimeField(auto_now_add=True)
-    image_hash = models.CharField(
-        max_length=255
-    )
+    image_hash = models.CharField(max_length=255)
 
     def __str__(self):
         return f"Image for {self.post.id}"

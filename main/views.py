@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from accounts.models import Account
 from accounts.serializers import BasicAccountSerializer
 
-from .models import ImageMedia, Post
+from .models import ImageMedia, Post, Reaction
 from .serializers import CreatePostSerializer, FeedbackSerializer, PostSerializer
 from .utils import delete_images_from_cloudinary
 
@@ -171,3 +171,35 @@ def delete_action(request, post_id):
         {"detail": "Post and associated images deleted successfully."},
         status=status.HTTP_204_NO_CONTENT,
     )
+
+
+@api_view(["POST"])
+def set_reaction(request, post_id):
+    user = request.user
+    emoji_name = request.data.get("emoji_name")
+
+    if not emoji_name:
+        return Response(
+            {"error": "Emoji name is required."}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        post = Post.objects.get(id=post_id)
+    except Post.DoesNotExist:
+        return Response({"error": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        # Check if the user already has a reaction on the post and remove it
+        Reaction.objects.filter(user=user, post=post).delete()
+
+        # Create a new reaction with the provided emoji
+        new_reaction = Reaction.objects.create(user=user, post=post, emoji=emoji_name)
+        new_reaction.save()
+        total_reactions = Reaction.objects.filter(post=post, emoji=emoji_name).count()
+        return Response(data=total_reactions, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response(
+            {"error": "Failed to update reaction.", "details": str(e)},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
