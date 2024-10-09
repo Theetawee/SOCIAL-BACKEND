@@ -103,10 +103,9 @@ class PostSerializer(serializers.ModelSerializer):
             "anger": 0,
             "laughing": 0,
             "sad": 0,
-            "disbelief": 0,
-            "love": 0,
+            "hundred": 0,
             "thumbs-up": 0,
-            "thumbs-down": 0,
+            "hot": 0,
         }
 
         # Query the reactions for this post

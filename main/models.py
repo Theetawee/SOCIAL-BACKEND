@@ -40,10 +40,9 @@ class Reaction(models.Model):
         ("anger", "Anger"),
         ("laughing", "Laughing"),
         ("sad", "Sad"),
-        ("disbelief", "Disbelief"),
-        ("love", "Love"),
         ("thumbs-up", "ThumbsUp"),
-        ("thumbs-down", "ThumbsDown"),
+        ("hot", "Hot"),
+        ("hundred", "hundred"),
     ]
 
     post = models.ForeignKey(Post, related_name="reactions", on_delete=models.CASCADE)
