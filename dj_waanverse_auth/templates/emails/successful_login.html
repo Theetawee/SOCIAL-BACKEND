@@ -1,0 +1,20 @@
+{% extends 'emails/base.html' %} {% load waanverse_tags %} {% block content %}
+<div>
+    <p>Hello {{ name|default:'there' }},</p>
+
+    <p>Your security is very important to us. We have noticed a successful login into your account on {{PLATFORM_NAME}}.</p>
+
+    <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0" />
+
+    <p><strong>Account:</strong> @{{ username }} ({{ email }})</p>
+    <p><strong>Time:</strong> {{ time }}</p>
+    <p><strong>IP Address:</strong> {{ ip_address }}</p>
+    <p><strong>Device info:</strong> {{ user_agent|device_info }}</p>
+
+    <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0" />
+
+    <p style="margin-bottom: 20px">If this was you, you can ignore this alert. If you notice any suspicious activity, please change your password and enable two-factor authentication. If you have any questions or require assistance, feel free to contact our support team.</p>
+
+    
+</div>
+{% endblock %}
