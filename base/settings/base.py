@@ -29,7 +29,6 @@ INSTALLED_APPS = [
     "corsheaders",
     "accounts",
     "main",
-    "cloudinary_storage",
     "cloudinary",
     "debug_toolbar",
     "django.contrib.sitemaps",
