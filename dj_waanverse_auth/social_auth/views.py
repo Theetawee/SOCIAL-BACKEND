@@ -59,44 +59,32 @@ class GoogleAuthCallbackView(APIView):
 
     def post(self, request):
         code = request.data.get("code")
-        if not code:
+        credential = request.data.get("credential")
+        print("here calling")
+        if credential:
+            print("here")
+            # Handle Google One Tap login
+            try:
+                user_info = self.verify_google_credential(credential)
+            except AuthenticationFailed as e:
+                return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        elif code:
+            # Handle Google OAuth2 code flow
+            user_info = self.exchange_code_for_user_info(code)
+        else:
             return Response(
-                {"error": "Authorization code not provided"},
+                {"error": "Authorization code or credential not provided"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-        token_url = "https://oauth2.googleapis.com/token"
-        token_data = {
-            "code": code,
-            "client_id": settings.GOOGLE_CLIENT_ID,
-            "client_secret": settings.GOOGLE_CLIENT_SECRET,
-            "redirect_uri": settings.GOOGLE_REDIRECT_URI,
-            "grant_type": "authorization_code",
-        }
-
-        token_response = requests.post(token_url, data=token_data)
-        token_response_data = token_response.json()
-
-        if "error" in token_response_data:
-            raise AuthenticationFailed(
-                f"Failed to obtain access token: {token_response_data['error_description']}"
-            )
-
-        access_token = token_response_data.get("access_token")
-        # Get user information
-        user_info_url = "https://www.googleapis.com/oauth2/v1/userinfo"
-        user_info_params = {"access_token": access_token}
-        user_info_response = requests.get(user_info_url, params=user_info_params)
-        user_info = user_info_response.json()
-        USER_CLAIM_SERIALIZER = get_serializer(
-            accounts_config.USER_CLAIM_SERIALIZER_CLASS
-        )
 
         # Implement user authentication or creation
         user = self.authenticate_or_create_user(user_info)
         mfa_status = check_mfa_status(user)
         email_verification_status = get_email_verification_status(user)
-        if email_verification_status is False:
+        USER_CLAIM_SERIALIZER = get_serializer(
+            accounts_config.USER_CLAIM_SERIALIZER_CLASS
+        )
+        if not email_verification_status:
             if accounts_config.AUTO_RESEND_EMAIL and self.is_created is False:
                 handle_email_verification(user)
 
@@ -106,8 +94,9 @@ class GoogleAuthCallbackView(APIView):
                 "code": "email_unverified",
             }
             return Response(response_data, status=status.HTTP_200_OK)
+
         if mfa_status:
-            pass
+            pass  # MFA handling can be added here
         else:
             tokens = generate_tokens(user)
             response = Response(
@@ -127,6 +116,59 @@ class GoogleAuthCallbackView(APIView):
 
         return new_response
 
+    def exchange_code_for_user_info(self, code):
+        token_url = "https://oauth2.googleapis.com/token"
+        token_data = {
+            "code": code,
+            "client_id": settings.GOOGLE_CLIENT_ID,
+            "client_secret": settings.GOOGLE_CLIENT_SECRET,
+            "redirect_uri": settings.GOOGLE_REDIRECT_URI,
+            "grant_type": "authorization_code",
+        }
+
+        token_response = requests.post(token_url, data=token_data)
+        token_response_data = token_response.json()
+
+        if "error" in token_response_data:
+            raise AuthenticationFailed(
+                f"Failed to obtain access token: {token_response_data.get('error_description', 'Unknown error')}"
+            )
+
+        access_token = token_response_data.get("access_token")
+
+        # Get user information
+        user_info_url = "https://www.googleapis.com/oauth2/v1/userinfo"
+        user_info_params = {"access_token": access_token}
+        user_info_response = requests.get(user_info_url, params=user_info_params)
+        user_info = user_info_response.json()
+
+        if "error" in user_info:
+            raise AuthenticationFailed("Failed to fetch user info from Google")
+
+        return user_info
+
+    def verify_google_credential(self, credential):
+        # Verify the Google ID token (One Tap credential) by sending it to Google's endpoint
+        verify_url = "https://oauth2.googleapis.com/tokeninfo"
+        response = requests.get(verify_url, params={"id_token": credential})
+        response_data = response.json()
+
+        if "error" in response_data:
+            raise AuthenticationFailed(
+                f"Invalid credential: {response_data.get('error_description', 'Unknown error')}"
+            )
+
+        # You can also check if the token audience matches your client ID
+        if response_data.get("aud") != settings.GOOGLE_CLIENT_ID:
+            raise AuthenticationFailed("Token audience mismatch")
+
+        return {
+            "email": response_data.get("email"),
+            "verified_email": response_data.get("email_verified"),
+            "name": response_data.get("name"),
+            "picture": response_data.get("picture"),
+        }
+
     def authenticate_or_create_user(self, user_info):
         email = user_info.get("email")
         username = get_username(user_info)
@@ -139,6 +181,7 @@ class GoogleAuthCallbackView(APIView):
         CREATION_SERIALIZER = get_serializer(
             accounts_config.REGISTRATION_SERIALIZER_CLASS
         )
+
         if not email:
             raise AuthenticationFailed("No email associated with Google account")
 
@@ -161,7 +204,7 @@ class GoogleAuthCallbackView(APIView):
                 user_created_via_google.send(
                     sender=self.__class__, user=user, user_info=user_info
                 )
-
             else:
                 raise AuthenticationFailed(serializer.errors)
+
         return user
