@@ -92,7 +92,9 @@ class Account(AbstractBaseUser, PermissionsMixin):
     verified = models.BooleanField(default=False)
     verified_company = models.BooleanField(default=False)
     location = models.CharField(max_length=20, blank=True, null=True)
-    badges = models.ManyToManyField(Badge, blank=True)
+    badges = models.ManyToManyField(
+        "Badge", blank=True
+    )  # Assuming Badge is defined elsewhere
     profile_image_hash = models.CharField(
         max_length=255, default="LTL55tj[~qof?bfQIUj[j[fQM{ay"
     )
@@ -132,8 +134,54 @@ class Account(AbstractBaseUser, PermissionsMixin):
     def get_absolute_url(self):
         return reverse("account", kwargs={"username": self.username})
 
+    def follow(self, user):
+        """Follow a user."""
+        if not self.is_following(user):
+            if user != self:
+                Follow.objects.create(follower=self, following=user)
+
+    def unfollow(self, user):
+        """Unfollow a user."""
+        Follow.objects.filter(follower=self, following=user).delete()
+
+    def is_following(self, user):
+        """Check if the user is following another user."""
+        return Follow.objects.filter(follower=self, following=user).exists()
+
+    def get_following(self):
+        """Get the list of users this user is following."""
+        return Account.objects.filter(
+            accounts_followers__follower=self
+        )  # Updated related_name
+
+    def get_followers(self):
+        """Get the list of accounts following this account."""
+        return Account.objects.filter(
+            accounts_following__following=self
+        )  # Updated related_name
+
     class Meta:
         ordering = ["-id"]
+
+
+class Follow(models.Model):
+    follower = models.ForeignKey(
+        Account,
+        related_name="accounts_following",  # Changed to avoid conflict with main app
+        on_delete=models.CASCADE,
+    )
+    following = models.ForeignKey(
+        Account,
+        related_name="accounts_followers",  # Changed to avoid conflict with main app
+        on_delete=models.CASCADE,
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("follower", "following")
+
+    def __str__(self):
+        return f"{self.follower} follows {self.following}"
 
 
 @receiver(user_created_via_google, dispatch_uid="handle_user_created_via_google")
