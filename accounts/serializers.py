@@ -1,4 +1,5 @@
-from dj_waanverse_auth.serializers import SignupSerializer as WaanverseSignupSerializer
+from dj_waanverse_auth.serializers import \
+    SignupSerializer as WaanverseSignupSerializer
 from rest_framework import serializers
 
 from main.utils import get_image_hash, upload_profile_image
@@ -9,6 +10,8 @@ from .models import Account
 class BasicAccountSerializer(serializers.ModelSerializer):
     is_self = serializers.SerializerMethodField()
     is_following_account = serializers.SerializerMethodField()
+    followers = serializers.SerializerMethodField()
+    following = serializers.SerializerMethodField()
 
     class Meta:
         model = Account
@@ -22,6 +25,8 @@ class BasicAccountSerializer(serializers.ModelSerializer):
             "is_self",
             "verified_company",
             "is_following_account",
+            "followers",
+            "following",
         ]
 
     def get_is_self(self, obj):
@@ -36,6 +41,12 @@ class BasicAccountSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated:
             return request.user.is_following(obj) if isinstance(obj, Account) else False
         return False
+
+    def get_followers(self, obj):
+        return obj.get_followers().count()
+
+    def get_following(self, obj):
+        return obj.get_following().count()
 
 
 class AccountSerializer(BasicAccountSerializer):
