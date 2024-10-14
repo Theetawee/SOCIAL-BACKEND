@@ -6,8 +6,11 @@ from rest_framework.response import Response
 
 from accounts.models import Account
 
-from .serializers import (AccountSerializer, BasicAccountSerializer,
-                          UpdateProfileSerializer)
+from .serializers import (
+    AccountSerializer,
+    BasicAccountSerializer,
+    UpdateProfileSerializer,
+)
 
 
 class UserList(generics.ListAPIView):
@@ -96,3 +99,27 @@ def user_account_action(request, action, username):
         return Response(data={"action": action}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET"])
+def account_interactions(request, interaction_type, username):
+    user_account = get_object_or_404(Account, username=username)
+
+    if interaction_type not in ["following", "followers"]:
+        return Response({"error": "Invalid type"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        if interaction_type == "following":
+            accounts = user_account.get_following()
+        elif interaction_type == "followers":
+            accounts = user_account.get_followers()
+
+        serializer = BasicAccountSerializer(
+            accounts, many=True, context={"request": request}
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    except Exception:
+        return Response(
+            {"error": "Something went wrong"}, status=status.HTTP_400_BAD_REQUEST
+        )

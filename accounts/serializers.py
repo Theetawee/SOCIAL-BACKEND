@@ -1,5 +1,4 @@
-from dj_waanverse_auth.serializers import \
-    SignupSerializer as WaanverseSignupSerializer
+from dj_waanverse_auth.serializers import SignupSerializer as WaanverseSignupSerializer
 from rest_framework import serializers
 
 from main.utils import get_image_hash, upload_profile_image
@@ -27,6 +26,7 @@ class BasicAccountSerializer(serializers.ModelSerializer):
             "is_following_account",
             "followers",
             "following",
+            "tagline",
         ]
 
     def get_is_self(self, obj):
@@ -60,7 +60,6 @@ class AccountSerializer(BasicAccountSerializer):
             "location",
             "date_joined",
             "website",
-            "tagline",
         ]
 
 
