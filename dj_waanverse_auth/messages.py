@@ -72,7 +72,7 @@ class Messages(MessagesSchema):
     mfa_login_success = _("MFA login was successful.")
     invalid_account = _("The provided account details are invalid. Please try again.")
     password_reset_code_sent = _(
-        "A password reset code has been sent to your email address."
+        "A password reset code has been sent to your email address if an account associated to it is present."
     )
     password_reset_successful = _("Your password has been reset successfully.")
     already_authenticated = _("You are already authenticated.")
@@ -111,5 +111,7 @@ class Messages(MessagesSchema):
     expired_code = _("The provided code has expired. Please try again.")
     username_exists = _("An account with this username already exists.")
 
-    email_not_found = _("The provided email address was not found. Please try again.")
+    email_not_found = _(
+        "A password reset code has been sent to your email address if an account associated to it is present."
+    )
     password_reset_complete_email_subject = _("Password Reset Successful")
