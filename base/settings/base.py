@@ -172,6 +172,7 @@ WAANVERSE_AUTH = {
     "REGISTRATION_SERIALIZER_CLASS": "accounts.serializers.SignupSerializer",
     "USE_ADMIN_PANEL": True,
     "AUTH_METHODS": ["username", "email", "phone_number"],
+    "PASSWORD_RESET_COOLDOWN_PERIOD": 5,
 }
 
 

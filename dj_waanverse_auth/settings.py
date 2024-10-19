@@ -23,15 +23,14 @@ class AccountConfigSchema(TypedDict, total=False):
     DISALLOWED_USERNAMES: List[str]
     USER_DETAIL_SERIALIZER_CLASS: str
     ENABLE_EMAIL_ON_LOGIN: bool
-    CONFIRMATION_CODE_DIGITS: int
+    CONFIRMATION_CODE_LENGTH: int
     PLATFORM_NAME: str
     EMAIL_VERIFICATION_CODE_DURATION: int
     MFA_ISSUER_NAME: str
     MFA_CODE_DIGITS: int
     MFA_EMAIL_ALERTS_ENABLED: bool
     PASSWORD_RESET_CODE_DURATION: timedelta
-    PASSWORD_RESET_COOLDOWN_PERIOD: timedelta
-    PASSWORD_RESET_MAX_ATTEMPTS: int
+    PASSWORD_RESET_COOLDOWN_PERIOD: int  # minutes
     EMAIL_THREADING_ENABLED: bool
     USE_ADMIN_PANEL: bool
     USE_UNFOLD: bool
@@ -77,7 +76,7 @@ class AccountConfig:
             "dj_waanverse_auth.serializers.AccountSerializer",
         )
         self.ENABLE_EMAIL_ON_LOGIN = settings_dict.get("ENABLE_EMAIL_ON_LOGIN", True)
-        self.CONFIRMATION_CODE_DIGITS = settings_dict.get("CONFIRMATION_CODE_DIGITS", 6)
+        self.CONFIRMATION_CODE_LENGTH = settings_dict.get("CONFIRMATION_CODE_LENGTH", 6)
         self.PLATFORM_NAME = settings_dict.get("PLATFORM_NAME", "Waanverse Auth")
         self.EMAIL_VERIFICATION_CODE_DURATION = settings_dict.get(
             "EMAIL_VERIFICATION_CODE_DURATION", 10
@@ -93,10 +92,7 @@ class AccountConfig:
             "PASSWORD_RESET_CODE_DURATION", timedelta(minutes=10)
         )
         self.PASSWORD_RESET_COOLDOWN_PERIOD = settings_dict.get(
-            "PASSWORD_RESET_COOLDOWN_PERIOD", timedelta(minutes=5)
-        )
-        self.PASSWORD_RESET_MAX_ATTEMPTS = settings_dict.get(
-            "PASSWORD_RESET_MAX_ATTEMPTS", 1
+            "PASSWORD_RESET_COOLDOWN_PERIOD", 5
         )
         self.EMAIL_THREADING_ENABLED = settings_dict.get(
             "EMAIL_THREADING_ENABLED", True

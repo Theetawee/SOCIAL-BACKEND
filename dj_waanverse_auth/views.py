@@ -461,7 +461,6 @@ def reset_password(request):
         return Response(
             {
                 "msg": Messages.password_reset_code_sent,
-                "attempts": reset_code.attempts,
                 "email": reset_code.email,
             },
             status=status.HTTP_200_OK,

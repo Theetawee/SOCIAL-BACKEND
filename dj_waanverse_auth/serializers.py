@@ -15,18 +15,11 @@ from dj_waanverse_auth.messages import Messages
 
 from .models import EmailConfirmationCode, MultiFactorAuth, ResetPasswordCode
 from .settings import accounts_config
-from .utils import (
-    check_mfa_status,
-    generate_password_reset_code,
-    generate_tokens,
-    get_client_ip,
-    get_email_verification_status,
-    get_user_agent,
-    handle_email_mechanism,
-    handle_email_verification,
-    handle_user_login,
-    user_email_address,
-)
+from .utils import (check_mfa_status, generate_password_reset_code,
+                    generate_tokens, get_client_ip,
+                    get_email_verification_status, get_user_agent,
+                    handle_email_mechanism, handle_email_verification,
+                    handle_user_login, user_email_address)
 from .validators import password_validator
 from .validators import validate_username as username_validator
 
@@ -274,13 +267,12 @@ class ResetPasswordSerializer(serializers.Serializer):
 
     def validate_email(self, email):
         if not Account.objects.filter(email=email).exists():
-            raise serializers.ValidationError({"msg": Messages.general_msg})
+            raise serializers.ValidationError(Messages.email_not_found)
         return email
 
     def save(self, **kwargs):
         email = self.validated_data["email"]
         code = generate_password_reset_code()
-        attempt_count = 1
 
         try:
             # Get the most recent reset code entry
@@ -288,30 +280,20 @@ class ResetPasswordSerializer(serializers.Serializer):
                 "created_at"
             )
             if last_reset_code.is_expired:
-                last_reset_code.delete()  # Delete expired code
+                last_reset_code.delete()
             else:
-                if (
-                    last_reset_code.attempts
-                    >= accounts_config.PASSWORD_RESET_MAX_ATTEMPTS
-                ):
-                    if last_reset_code.cooldown_remaining > timedelta(seconds=0):
-                        raise serializers.ValidationError(
-                            {"msg": Messages.attempts_limit}
-                        )
-                    else:
-                        # If cooldown period is over, reset attempts
-                        attempt_count = last_reset_code.attempts + 1
-                        last_reset_code.delete()  # Delete old code
+                if last_reset_code.cooldown_remaining > timedelta(seconds=0):
+                    raise serializers.ValidationError(
+                        {"msg": Messages.password_reset_attempts_limit}
+                    )
                 else:
-                    attempt_count = last_reset_code.attempts + 1
+                    # If cooldown period is over, reset attempts
                     last_reset_code.delete()  # Delete old code
 
         except ResetPasswordCode.DoesNotExist:
-            # No previous reset code found, so start with the first attempt
-            attempt_count = 1
-
+            pass
         # Create and save a new reset code
-        reset_code = ResetPasswordCode(email=email, code=code, attempts=attempt_count)
+        reset_code = ResetPasswordCode(email=email, code=code)
         reset_code.save()
 
         # Send the email with the new reset code
@@ -350,7 +332,7 @@ class VerifyResetPasswordSerializer(serializers.Serializer):
         # Check if the code has expired
         if reset_code.is_expired:
             reset_code.delete()
-            raise serializers.ValidationError({"msg": Messages.invalid_code})
+            raise serializers.ValidationError({"msg": Messages.expired_code})
 
         return data
 
@@ -370,6 +352,13 @@ class VerifyResetPasswordSerializer(serializers.Serializer):
         ResetPasswordCode.objects.filter(
             email=email, code=self.validated_data["code"]
         ).delete()
+        email_context = {}
+        handle_email_mechanism(
+            context=email_context,
+            email=email,
+            template="password_reset_complete",
+            subject=Messages.password_reset_complete_email_subject,
+        )
 
         return user
 

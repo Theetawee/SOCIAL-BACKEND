@@ -45,6 +45,7 @@
         "slackbot",
         "telegrambot",
         "timespan",
+        "totp",
         "twitterbot",
         "vkshare",
         "waanie",

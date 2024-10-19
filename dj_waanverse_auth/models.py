@@ -65,9 +65,8 @@ class UserLoginActivity(models.Model):
 
 class ResetPasswordCode(models.Model):
     email = models.EmailField(max_length=255, unique=True, db_index=True)
-    code = models.CharField(max_length=6)
+    code = models.CharField(max_length=accounts_config.CONFIRMATION_CODE_LENGTH)
     created_at = models.DateTimeField(auto_now_add=True)
-    attempts = models.IntegerField(default=0)
 
     @property
     def is_expired(self):
@@ -77,8 +76,8 @@ class ResetPasswordCode(models.Model):
     @property
     def cooldown_remaining(self):
         # Calculate cooldown end time
-        cooldown_end_time = (
-            self.created_at + accounts_config.PASSWORD_RESET_COOLDOWN_PERIOD
+        cooldown_end_time = self.created_at + timedelta(
+            minutes=accounts_config.PASSWORD_RESET_COOLDOWN_PERIOD
         )
         return max(cooldown_end_time - timezone.now(), timedelta(seconds=0))
 

@@ -192,7 +192,7 @@ def get_client_ip(request):
 
 
 def generate_password_reset_code():
-    length = accounts_config.CONFIRMATION_CODE_DIGITS
+    length = accounts_config.CONFIRMATION_CODE_LENGTH
 
     # Generate a numeric code
     code = "".join(random.choices(string.digits, k=length))
