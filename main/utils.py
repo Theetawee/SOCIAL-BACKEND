@@ -1,114 +1,104 @@
 import os
 import uuid
 from concurrent.futures import ThreadPoolExecutor
+from io import BytesIO
 from urllib.parse import urljoin
 
 import blurhash
 from cloudinary.uploader import destroy, upload
 from django.conf import settings
+from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from PIL import Image
 
 
-def upload_profile_image(file, file_name, folder=None, request=None):
+def convert_and_save_image(file, file_name):
     """
-    Upload image to Cloudinary in production, or handle locally in development.
-    Always name the image after the file_name and overwrite if it exists.
-
+    Convert the image to WebP format and save locally or return the content.
     Args:
-        file (_file_): The file to upload.
-        file_name (str): The file_name to use as the image name.
-        folder (str, optional): The folder to upload the image to in Cloudinary.
-        request (HttpRequest, optional): The request object to build absolute URLs.
+        file (_file_): The file to convert and save.
+        file_name (str): The name to use for the converted file.
 
     Returns:
-        url: str
+        ContentFile: Optimized image in WebP format for saving in local storage.
     """
-    # Construct the public ID using the folder and file_name
-    public_id = f"{folder}/{file_name}" if folder else file_name
+    # Convert image to WebP using Pillow
+    img = Image.open(file)
+    buffer = BytesIO()
+    img.save(buffer, format="WEBP", optimize=True, quality=85)
 
+    return ContentFile(buffer.getvalue(), name=f"{file_name}.webp")
+
+
+def handle_image_upload(file, file_name, folder=None, request=None, overwrite=True):
+    """
+    Handle image upload either to Cloudinary or local storage based on DEBUG mode.
+    Args:
+        file (_file_): The file to upload.
+        file_name (str): The file name to use.
+        folder (str, optional): The folder where the image should be saved.
+        request (HttpRequest, optional): The request object for building URLs (optional).
+        overwrite (bool, optional): Whether to overwrite the file in Cloudinary (default: True).
+
+    Returns:
+        str: The URL of the uploaded image.
+    """
     if settings.DEBUG:
-        file_name = f"{file_name}_{file.name}"
-        file_path = os.path.join(folder, file_name) if folder else file_name
-
-        # Save the file locally
-        file_name = default_storage.save(file_path, file)
-        relative_url = default_storage.url(file_name)
+        # Save locally and convert to WebP
+        webp_file = convert_and_save_image(file, file_name)
+        file_path = os.path.join(folder, webp_file.name) if folder else webp_file.name
+        saved_file = default_storage.save(file_path, webp_file)
+        relative_url = default_storage.url(saved_file)
 
         # Generate absolute URL if `request` is provided
         if request:
             file_url = request.build_absolute_uri(relative_url)
         else:
-            # Fallback: Construct absolute URL using site's base URL
             base_url = settings.SITE_URL
             file_url = urljoin(base_url, relative_url)
-
-        return file_url
     else:
+        # Cloudinary upload with optimization
+        file.seek(0)
         response = upload(
             file,
-            public_id=public_id,
-            overwrite=True,
+            public_id=f"{folder}/{file_name}" if folder else file_name,
+            overwrite=overwrite,
             folder=folder,
+            format="webp",  # Convert to WebP in Cloudinary
+            quality="auto",  # Automatically optimize quality based on Cloudinary's algorithms
+            resource_type="image",  # Ensure the upload is treated as an image
         )
-        return response["secure_url"]
+        file_url = response["secure_url"]
+
+    return file_url
+
+
+def upload_profile_image(file, file_name, folder=None, request=None):
+    """
+    Upload image to Cloudinary in production or handle locally in development.
+    Always name the image after the file_name and overwrite if it exists.
+    """
+    return handle_image_upload(file, file_name, folder, request, overwrite=True)
 
 
 def upload_single_image(file, folder=None, request=None):
     """
-    Upload a single image to Cloudinary or handle locally in development.
-    Give the image a random unique name to avoid overwriting any existing ones.
+    Upload a single image with a unique name to Cloudinary or handle locally in development.
     """
-    # Reset the file pointer to the beginning in case it was read before
-    file.seek(0)
-
-    unique_name = f"{uuid.uuid4()}_{file.name}"
-
-    if settings.DEBUG:
-        file_path = os.path.join(folder, unique_name) if folder else unique_name
-        file_name = default_storage.save(file_path, file)
-        relative_url = default_storage.url(file_name)
-
-        if request:
-            file_url = request.build_absolute_uri(relative_url)
-        else:
-            base_url = settings.SITE_URL
-            file_url = urljoin(base_url, relative_url)
-
-        return file_url
-    else:
-        # Reset the file pointer again for production upload
-        file.seek(0)
-
-        response = upload(
-            file,
-            public_id=f"{folder}/{unique_name}" if folder else unique_name,
-            overwrite=False,
-            folder=folder,
-        )
-        return response["secure_url"]
+    unique_name = f"{uuid.uuid4()}"
+    return handle_image_upload(file, unique_name, folder, request, overwrite=False)
 
 
 def upload_images(files, folder=None, request=None):
     """
     Upload multiple images concurrently to Cloudinary or locally in development.
-
-    Args:
-        files (list): List of file objects to upload.
-        folder (str, optional): The folder to upload the image to.
-        request (HttpRequest, optional): Request object to build absolute URLs (in development).
-
-    Returns:
-        list: List of uploaded image URLs.
     """
-    # Use ThreadPoolExecutor to upload multiple images concurrently
     with ThreadPoolExecutor() as executor:
         futures = [
             executor.submit(upload_single_image, file, folder, request)
             for file in files
         ]
         results = [future.result() for future in futures]
-
     return results
 
 

@@ -1,7 +1,6 @@
 blurhash-python
 cloudinary
 Django
-django-cloudinary-storage
 django-cors-headers
 django-debug-toolbar
 django-dotenv
@@ -10,3 +9,4 @@ djangorestframework-simplejwt
 pillow
 psycopg
 psycopg-binary
+gunicorn

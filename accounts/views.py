@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -72,3 +73,53 @@ def basic_user_info(request, username):
         return Response(data=serializer.data, status=status.HTTP_200_OK)
     except Exception:
         return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(["POST"])
+def user_account_action(request, action, username):
+    """Handle follow or unfollow action."""
+    if not request.user.is_authenticated:
+        return Response(
+            {"error": "Authentication required."}, status=status.HTTP_401_UNAUTHORIZED
+        )
+
+    user_to_follow = get_object_or_404(Account, username=username)
+
+    if action not in ["follow", "unfollow"]:
+        return Response(
+            {"error": "Invalid action."}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        if action == "follow":
+            request.user.follow(user_to_follow)
+        elif action == "unfollow":
+            request.user.unfollow(user_to_follow)
+
+        return Response(data={"action": action}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET"])
+def account_interactions(request, interaction_type, username):
+    user_account = get_object_or_404(Account, username=username)
+
+    if interaction_type not in ["following", "followers"]:
+        return Response({"error": "Invalid type"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        if interaction_type == "following":
+            accounts = user_account.get_following()
+        elif interaction_type == "followers":
+            accounts = user_account.get_followers()
+
+        serializer = BasicAccountSerializer(
+            accounts, many=True, context={"request": request}
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    except Exception:
+        return Response(
+            {"error": "Something went wrong"}, status=status.HTTP_400_BAD_REQUEST
+        )

@@ -59,6 +59,7 @@ class PostSerializer(serializers.ModelSerializer):
             "images",
             "reaction",
             "post_reactions",
+            "tagged_link",
         ]
 
     def get_comments(self, obj):
@@ -126,6 +127,7 @@ class CreatePostSerializer(serializers.Serializer):
     files = serializers.ListField(
         child=serializers.FileField(), required=False, write_only=True
     )
+    tagged_link = serializers.URLField(required=False)
 
     def create(self, validated_data):
         user = self.context["request"].user

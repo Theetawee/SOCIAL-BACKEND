@@ -8,6 +8,9 @@ from .models import Account
 
 class BasicAccountSerializer(serializers.ModelSerializer):
     is_self = serializers.SerializerMethodField()
+    is_following_account = serializers.SerializerMethodField()
+    followers = serializers.SerializerMethodField()
+    following = serializers.SerializerMethodField()
 
     class Meta:
         model = Account
@@ -20,6 +23,10 @@ class BasicAccountSerializer(serializers.ModelSerializer):
             "profile_image_hash",
             "is_self",
             "verified_company",
+            "is_following_account",
+            "followers",
+            "following",
+            "tagline",
         ]
 
     def get_is_self(self, obj):
@@ -27,6 +34,19 @@ class BasicAccountSerializer(serializers.ModelSerializer):
         if request and request.user:
             return obj == request.user
         return False
+
+    def get_is_following_account(self, obj):
+        request = self.context.get("request", None)
+
+        if request and request.user.is_authenticated:
+            return request.user.is_following(obj) if isinstance(obj, Account) else False
+        return False
+
+    def get_followers(self, obj):
+        return obj.get_followers().count()
+
+    def get_following(self, obj):
+        return obj.get_following().count()
 
 
 class AccountSerializer(BasicAccountSerializer):
@@ -40,7 +60,6 @@ class AccountSerializer(BasicAccountSerializer):
             "location",
             "date_joined",
             "website",
-            "tagline",
         ]
 
 

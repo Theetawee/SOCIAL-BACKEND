@@ -2,7 +2,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
 from accounts.models import Account
@@ -60,6 +60,7 @@ comment_list = PostCommentsList.as_view()
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def create_post(request, post_id=None):
+    print(request.data)
     serializer = CreatePostSerializer(
         data=request.data, context={"request": request, "post_id": post_id}
     )
@@ -136,6 +137,7 @@ def search_view(request):
 
 
 @api_view(["POST"])
+@permission_classes([AllowAny])
 def get_feedback(request):
     serializer = FeedbackSerializer(data=request.data)
     if serializer.is_valid():
