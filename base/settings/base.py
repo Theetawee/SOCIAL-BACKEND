@@ -143,7 +143,7 @@ ASGI_APPLICATION = "base.asgi.application"
 
 # SIMPLE_JWT SETTINGS
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=10),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
@@ -171,6 +171,8 @@ WAANVERSE_AUTH = {
     "REGISTRATION_SERIALIZER_CLASS": "accounts.serializers.SignupSerializer",
     "USE_ADMIN_PANEL": True,
     "AUTH_METHODS": ["username", "email", "phone_number"],
+    "REFRESH_TOKEN_COOKIE": "ACCOUNT_",
+    "ACCESS_TOKEN_COOKIE": "all_access",
 }
 
 
