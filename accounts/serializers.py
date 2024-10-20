@@ -43,10 +43,16 @@ class BasicAccountSerializer(serializers.ModelSerializer):
         return False
 
     def get_followers(self, obj):
-        return obj.get_followers().count()
+        try:
+            return obj.get_followers().count()
+        except Exception:
+            return 0
 
     def get_following(self, obj):
-        return obj.get_following().count()
+        try:
+            return obj.get_following().count()
+        except Exception:
+            return 0
 
 
 class AccountSerializer(BasicAccountSerializer):
