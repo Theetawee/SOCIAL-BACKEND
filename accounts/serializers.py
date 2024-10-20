@@ -1,6 +1,6 @@
-from dj_waanverse_auth.serializers import SignupSerializer as WaanverseSignupSerializer
 from rest_framework import serializers
 
+from dj_waanverse_auth.serializers import SignupSerializer as WaanverseSignupSerializer
 from main.utils import get_image_hash, upload_profile_image
 
 from .models import Account
@@ -43,10 +43,16 @@ class BasicAccountSerializer(serializers.ModelSerializer):
         return False
 
     def get_followers(self, obj):
-        return obj.get_followers().count()
+        try:
+            return obj.get_followers().count()
+        except Exception:
+            return 0
 
     def get_following(self, obj):
-        return obj.get_following().count()
+        try:
+            return obj.get_following().count()
+        except Exception:
+            return 0
 
 
 class AccountSerializer(BasicAccountSerializer):
