@@ -104,6 +104,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
     cover_image_hash = models.CharField(blank=True, null=True, max_length=200)
     google_account = models.BooleanField(default=False)
     website = models.URLField(blank=True, null=True)
+    points = models.IntegerField(default=0)
 
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["email"]
