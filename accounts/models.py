@@ -160,6 +160,10 @@ class Account(AbstractBaseUser, PermissionsMixin):
             accounts_following__following=self
         )  # Updated related_name
 
+    @property
+    def is_verified_account(self):
+        return self.verified or self.verified_company
+
     class Meta:
         ordering = ["-id"]
 

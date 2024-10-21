@@ -19,14 +19,15 @@ class BasicAccountSerializer(serializers.ModelSerializer):
             "name",
             "id",
             "profile_image_url",
-            "verified",
             "profile_image_hash",
-            "is_self",
             "verified_company",
+            "verified",
+            "is_self",
             "is_following_account",
             "followers",
             "following",
             "tagline",
+            "is_verified_account"
         ]
 
     def get_is_self(self, obj):
