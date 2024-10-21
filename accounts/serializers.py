@@ -27,7 +27,8 @@ class BasicAccountSerializer(serializers.ModelSerializer):
             "followers",
             "following",
             "tagline",
-            "is_verified_account"
+            "is_verified_account",
+            "points",
         ]
 
     def get_is_self(self, obj):
