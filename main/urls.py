@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    account_post_list,
     comment_list,
     create_post,
     delete_action,
@@ -27,4 +28,5 @@ urlpatterns = [
     path("feedback", get_feedback, name="feedback"),
     path("delete/<int:post_id>", delete_action, name="delete_action"),
     path("post/react/<int:post_id>", set_reaction, name="set_reaction"),
+    path("account/posts", account_post_list, name="account_post_list"),
 ]
