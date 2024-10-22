@@ -58,6 +58,8 @@ class BasicAccountSerializer(serializers.ModelSerializer):
 
 
 class AccountSerializer(BasicAccountSerializer):
+    referrals = serializers.SerializerMethodField()
+
     class Meta(BasicAccountSerializer.Meta):
         model = Account
         fields = BasicAccountSerializer.Meta.fields + [
@@ -69,7 +71,11 @@ class AccountSerializer(BasicAccountSerializer):
             "date_joined",
             "website",
             "referral_code",
+            "referrals",
         ]
+
+    def get_referrals(self, obj):
+        return obj.referred_accounts.all().count()
 
 
 class SignupSerializer(WaanverseSignupSerializer):
