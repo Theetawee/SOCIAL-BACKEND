@@ -1,6 +1,7 @@
 import uuid
 
 from dj_waanverse_auth.signals import user_created_via_google
+from dj_waanverse_auth.utils import get_email_verification_status
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -106,7 +107,6 @@ class Account(AbstractBaseUser, PermissionsMixin):
     cover_image_hash = models.CharField(blank=True, null=True, max_length=200)
     google_account = models.BooleanField(default=False)
     website = models.URLField(blank=True, null=True)
-    points = models.IntegerField(default=0)
 
     referral_code = models.CharField(max_length=255, blank=True, unique=True, null=True)
     referred_accounts = models.ManyToManyField("self", blank=True)
@@ -179,6 +179,19 @@ class Account(AbstractBaseUser, PermissionsMixin):
         return Account.objects.filter(
             accounts_following__following=self
         )  # Updated related_name
+
+    @property
+    def points(self):
+        """Calculate points based on the email verification status of referred accounts."""
+        verified_referrals_count = 0
+
+        for account in self.referred_accounts.all():
+            # Use get_email_verification_status to check if the referred account is verified
+            if get_email_verification_status(account):
+                verified_referrals_count += 1
+
+        # Calculate points (assuming 10 points per verified referral)
+        return verified_referrals_count * 10
 
     @property
     def is_verified_account(self):
