@@ -2,7 +2,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from accounts.models import Account
@@ -33,6 +33,24 @@ class PostList(generics.ListAPIView):
 
 
 post_list = PostList.as_view()
+
+
+class AccountPostList(generics.ListAPIView):
+    serializer_class = PostSerializer
+
+    def get_queryset(self):
+        # Get the username from the query parameters
+        username = self.request.query_params.get("username")
+        # Ensure the username is provided
+        if username is None:
+            return Post.objects.none()  # Return no posts if username is not provided
+
+        account = get_object_or_404(Account, username=username)
+        posts = Post.objects.filter(author=account, parent=None)
+        return posts
+
+
+account_post_list = AccountPostList.as_view()
 
 
 class PostDetail(generics.RetrieveAPIView):

@@ -1,4 +1,7 @@
+import uuid
+
 from dj_waanverse_auth.signals import user_created_via_google
+from dj_waanverse_auth.utils import get_email_verification_status
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -105,6 +108,9 @@ class Account(AbstractBaseUser, PermissionsMixin):
     google_account = models.BooleanField(default=False)
     website = models.URLField(blank=True, null=True)
 
+    referral_code = models.CharField(max_length=255, blank=True, unique=True, null=True)
+    referred_accounts = models.ManyToManyField("self", blank=True)
+
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["email"]
 
@@ -115,6 +121,20 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
     def get_full_name(self):
         return self.name or self.username
+
+    def save(self, *args, **kwargs):
+        if not self.referral_code:
+            self.referral_code = self.generate_referral_code()
+        super().save(*args, **kwargs)
+
+    def generate_referral_code(self):
+        """Generate a unique referral code."""
+        code = None
+        while not code or Account.objects.filter(referral_code=code).exists():
+            code = str(uuid.uuid4()).replace("-", "")[
+                :10
+            ]  # Generate a 10-character unique code
+        return code
 
     def get_short_name(self):
         return self.username
@@ -159,6 +179,23 @@ class Account(AbstractBaseUser, PermissionsMixin):
         return Account.objects.filter(
             accounts_following__following=self
         )  # Updated related_name
+
+    @property
+    def points(self):
+        """Calculate points based on the email verification status of referred accounts."""
+        verified_referrals_count = 0
+
+        for account in self.referred_accounts.all():
+            # Use get_email_verification_status to check if the referred account is verified
+            if get_email_verification_status(account):
+                verified_referrals_count += 1
+
+        # Calculate points (assuming 10 points per verified referral)
+        return verified_referrals_count * 10
+
+    @property
+    def is_verified_account(self):
+        return self.verified or self.verified_company
 
     class Meta:
         ordering = ["-id"]

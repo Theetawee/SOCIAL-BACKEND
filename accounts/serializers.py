@@ -19,14 +19,16 @@ class BasicAccountSerializer(serializers.ModelSerializer):
             "name",
             "id",
             "profile_image_url",
-            "verified",
             "profile_image_hash",
-            "is_self",
             "verified_company",
+            "verified",
+            "is_self",
             "is_following_account",
             "followers",
             "following",
             "tagline",
+            "is_verified_account",
+            "points",
         ]
 
     def get_is_self(self, obj):
@@ -56,6 +58,8 @@ class BasicAccountSerializer(serializers.ModelSerializer):
 
 
 class AccountSerializer(BasicAccountSerializer):
+    referrals = serializers.SerializerMethodField()
+
     class Meta(BasicAccountSerializer.Meta):
         model = Account
         fields = BasicAccountSerializer.Meta.fields + [
@@ -66,12 +70,34 @@ class AccountSerializer(BasicAccountSerializer):
             "location",
             "date_joined",
             "website",
+            "referral_code",
+            "referrals",
         ]
+
+    def get_referrals(self, obj):
+        return obj.referred_accounts.all().count()
 
 
 class SignupSerializer(WaanverseSignupSerializer):
     name = serializers.CharField(required=False)
     gender = serializers.CharField(required=False)
+    referral_code = serializers.CharField(required=False, write_only=True)
+
+    def create(self, validated_data):
+        """Create a new user, apply referral logic, and return user data."""
+        # Pop the referral code out of the validated data
+        referral_code = validated_data.pop("referral_code", None)
+
+        # Proceed with the regular user creation process
+        user = super().create(validated_data)
+
+        # If a referral code was provided, apply referral logic
+        if referral_code:
+            referral = Account.objects.get(referral_code=referral_code)
+            referral.referred_accounts.add(user)
+            referral.save()
+
+        return user
 
     def get_additional_fields(self, validated_data):
         return {
