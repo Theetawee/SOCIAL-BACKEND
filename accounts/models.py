@@ -1,3 +1,5 @@
+import uuid
+
 from dj_waanverse_auth.signals import user_created_via_google
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -106,6 +108,9 @@ class Account(AbstractBaseUser, PermissionsMixin):
     website = models.URLField(blank=True, null=True)
     points = models.IntegerField(default=0)
 
+    referral_code = models.CharField(max_length=255, blank=True, null=True)
+    referred_accounts = models.ManyToManyField("self", blank=True)
+
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["email"]
 
@@ -116,6 +121,20 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
     def get_full_name(self):
         return self.name or self.username
+
+    def save(self, *args, **kwargs):
+        if not self.referral_code:
+            self.referral_code = self.generate_referral_code()
+        super().save(*args, **kwargs)
+
+    def generate_referral_code(self):
+        """Generate a unique referral code."""
+        code = None
+        while not code or Account.objects.filter(referral_code=code).exists():
+            code = str(uuid.uuid4()).replace("-", "")[
+                :10
+            ]  # Generate a 10-character unique code
+        return code
 
     def get_short_name(self):
         return self.username

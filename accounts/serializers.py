@@ -68,6 +68,7 @@ class AccountSerializer(BasicAccountSerializer):
             "location",
             "date_joined",
             "website",
+            "referral_code",
         ]
 
 
