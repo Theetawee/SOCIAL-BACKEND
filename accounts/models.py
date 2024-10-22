@@ -108,7 +108,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
     website = models.URLField(blank=True, null=True)
     points = models.IntegerField(default=0)
 
-    referral_code = models.CharField(max_length=255, blank=True, null=True)
+    referral_code = models.CharField(max_length=255, blank=True, unique=True, null=True)
     referred_accounts = models.ManyToManyField("self", blank=True)
 
     USERNAME_FIELD = "username"
