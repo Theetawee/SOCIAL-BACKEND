@@ -32,7 +32,6 @@ INSTALLED_APPS = [
     "cloudinary",
     "debug_toolbar",
     "django.contrib.sitemaps",
-    "dj_waanverse_auth",
     "django_hosts",
     "prerender",
     "django_cotton",
@@ -51,7 +50,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
-    "dj_waanverse_auth.middleware.CookiesHandlerMiddleware",
     "django_hosts.middleware.HostsResponseMiddleware",
     "base.middleware.PrerenderBotMiddleware",
     "base.middleware.MinifyHTMLMiddleware",
@@ -123,7 +121,6 @@ CORS_ALLOW_CREDENTIALS = True
 
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": ("dj_waanverse_auth.backends.JWTAuthentication",),
     "DEFAULT_PAGINATION_CLASS": "base.utils.CustomPageNumberPagination",
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
@@ -133,7 +130,6 @@ REST_FRAMEWORK = {
 
 
 AUTHENTICATION_BACKENDS = [
-    "dj_waanverse_auth.backends.AuthBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
 
@@ -160,20 +156,6 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get("SMTP_EMAIL")
 EMAIL_HOST_PASSWORD = os.environ.get("SMTP_PASSWORD")
 EMAIL_USE_TLS = True
-
-
-WAANVERSE_AUTH = {
-    "USER_CLAIM_SERIALIZER_CLASS": "accounts.serializers.BasicAccountSerializer",
-    "USER_DETAIL_SERIALIZER_CLASS": "accounts.serializers.BasicAccountSerializer",
-    "ENABLE_EMAIL_ON_LOGIN": False,
-    "PLATFORM_NAME": "Alloqet",
-    "AUTO_RESEND_EMAIL": True,
-    "REGISTRATION_SERIALIZER_CLASS": "accounts.serializers.SignupSerializer",
-    "USE_ADMIN_PANEL": True,
-    "AUTH_METHODS": ["username", "email", "phone_number"],
-    "REFRESH_TOKEN_COOKIE": "ACCOUNT_",
-    "ACCESS_TOKEN_COOKIE": "all_access",
-}
 
 
 ADMIN_ENABLED = os.environ.get("ADMIN_ENABLED", "False").lower() == "true"

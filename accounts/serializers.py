@@ -1,4 +1,3 @@
-from dj_waanverse_auth.serializers import SignupSerializer as WaanverseSignupSerializer
 from rest_framework import serializers
 
 from main.utils import get_image_hash, upload_profile_image
@@ -28,7 +27,6 @@ class BasicAccountSerializer(serializers.ModelSerializer):
             "following",
             "tagline",
             "is_verified_account",
-            "points",
         ]
 
     def get_is_self(self, obj):
@@ -78,7 +76,7 @@ class AccountSerializer(BasicAccountSerializer):
         return obj.referred_accounts.all().count()
 
 
-class SignupSerializer(WaanverseSignupSerializer):
+class SignupSerializer(serializers.Serializer):
     name = serializers.CharField(required=False)
     gender = serializers.CharField(required=False)
     referral_code = serializers.CharField(required=False, write_only=True)

@@ -1,15 +1,12 @@
 import uuid
 
-from dj_waanverse_auth.signals import user_created_via_google
-from dj_waanverse_auth.utils import get_email_verification_status
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
     PermissionsMixin,
 )
 from django.contrib.humanize.templatetags.humanize import naturalday
-from django.db import models, transaction
-from django.dispatch import receiver
+from django.db import models
 from django.templatetags.static import static
 from django.urls import reverse
 
@@ -181,19 +178,6 @@ class Account(AbstractBaseUser, PermissionsMixin):
         )  # Updated related_name
 
     @property
-    def points(self):
-        """Calculate points based on the email verification status of referred accounts."""
-        verified_referrals_count = 0
-
-        for account in self.referred_accounts.all():
-            # Use get_email_verification_status to check if the referred account is verified
-            if get_email_verification_status(account):
-                verified_referrals_count += 1
-
-        # Calculate points (assuming 10 points per verified referral)
-        return verified_referrals_count * 10
-
-    @property
     def is_verified_account(self):
         return self.verified or self.verified_company
 
@@ -219,15 +203,3 @@ class Follow(models.Model):
 
     def __str__(self):
         return f"{self.follower} follows {self.following}"
-
-
-@receiver(user_created_via_google, dispatch_uid="handle_user_created_via_google")
-def handle_user_created_via_google(sender, user, user_info, **kwargs):
-    try:
-        with transaction.atomic():
-            user.profile_image_url = user_info.get("picture")
-            user.google_account = True
-            user.name = user_info.get("name")
-            user.save(update_fields=["profile_image_url", "name", "google_account"])
-    except Exception:
-        pass

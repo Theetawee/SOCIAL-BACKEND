@@ -5,9 +5,9 @@ from django.urls import include, path
 
 urlpatterns = [
     path("v1/accounts/", include("accounts.urls")),
-    path("v1/accounts/", include("dj_waanverse_auth.urls")),
     path("v1/", include("main.urls")),
     path("prerender/", include("prerender.urls")),
+    path("v1/auth/", include("authentication.urls")),
 ]
 
 if settings.ADMIN_ENABLED:
