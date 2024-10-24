@@ -29,7 +29,7 @@ def set_cookie(response, token, token_type):
     if token_type == "access":
         ACCESS_LIFETIME = api_settings.ACCESS_TOKEN_LIFETIME.total_seconds()
         response.set_cookie(
-            "access",
+            "a_alloqet",
             token,
             max_age=ACCESS_LIFETIME,
             httponly=True,
@@ -41,7 +41,7 @@ def set_cookie(response, token, token_type):
     elif token_type == "refresh":
         REFRESH_LIFETIME = api_settings.REFRESH_TOKEN_LIFETIME.total_seconds()
         response.set_cookie(
-            "refresh",
+            "ACCOUNT_",
             token,
             max_age=REFRESH_LIFETIME,
             httponly=True,
